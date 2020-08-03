@@ -1,20 +1,47 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import "./App.css";
 
+import "react-toastify/dist/ReactToastify.css";
 import {
   BrowserRouter as Router,
-  Switch,
   Route,
+  Switch,
   Redirect
 } from "react-router-dom";
 
+import { toast } from "react-toastify";
+
 //components
 
-import Dashboard from "./components/Dashboard";
-import LoginForm from "./components/Login";
+import Login from "./components/Login";
 import Register from "./components/Register";
+import Dashboard from "./components/Dashboard";
+
+toast.configure();
 
 function App() {
+  const checkAuthenticated = async () => {
+    try {
+      const res = await fetch(
+        "http://ec2-52-221-199-235.ap-southeast-1.compute.amazonaws.com:5000/api/auth/is-verify",
+        {
+          method: "GET",
+          headers: { token: localStorage.token }
+        }
+      );
+
+      const parseRes = await res.json();
+
+      parseRes === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthenticated();
+  }, []);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const setAuth = boolean => {
@@ -24,14 +51,14 @@ function App() {
   return (
     <Fragment>
       <Router>
-        <Switch>
-          <div className="App">
+        <div className="App">
+          <Switch>
             <Route
               exact
               path="/login"
               render={props =>
                 !isAuthenticated ? (
-                  <LoginForm {...props} setAuth={setAuth} />
+                  <Login {...props} setAuth={setAuth} />
                 ) : (
                   <Redirect to="/dashboard" />
                 )
@@ -44,7 +71,7 @@ function App() {
                 !isAuthenticated ? (
                   <Register {...props} setAuth={setAuth} />
                 ) : (
-                  <Redirect to="/login" />
+                  <Redirect to="/dashboard" />
                 )
               }
             />
@@ -52,15 +79,15 @@ function App() {
               exact
               path="/dashboard"
               render={props =>
-                !isAuthenticated ? (
+                isAuthenticated ? (
                   <Dashboard {...props} setAuth={setAuth} />
                 ) : (
                   <Redirect to="/login" />
                 )
               }
             />
-          </div>
-        </Switch>
+          </Switch>
+        </div>
       </Router>
     </Fragment>
   );

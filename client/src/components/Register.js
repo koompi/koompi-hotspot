@@ -1,23 +1,21 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React from "react";
+import { Link } from "react-router-dom";
+// import axios from "axios";
+
 import {
   Form,
   Input,
   Tooltip,
   Cascader,
   Select,
-  Row,
-  Col,
   Checkbox,
   Button,
-  AutoComplete,
   DatePicker
 } from "antd";
 import moment from "moment";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
-const AutoCompleteOption = AutoComplete.Option;
 const residences = [
   {
     value: "asia",
@@ -38,22 +36,6 @@ const residences = [
           {
             value: "banteay meanchey",
             label: "Banteay Meanchey"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: "america",
-    label: "America",
-    children: [
-      {
-        value: "usa",
-        label: "USA",
-        children: [
-          {
-            value: "california",
-            label: "California"
           }
         ]
       }
@@ -106,35 +88,11 @@ const RegistrationForm = () => {
         }}
       >
         <Option value="855">+855</Option>
-        <Option value="1">+1</Option>
       </Select>
     </Form.Item>
   );
   const dateFormatList = ["DD/MMMM/YYYY", "DD/MMMM/YY"];
-  const [inputs, setInputs] = useState({
-    email: "",
-    password: "",
-    fullname: "",
-    address: "",
-    phone: "",
-    date: ""
-  });
-  const { email, password, fullname, address, phone, date } = inputs;
-  // const onSubmitForm = e => {
-  //   const body = { email, password, fullname, address, phone, date };
 
-  //   e.preventDefault();
-  //   try {
-  //     const response = await axios.post("http://localhost:5000/api/auth/register");
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // };
-  // const onSubmitForm =()=>{
-  //   fetch.get("http://localhost:5000/api/auth/register", {
-
-  //   });
-  // };
   return (
     <Form
       {...formItemLayout}
@@ -149,7 +107,7 @@ const RegistrationForm = () => {
       scrollToFirstError
       // onSubmit={onSubmitForm}
     >
-      <h1>Login</h1>
+      <h1>Register</h1>
       <Form.Item
         name="email"
         label="E-mail"
@@ -163,7 +121,6 @@ const RegistrationForm = () => {
             message: "Please input your E-mail!"
           }
         ]}
-        value={email}
       >
         <Input />
       </Form.Item>
@@ -178,7 +135,6 @@ const RegistrationForm = () => {
           }
         ]}
         hasFeedback
-        value={password}
       >
         <Input.Password />
       </Form.Item>
@@ -226,7 +182,6 @@ const RegistrationForm = () => {
             whitespace: true
           }
         ]}
-        value={fullname}
       >
         <Input />
       </Form.Item>
@@ -240,7 +195,6 @@ const RegistrationForm = () => {
           }
         ]}
         hasFeedback
-        value={date}
       >
         <DatePicker
           defaultValue={moment("01/01/2000", dateFormatList[0])}
@@ -258,7 +212,6 @@ const RegistrationForm = () => {
             message: "Please select your habitual residence!"
           }
         ]}
-        value={address}
       >
         <Cascader options={residences} />
       </Form.Item>
@@ -272,7 +225,6 @@ const RegistrationForm = () => {
             message: "Please input your phone number!"
           }
         ]}
-        value={phone}
       >
         <Input
           addonBefore={prefixSelector}
@@ -304,6 +256,7 @@ const RegistrationForm = () => {
           Register
         </Button>
       </Form.Item>
+      <Link to="/login">Login</Link>
     </Form>
   );
 };
