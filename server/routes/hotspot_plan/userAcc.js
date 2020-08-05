@@ -26,11 +26,18 @@ router.post("/", async (req, res) => {
     //   [username, attributeMD5, op, password]
     // );
 
-    const value=req.body;
+    const value = req.body;
 
-    if(attribute==Access_Period){
+    // if (attribute == Access_Period) {
+    //   goupname = (access_period_1h, access_period_6h, access_period_12h, access_period_24h)
+    // } if (attribute = Expiration) {
+    //   groupname = (Expiration_username_amountday)
+    // }
+    // if(attribute=Simutaneous_Use){
+    //   groupname=(Simultaneous_User_username_value)
+    // }
+    
 
-    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error!");
