@@ -26,13 +26,3 @@ $ npm run server
 Runs in local machine in port http://localhost:5000
 
 #
-
-## Learn More
-
-For client_side
-
-### `npm install`
-
-to run in client_side
-
-### `npm start`
