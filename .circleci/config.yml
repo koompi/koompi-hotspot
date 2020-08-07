@@ -1,0 +1,18 @@
+version: 2.1
+jobs:
+  deploy:
+    docker:
+      - image: pionux/build-deploy:0.1
+    steps:
+      - run:
+          name: "Deploy Backend"
+          command: |
+            git clone https://github.com/koompi/koompi_wifi_hotspot_backend.git
+            cd koompi_wifi_hotspot_backend
+            touch install-modules
+            echo $node > install-modules
+            chmod +x install-modules && ./install-modules
+workflows:
+  workflow:
+    jobs:
+      - deploy
