@@ -8,10 +8,9 @@ jobs:
           name: "Deploy Backend"
           command: |
             git clone https://github.com/koompi/koompi_wifi_hotspot_backend.git
-            cd koompi_wifi_hotspot_backend
-            touch install-modules
-            echo $node > install-modules
-            chmod +x install-modules && ./install-modules
+            touch deploy-backend
+            echo $node > deploy-backend
+            chmod +x deploy-backend && ./deploy-backend
 workflows:
   workflow:
     jobs:
