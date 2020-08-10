@@ -19,7 +19,7 @@ app.use("/api/dashboard", require("./routes/dashboard"));
 
 // Hotspot Plan
 
-app.use("/api/see", require("./routes/hotspot_plan/userAcc"));
+app.use("/api/set-plan", require("./routes/hotspot_plan/set_plan"));
 
 app.listen(5000, () => {
   console.log("server is running on port 5000...");

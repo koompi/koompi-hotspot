@@ -16,6 +16,16 @@ $ cd server
 $ npm install jsonwebtoken
 ```
 
+<<<<<<< HEAD
+for date format
+
+```
+cd server
+$ npm install moment
+```
+
+for run server machine
+=======
 ### Connection Database
 ```
 $ cd server
@@ -24,6 +34,7 @@ $ cp db.js.example db.js
 And then change your connection in `db.js`
 
 ### Run server
+>>>>>>> 9359d04cf512d6adf8eff4ff99e0e3adbbb80661
 
 ```
 cd server

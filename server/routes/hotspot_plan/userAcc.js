@@ -19,25 +19,12 @@ router.post("/", async (req, res) => {
     } else {
       res.send(await pool.query("select * from radgroupcheck"));
     }
-    //2. enter the user inside database
+    // 2. enter the user inside database
 
-    // const newAcc = await pool.query(
-    //   "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,$3,$4) RETURNING *",
-    //   [username, attributeMD5, op, password]
-    // );
-
-    const value = req.body;
-
-    // if (attribute == Access_Period) {
-    //   goupname = (access_period_1h, access_period_6h, access_period_12h, access_period_24h)
-    // } if (attribute = Expiration) {
-    //   groupname = (Expiration_username_amountday)
-    // }
-    // if(attribute=Simutaneous_Use){
-    //   groupname=(Simultaneous_User_username_value)
-    // }
-    
-
+    const newAcc = await pool.query(
+      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,$3,$4) RETURNING *",
+      [username, attributeMD5, op, password]
+    );
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error!");
