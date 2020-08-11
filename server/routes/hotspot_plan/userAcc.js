@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
     // 2. enter the user inside database
 
     const newAcc = await pool.query(
-      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,$3,$4) RETURNING *",
+      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,$4) RETURNING *",
       [username, attributeMD5, op, password]
     );
   } catch (err) {

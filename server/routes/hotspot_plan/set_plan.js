@@ -62,7 +62,7 @@ router.post("/", async (req, res) => {
     }
     // 2. enter the user inside database
     const newAcc = await pool.query(
-      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,$4) RETURNING *",
+      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,MD5($4)) RETURNING *",
       [username, attributeMD5, op, password]
     );
 
@@ -93,7 +93,7 @@ router.post("/", async (req, res) => {
 
     //  insert into table RAD_USER_GROUP
 
-    const radgroupcheck = await pool.query(
+    const raduser = await pool.query(
       "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
       [username, sim_Name, priority]
     );
