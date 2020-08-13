@@ -6,7 +6,7 @@ This project was bootstrapped with [Postgresql](https://www.postgresql.org/).
 
 ```
 $ cd server
-$ npm install express pg bcrypt cors dotenv
+$ npm install express pg bcrypt cors dotenv body-parser aws-sdk
 ```
 
 ### For JWT Json Web Token
@@ -24,23 +24,26 @@ cd server
 $ npm install moment
 ```
 
-for run server machine
-=======
+# for run server machine
+
 ### Connection Database
+
 ```
 $ cd server
 $ cp db.js.example db.js
 ```
+
 And then change your connection in `db.js`
 
 ### Run server
->>>>>>> 9359d04cf512d6adf8eff4ff99e0e3adbbb80661
+
+> > > > > > > 9359d04cf512d6adf8eff4ff99e0e3adbbb80661
 
 ```
 cd server
 $ npm run server
 ```
 
-***Runs in local machine in port http://localhost:5000***
+**_Runs in local machine in port http://localhost:5000_**
 
 #

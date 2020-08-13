@@ -1,4 +1,4 @@
-cd server && npm install express pg bcrypt cors dotenv jsonwebtoken moment && npm run server
+cd server && npm install express pg bcrypt cors dotenv jsonwebtoken moment body-parser aws-sdk && npm run server
 
 #install node module
 # npm install express pg bcrypt cors dotenv jsonwebtoken moment

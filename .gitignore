@@ -1,2 +1,3 @@
 server/db.js
 server/node_modules
+server/.env
