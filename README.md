@@ -35,6 +35,15 @@ $ cp db.js.example db.js
 
 And then change your connection in `db.js`
 
+### Your secret connection with AWS SES
+
+```
+$ cd server
+$ cp .env.example .env
+```
+
+And then change your connection in `.env`
+
 ### Run server
 
 > > > > > > > 9359d04cf512d6adf8eff4ff99e0e3adbbb80661
