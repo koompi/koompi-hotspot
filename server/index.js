@@ -3,21 +3,9 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-// AWS sending email
-const sesClient = require("./routes/Account/aws/aws_ses_client");
+// AWS sending email middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-// call sesClient to send an email
-app.get("/api/ses", (req, res) => {
-  sesClient.sendEmail(
-    (email = req.body),
-    "Hey! Welcome",
-    "your here your code to verify"
-  );
-
-  res.send(email);
-});
 
 /// midlleware
 

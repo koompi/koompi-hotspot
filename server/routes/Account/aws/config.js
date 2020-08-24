@@ -6,7 +6,7 @@ module.exports = {
     ses: {
       from: {
         //  actual email address
-        default: '"loeb.kalin79@gmail.com"'
+        default: '"KOOMPI Hotspot Wifi" <no-reply@koompi.org>'
       },
       region: process.env.AWS_SES_REGION
     }
