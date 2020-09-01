@@ -16,13 +16,14 @@ app.use(cors());
 
 //register and login routes
 app.use("/api/auth", require("./routes/Account/jwtAuth"));
+app.use("/api/auth", require("./routes/Account/completeInfo"));
 
 //dashboard route
 app.use("/api/dashboard", require("./routes/Account/dashboard"));
 
 // Hotspot Plan
 app.use("/api/set-plan", require("./routes/hotspot_plan/set_plan"));
-app.use("/api/update-plan", require("./routes/hotspot_plan/update_plan"));
+app.use("/api/update-plan", require("./routes/hotspot_plan/test"));
 
 app.listen(5000, () => {
   console.log("server is running on port 5000...");
