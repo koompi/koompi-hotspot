@@ -17,13 +17,17 @@ router.post("/complete-info", async (req, res) => {
     if (user.rows.length === 0) {
       return res.status(401).send("Account isn't exist yet!");
     }
+    const activate = await user.rows[0].activate;
 
-    const updateAcc = await pool.query(
-      "UPDATE users_email SET name=$1, gender=$2, birthdate=$3, address=$4  WHERE email=$5",
-      [name, gender, birthdate, address, email]
-    );
-
-    res.send("Completed Info.");
+    if (!activate) {
+      return res.status(401).json("Please active your acount first!");
+    } else {
+      const updateAcc = await pool.query(
+        "UPDATE users_email SET name=$1, gender=$2, birthdate=$3, address=$4  WHERE email=$5 AND activate = true",
+        [name, gender, birthdate, address, email]
+      );
+      res.send("Completed Info.");
+    }
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error!");

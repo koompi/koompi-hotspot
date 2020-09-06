@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 const Dashboard = ({ setAuth }) => {
   const [name, setName] = useState([]);
@@ -11,9 +11,9 @@ const Dashboard = ({ setAuth }) => {
         "http://ec2-52-221-199-235.ap-southeast-1.compute.amazonaws.com:5000/api/dashboard",
       headers: {
         token: localStorage.token,
-        "Content-type": " application/json"
-      }
-    }).then(res => {
+        "Content-type": " application/json",
+      },
+    }).then((res) => {
       setName(res.data);
       console.log(" hello data", res.data);
     });

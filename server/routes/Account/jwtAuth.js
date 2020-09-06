@@ -102,7 +102,7 @@ router.post("/register", validInfo, async (req, res) => {
     //5. enter the new user inside our database
 
     const newUserAcc = await pool.query(
-      "INSERT INTO users_email (name, email, password, verify) VALUES($1,$2,$3,$4)",
+      "INSERT INTO users_email (name, email, password, code) VALUES($1,$2,$3,$4)",
       [name, email, bcryptPassword, code]
     );
 
@@ -127,6 +127,11 @@ router.post("/login", validInfo, async (req, res) => {
     ]);
     if (user.rows.length === 0) {
       return res.status(401).json("Incorrect E-mail");
+    }
+
+    const activate = await user.rows[0].activate;
+    if (!activate) {
+      return res.status(401).json("Please active your acount first!");
     }
 
     //3. check if incomming password is the same database password
@@ -161,16 +166,20 @@ router.get("/is-verify", authorization, async (req, res) => {
 });
 
 //         CONFIRM CODE FROM EMAIL
-router.get("/confirm-email", async (req, res) => {
+router.post("/confirm-email", async (req, res) => {
   try {
     const { email, vCode } = req.body;
 
     const rCode = await pool.query(
-      "SELECT verify FROM users_email WHERE email =$1",
+      "SELECT code FROM users_email WHERE email =$1",
       [email]
     );
 
-    if (rCode.rows[0].verify === vCode) {
+    if (rCode.rows[0].code === vCode) {
+      const verify = await pool.query(
+        "UPDATE users_email SET activate = true WHERE email=$1",
+        [email]
+      );
       res.send("Correct Code.");
     } else res.send("Incorrect Code!");
   } catch (error) {
