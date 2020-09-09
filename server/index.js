@@ -24,7 +24,12 @@ app.use("/api/dashboard", require("./routes/Account/dashboard"));
 // Hotspot Plan
 app.use("/api/set-plan", require("./routes/hotspot_plan/set_plan"));
 app.use("/api/reset-plan", require("./routes/hotspot_plan/reset_plan"));
-
+//  change password
+app.use("/api/reset-password", require("./routes/Account/reset_password_Acc"));
+app.use(
+  "/api/reset-password",
+  require("./routes/hotspot_plan/reset_password_User")
+);
 app.listen(5000, () => {
   console.log("server is running on port 5000...");
 });

@@ -2,7 +2,7 @@ const router = require("express").Router();
 const pool = require("../../db");
 // const authorization = require("../../middleware/authorization");
 
-router.post("/complete-info", async (req, res) => {
+router.put("/complete-info", async (req, res) => {
   try {
     //1. destructure the req.body (full_name,gender , email, password,bithdate,address)
 

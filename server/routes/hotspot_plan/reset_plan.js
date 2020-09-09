@@ -3,9 +3,9 @@ const pool = require("../../db");
 const moment = require("moment");
 const dateFormat = require("dateformat");
 
-// Create Account User
 
-router.post("/", async (req, res) => {
+
+router.put("/", async (req, res) => {
   try {
     //1. destructure the req.body(username,password)
     // for attributeMD5 & op it is default from database
