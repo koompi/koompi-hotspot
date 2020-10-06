@@ -7,7 +7,7 @@ function jwtGenerator(id) {
   };
 
   return jwt.sign(payload, process.env.jwtSecret, {
-    expiresIn: "1hr"
+    expiresIn: "24hr"
   });
 }
 

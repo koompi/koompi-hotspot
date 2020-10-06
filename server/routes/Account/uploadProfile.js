@@ -4,9 +4,9 @@ const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const _ = require("lodash");
-const { now } = require("lodash");
 const path = require("path");
+const authorization = require("../../middleware/authorization");
+
 // enable files upload
 router.use(
   fileUpload({
@@ -19,7 +19,7 @@ router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(morgan("dev"));
-router.post("/upload-avatar", async (req, res) => {
+router.post("/upload-avatar", authorization, async (req, res) => {
   try {
     if (!req.files) {
       res.send({
@@ -29,7 +29,6 @@ router.post("/upload-avatar", async (req, res) => {
     } else {
       //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
       let avatar = req.files.avatar;
-      const email = "sokunsamnang45@gmail.com";
       let name = "avatar" + "_" + Date.now() + path.extname(avatar.name);
 
       if (
@@ -40,10 +39,10 @@ router.post("/upload-avatar", async (req, res) => {
       ) {
         //Use the mv() method to place the file in upload directory (i.e. "uploads")
         avatar.mv("./uploads/" + name);
-        await pool.query(
-          "update users_email set image=$1 where email like $2",
-          [name, email]
-        );
+        await pool.query("update users_email set image=$1 where id = $2", [
+          name,
+          req.user,
+        ]);
 
         //send response
         res.send({

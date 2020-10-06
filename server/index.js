@@ -32,7 +32,7 @@ app.use(
 );
 
 // upload avata
-app.use("/", require("./routes/Account/uploadProfile"));
+app.use("/api", require("./routes/Account/uploadProfile"));
 app.listen(5000, () => {
   console.log("server is running on port 5000...");
 });

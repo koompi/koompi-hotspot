@@ -8,98 +8,63 @@ router.post("/", async (req, res) => {
   try {
     //1. destructure the req.body(username,password)
     // for attributeMD5 & op it is default from database
-    const { username, password, simultaneous, value } = req.body;
+    const { username, password, simultaneous, value } = req.body; // value : 30 , 365
     const op = ":=";
     const attributeMD5 = "MD5-Password";
     const priority = "1";
     const attributeSim = "Simultaneous-Use";
-    const attribute = ["Access-Period", "Expiration"];
-    const optionAccess_Period = [
-      "Access-Period-1h",
-      "Access-Period-6h",
-      "Access-Period-12h",
-      "Access-Period-24h"
-    ];
+    const attributeExp = "Expiration";
+
     var val = parseInt(value, 10);
     var sim = parseInt(simultaneous, 10);
-    var attri;
     var optName;
 
-    if (val === 1) {
-      //   //  ======---===== For Access Period Hour =====---======
-      attri = attribute[0];
-      optName = optionAccess_Period[0];
-    } else if (val === 6) {
-      attri = attribute[0];
-      optName = optionAccess_Period[1];
-    } else if (val === 12) {
-      attri = attribute[0];
-      optName = optionAccess_Period[2];
-    } else if (val === 24) {
-      attri = attribute[0];
-      optName = optionAccess_Period[3];
-    } else if (val === 7) {
-      //   //  ======---===== For Expiration amount of day =====---======
-      attri = attribute[1];
-      optName = "7days";
-    } else if (val === 14) {
-      attri = attribute[1];
-      optName = "14days";
-    } else if (val === 30) {
-      attri = attribute[1];
+    //   //  ======---===== For Expiration amount of day =====---======
+    if (val === 30) {
       optName = "30days";
+    } else if (val === 365) {
+      optName = "1year";
     } else {
       res.send("Please choose!");
     }
 
     // // if username already exist
-    const acc = await pool.query("select * from radcheck where username=$1", [
-      username
+    const user = await pool.query("select * from radcheck where username=$1", [
+      username,
     ]);
-    if (acc.rows.length !== 0) {
+    if (user.rows.length !== 0) {
       return res.status(401).send("Account already exist");
     }
     // 2. enter the user inside database
-    const newAcc = await pool.query(
-      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,MD5($4)) RETURNING *",
+    await pool.query(
+      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,MD5($4))",
       [username, attributeMD5, op, password]
     );
 
     //  insert into table RAD_GROUP_CHECK
     const sim_Name = attributeSim + "_" + username + "_" + sim;
-    const rad = await pool.query(
-      "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4) RETURNING *",
+    await pool.query(
+      "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4)",
       [sim_Name, attributeSim, op, sim]
     );
 
-    var exp_or_period_Name;
-
-    if (attri === attribute[1]) {
-      exp_or_period_Name = attri + "_" + username + "_" + optName;
-
-      //   Format Date
-      var due = moment()
-        .add(val, "days")
-        .format("YYYY MMM DD");
-
-      const rad = await pool.query(
-        "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4) RETURNING *",
-        [exp_or_period_Name, attri, op, due]
-      );
-    } else {
-      exp_or_period_Name = optName + "_" + username;
-    }
+    const exp_Name = attributeExp + "_" + username + "_" + optName;
+    //   Format Date
+    var due = moment().add(val, "days").format("YYYY MMM DD");
+    await pool.query(
+      "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4)",
+      [exp_Name, attri, op, due]
+    );
 
     //  insert into table RAD_USER_GROUP
-
-    const raduser = await pool.query(
+    await pool.query(
       "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
       [username, sim_Name, priority]
     );
 
-    const radusergroup = await pool.query(
+    await pool.query(
       "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
-      [username, exp_or_period_Name, priority]
+      [username, exp_Name, priority]
     );
 
     res.send("Set plan successfully");

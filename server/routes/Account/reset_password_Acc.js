@@ -1,22 +1,23 @@
 const router = require("express").Router();
 const pool = require("../../db");
 const bcrypt = require("bcrypt");
+const authorization = require("../../middleware/authorization");
 
-router.put("/account", async (req, res) => {
+router.put("/account", authorization, async (req, res) => {
   try {
-    const { email, old_password, new_password } = req.body;
-    const user = await pool.query(
-      "SELECT * FROM users_email WHERE email = $1",
-      [email]
-    );
-    if (user.rows.length === 0) {
+    const { old_password, new_password } = req.body;
+
+    const acc = await pool.query("SELECT * FROM users_email WHERE id = $1", [
+      req.user,
+    ]);
+    if (acc.rows.length === 0) {
       return res.status(401).json("Incorrect E-mail!");
     }
 
     // compare password
     const validPassword = await bcrypt.compare(
       old_password,
-      user.rows[0].password
+      acc.rows[0].password
     );
 
     if (!validPassword) {
@@ -28,15 +29,15 @@ router.put("/account", async (req, res) => {
     const salt = await bcrypt.genSalt(saltRound);
     const bcryptPassword = await bcrypt.hash(new_password, salt);
     // update into database
-    const newPass = await pool.query(
-      "UPDATE users_email SET password = $1 WHERE email = $2",
-      [bcryptPassword, email]
-    );
+    await pool.query("UPDATE users_email SET password = $1 WHERE id = $2", [
+      bcryptPassword,
+      req.user,
+    ]);
 
     res.send("Reset password successfully.");
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error!");
+    res.status(500).send("Server Error");
   }
 });
 
