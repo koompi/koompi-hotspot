@@ -36,7 +36,7 @@ router.put("/user", async (req, res) => {
       [new_password, username]
     );
 
-    res.send("Reset successfull");
+    res.send("Change successfull");
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error!");

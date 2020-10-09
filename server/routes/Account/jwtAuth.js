@@ -100,12 +100,10 @@ router.post("/register", validInfo, async (req, res) => {
     sesClient.sendEmail(email, "Account Verification", html);
 
     //5. enter the new user inside our database
-
-    const newUserAcc = await pool.query(
+    await pool.query(
       "INSERT INTO users_email (name, email, password, code) VALUES($1,$2,$3,$4)",
       [name, email, bcryptPassword, code]
     );
-
     res.send("Please check your E-mail!");
   } catch (error) {
     console.error(error.message);
@@ -176,7 +174,7 @@ router.post("/confirm-email", async (req, res) => {
     );
 
     if (rCode.rows[0].code === vCode) {
-      const verify = await pool.query(
+    await pool.query(
         "UPDATE users_email SET activate = true WHERE email=$1",
         [email]
       );

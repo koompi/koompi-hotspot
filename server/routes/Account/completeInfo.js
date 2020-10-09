@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const pool = require("../../db");
-// const authorization = require("../../middleware/authorization");
 
 router.put("/complete-info", async (req, res) => {
   try {
@@ -22,7 +21,7 @@ router.put("/complete-info", async (req, res) => {
     if (!activate) {
       return res.status(401).json("Please active your acount first!");
     } else {
-      const updateAcc = await pool.query(
+      await pool.query(
         "UPDATE users_email SET name=$1, gender=$2, birthdate=$3, address=$4  WHERE email=$5 AND activate = true",
         [name, gender, birthdate, address, email]
       );
