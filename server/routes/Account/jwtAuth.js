@@ -65,7 +65,7 @@ router.post("/register-full", validInfo, async (req, res) => {
 router.post("/register", validInfo, async (req, res) => {
   try {
     //1. destructure the req.body
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
 
     //2. check if user doesn't exist(if not then throw error)
     const user = await pool.query(
@@ -101,8 +101,8 @@ router.post("/register", validInfo, async (req, res) => {
 
     //5. enter the new user inside our database
     await pool.query(
-      "INSERT INTO users_email (name, email, password, code) VALUES($1,$2,$3,$4)",
-      [name, email, bcryptPassword, code]
+      "INSERT INTO users_email ( email, password, code) VALUES($1,$2,$3)",
+      [email, bcryptPassword, code]
     );
     res.send("Please check your E-mail!");
   } catch (error) {
