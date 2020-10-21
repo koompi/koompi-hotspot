@@ -22,8 +22,7 @@ app.use("/api/auth", require("./routes/Account/completeInfo"));
 app.use("/api/dashboard", require("./routes/Account/dashboard"));
 
 // Hotspot Plan
-app.use("/api/set-plan", require("./routes/hotspot_plan/set_plan"));
-app.use("/api/reset-plan", require("./routes/hotspot_plan/reset_plan"));
+app.use("/api/hotspot", require("./routes/hotspot_plan/hotspot_plan"));
 
 //  change password
 app.use(
@@ -36,7 +35,7 @@ app.use(
 );
 
 //  forgot and reset password
-app.use('/api',require("./routes/Account/forgot_reset_pass"))
+app.use("/api", require("./routes/Account/forgot_reset_pass"));
 
 // upload avata
 app.use("/api", require("./routes/Account/uploadProfile"));
