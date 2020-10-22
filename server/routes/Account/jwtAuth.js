@@ -73,7 +73,7 @@ router.post("/register", validInfo, async (req, res) => {
       [email]
     );
     if (user.rows.length !== 0) {
-      return res.status(401).send("Account already exist");
+      return res.status(401).send("Account already exist.");
     }
 
     //3. bcrypt the user password
@@ -107,7 +107,7 @@ router.post("/register", validInfo, async (req, res) => {
     res.send("Please check your E-mail!");
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error!");
   }
 });
 
@@ -124,7 +124,7 @@ router.post("/login", validInfo, async (req, res) => {
       email,
     ]);
     if (user.rows.length === 0) {
-      return res.status(401).json("Incorrect E-mail");
+      return res.status(401).json("Incorrect E-mail!");
     }
 
     const activate = await user.rows[0].activate;
@@ -137,7 +137,7 @@ router.post("/login", validInfo, async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.rows[0].password);
 
     if (!validPassword) {
-      return res.status(401).json("Incorrect Password");
+      return res.status(401).json("Incorrect Password!");
     }
 
     //3. give them the jwt token
@@ -148,7 +148,7 @@ router.post("/login", validInfo, async (req, res) => {
     });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error!");
   }
 });
 

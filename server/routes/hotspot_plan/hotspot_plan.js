@@ -56,7 +56,7 @@ router.post("/set-plan", async (req, res) => {
     var due = moment().add(val, "days").format("YYYY MMM DD");
     await pool.query(
       "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4)",
-      [exp_Name, attri, op, due]
+      [exp_Name, attributeExp, op, due]
     );
 
     //  insert into table RAD_USER_GROUP
@@ -70,7 +70,7 @@ router.post("/set-plan", async (req, res) => {
       [username, exp_Name, priority]
     );
 
-    res.send("Set plan successfully");
+    res.send("Set plan successfully.");
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error!");
