@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { Form, InputNumber, Button, Input, message } from "antd";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 
 import image_animation from "../../../assets/images/email-verification.png";

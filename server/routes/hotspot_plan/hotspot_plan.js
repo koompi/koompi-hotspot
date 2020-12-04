@@ -151,4 +151,32 @@ router.put("/reset-plan", validHotspot, async (req, res) => {
   }
 });
 
+router.post("/free-plan", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const op = ":=";
+    const attributeMD5 = "MD5-Password";
+
+    const user = await pool.query(
+      "select * from radcheck WHERE username = $1",
+      [username]
+    );
+
+    if (user.rows.length !== 0) {
+      return res.status(401).send("Account already exist");
+    }
+
+    // 2. enter the user inside database
+    await pool.query(
+      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,MD5($4))",
+      [username, attributeMD5, op, password]
+    );
+
+    res.send("Set plan successfully.");
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error!");
+  }
+});
+
 module.exports = router;

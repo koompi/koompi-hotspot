@@ -1,8 +1,8 @@
 import React, { Fragment, useState } from "react";
-import { Form, Input, Button, DatePicker, Space, Select } from "antd";
+import { Form, Input, Button, DatePicker, Select, message } from "antd";
 import { useHistory } from "react-router-dom";
+import axios from "axios";
 
-const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const CompleteInfo = () => {
@@ -11,30 +11,39 @@ const CompleteInfo = () => {
   const history = useHistory();
 
   const onFinish = (data) => {
-    // console.log("Success:", values);
-
     const info = {
-      name: data.Name,
-      gender: data.Gender,
-      email: data.Email,
-      birthdate: data.DOB,
-      address: data.Location,
+      name: data.name,
+      gender: data.gender,
+      email: data.email,
+      birthdate: data.dob.format("DD-MMM-YYYY"),
+      address: data.location,
     };
-    console.log(data);
-    console.log(`selected ${data.value}`);
+    axios
+      .put("https://api-hotspot.koompi.org/api/auth/complete-info", info)
+      .then((res) => {
+        console.log(res);
+        if (res.data === "Completed Info.") {
+          message.success(res.data);
+          setLoading(true);
+          history.push("/login");
+        } else {
+          message.error(res.data);
+          setLoading(false);
+        }
+      })
+      .catch(async (err) => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+        await message.error(err.response.data);
+      });
+
+    console.log(info);
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
-
-  function handleChangeGender(gender) {
-    // Select
-    console.log(`selected ${gender}`);
-  }
-  function handleChangeLocation(location) {
-    console.log(`selected ${location}`);
-  }
 
   return (
     <Fragment>
@@ -47,12 +56,11 @@ const CompleteInfo = () => {
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
               className="login-form"
-              // size={size}
             >
               <h3>Complete Information</h3>
               {/* Full Name */}
               <Form.Item
-                name="Name"
+                name="name"
                 rules={[
                   { required: true, message: "Please input your full name!" },
                 ]}
@@ -61,7 +69,7 @@ const CompleteInfo = () => {
               </Form.Item>
 
               <Form.Item
-                name="Email"
+                name="email"
                 rules={[
                   { type: "email", message: "The input is not valid email" },
                   { required: true, message: "Please input your email!" },
@@ -71,66 +79,68 @@ const CompleteInfo = () => {
               </Form.Item>
 
               {/* =============== date picker ============== */}
-              <Form.Item>
-                <Space direction="vertical">
-                  <DatePicker
-                    name="DOB"
-                    size={size}
-                    className="input-full-in"
-                    placeholder="Date of Birth"
-                    format="DD-MMM-YYYY"
-                  ></DatePicker>
-                </Space>
+              <Form.Item name="dob">
+                <DatePicker
+                  size={size}
+                  className="input-full-in"
+                  placeholder="Date of Birth"
+                  format="DD-MMM-YYYY"
+                />
               </Form.Item>
 
               {/* =============== select Gender & Location ============== */}
-              <Form.Item>
+              <Form.Item name="gender">
                 <Select
                   className="input-full-in"
                   placeholder="Gender"
-                  name="Gender"
-                  optionFilterProp="value"
                   size={size}
-                  onChange={(gender) => {
-                    alert(gender);
-                  }}
                 >
                   <Option value="Male">Male</Option>
                   <Option value="Female">Female</Option>
                 </Select>
               </Form.Item>
-              <Form.Item name="Location">
+              <Form.Item name="location">
                 <Select
+                  showSearch
                   className="input-full-in"
                   placeholder="Location"
-                  // optionFilterProp="location"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.children
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                  }
+                  filterSort={(optionA, optionB) =>
+                    optionA.children
+                      .toLowerCase()
+                      .localeCompare(optionB.children.toLowerCase())
+                  }
                   size={size}
-                  onClick={handleChangeLocation}
                 >
-                  <Option location="Banteay Meanchey">Banteay Meanchey</Option>
-                  <Option location="Battambang">Battambang</Option>
-                  <Option location="Kampong Cham">Kampong Cham</Option>
-                  <Option location="Kampong Chhnang">Kampong Chhnang</Option>
-                  <Option location="Kampong Speu">Kampong Speu</Option>
-                  <Option location="Kampong Thom">Kampong Thom</Option>
-                  <Option location="Kampot">Kampot</Option>
-                  <Option location="Kandal">Kandal</Option>
-                  <Option location="Kep">Kep</Option>
-                  <Option location="Koh Kong">Koh Kong</Option>
-                  <Option location="Kratié">Kratié</Option>
-                  <Option location="Mondulkiri">Mondulkiri</Option>
-                  <Option location="Oddar Meanchey">Oddar Meanchey</Option>
-                  <Option location="Pailin">Pailin</Option>
-                  <Option location="Phnom Penh">Phnom Penh</Option>
-                  <Option location="Preah Vihear">Preah Vihear</Option>
-                  <Option location="Preah Sihanouk">Preah Sihanouk</Option>
-                  <Option location="Prey Veng">Prey Veng</Option>
-                  <Option location="Pursat">Pursat</Option>
-                  <Option location="Ratanak Kiri">Ratanak Kiri</Option>
-                  <Option location="Siem Reap">Siem Reap</Option>
-                  <Option location="Stung Treng">Stung Treng</Option>
-                  <Option location="Takéo">Takéo</Option>
-                  <Option location="Tboung Khmum">Tboung Khmum</Option>
+                  <Option value="Banteay Meanchey">Banteay Meanchey</Option>
+                  <Option value="Battambang">Battambang</Option>
+                  <Option value="Kampong Cham">Kampong Cham</Option>
+                  <Option value="Kampong Chhnang">Kampong Chhnang</Option>
+                  <Option value="Kampong Speu">Kampong Speu</Option>
+                  <Option value="Kampong Thom">Kampong Thom</Option>
+                  <Option value="Kampot">Kampot</Option>
+                  <Option value="Kandal">Kandal</Option>
+                  <Option value="Kep">Kep</Option>
+                  <Option value="Koh Kong">Koh Kong</Option>
+                  <Option value="Kratié">Kratié</Option>
+                  <Option value="Mondulkiri">Mondulkiri</Option>
+                  <Option value="Oddar Meanchey">Oddar Meanchey</Option>
+                  <Option value="Pailin">Pailin</Option>
+                  <Option value="Phnom Penh">Phnom Penh</Option>
+                  <Option value="Preah Vihear">Preah Vihear</Option>
+                  <Option value="Preah Sihanouk">Preah Sihanouk</Option>
+                  <Option value="Prey Veng">Prey Veng</Option>
+                  <Option value="Pursat">Pursat</Option>
+                  <Option value="Ratanak Kiri">Ratanak Kiri</Option>
+                  <Option value="Siem Reap">Siem Reap</Option>
+                  <Option value="Stung Treng">Stung Treng</Option>
+                  <Option value="Takéo">Takéo</Option>
+                  <Option value="Tboung Khmum">Tboung Khmum</Option>
                 </Select>
               </Form.Item>
 

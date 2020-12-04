@@ -1,19 +1,38 @@
 import React, { Fragment, useState } from "react";
-import { Form, Input, Button, Radio } from "antd";
-import { Link } from "react-router-dom";
+import { Form, Input, Button, Radio, message } from "antd";
+import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 const Buy_plan = () => {
+  const history = useHistory();
+  const [loading, setLoading] = useState(false);
   const [size] = useState("large");
   const onFinish = (values) => {
-    console.log("Success:", values);
+    const userWiFi = {
+      username: values.username,
+      password: values.password,
+    };
+    axios
+      .post("https://api-hotspot.koompi.org/api/auth/free-plan", userWiFi)
+      .then((res) => {
+        console.log(res);
+        if (res.data === "Incorrect Code!") {
+          message.error(res.data);
+          setLoading(false);
+        }
+        if (res.data === "Correct Code.") {
+          message.success(res.data);
+          setLoading(true);
+          history.push("/login");
+        }
+      })
+      .catch(async (err) => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+        await message.error(err.response.data);
+      });
   };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-
-// const [user,setUser]=useState
-
   return (
     <Fragment>
       <div className="loginBackground">
@@ -23,20 +42,18 @@ const Buy_plan = () => {
               name="basic"
               initialValues={{ remember: true }}
               onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
               className="login-form"
-              // size={size}
             >
               <h2>Buy Hotspot Plan</h2>
-              {/* =============== Email ============== */}
+              {/* =============== username ============== */}
               <Form.Item
-                name="Username"
+                name="username"
                 rules={[{ required: true, message: "Please input username!" }]}
+                size={size}
               >
                 <Input placeholder="Username" size={size} />
               </Form.Item>
 
-              {/* =============== Password ============== */}
               <Form.Item
                 name="password"
                 rules={[{ required: true, message: "Please input password!" }]}
@@ -47,10 +64,9 @@ const Buy_plan = () => {
                   size={size}
                 />
               </Form.Item>
-              <Form.Item label="Plan Date:" size={size}>
-                <Radio.Group defaultValue="15days" buttonStyle="solid">
+              <Form.Item>
+                <Radio.Group label="Plan Date:" defaultValue="15days">
                   <Radio.Button value="15days">15 Days</Radio.Button>
-                  {/* <Radio.Button value="5days">5 Days</Radio.Button> */}
                 </Radio.Group>
               </Form.Item>
 
@@ -65,6 +81,9 @@ const Buy_plan = () => {
                   Submit
                 </Button>
               </Form.Item>
+              <p>
+                * This user for loggin to <span>Koompi Hotspot Wi-Fi</span>{" "}
+              </p>
             </Form>
           </div>
         </div>
