@@ -13,14 +13,14 @@ const Buy_plan = () => {
       password: values.password,
     };
     axios
-      .post("https://api-hotspot.koompi.org/api/auth/free-plan", userWiFi)
+      .post("https://api-hotspot.koompi.org/api/hotspot/free-plan", userWiFi)
       .then((res) => {
         console.log(res);
-        if (res.data === "Incorrect Code!") {
+        if (res.data === "Account already exist") {
           message.error(res.data);
           setLoading(false);
         }
-        if (res.data === "Correct Code.") {
+        if (res.data === "Set plan successfully.") {
           message.success(res.data);
           setLoading(true);
           history.push("/login");

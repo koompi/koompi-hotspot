@@ -5,13 +5,6 @@ import { Link } from "react-router-dom";
 import image_animation from "../../../assets/images/password.jpg";
 import bottom_image from "../../../assets/images/image_02.png";
 
-const layout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 },
-};
-const tailLayout = {
-  wrapperCol: { offset: 8, span: 16 },
-};
 
 const ForgotPassword = () => {
   const [size] = useState("large");
@@ -80,8 +73,8 @@ const ForgotPassword = () => {
                   Confirm
                 </Button>
                 <br />
-                <br/>
-                Back to <a href="">Login!</a>
+                <br />
+                Back to <Link to="/login">Login!</Link>
               </Form.Item>
             </Form>
           </div>
