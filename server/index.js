@@ -40,6 +40,8 @@ app.use("/api", require("./routes/Account/forgot_reset_pass"));
 // upload avata
 app.use("/api", require("./routes/Account/uploadProfile"));
 
+// integration with selendra wallet
+app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
 app.listen(5000, () => {
   console.log("server is running on port 5000...");
 });
