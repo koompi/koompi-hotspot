@@ -1,3 +1,6 @@
+| Develop | [![CircleCI](https://circleci.com/gh/koompi/koompi-hotspot.svg?style=shield)](https://circleci.com/gh/koompi/koompi.org)  |
+|---------|-----------------------------------------------------------------------------------------------------------------------------|
+
 This project was bootstrapped with [Postgresql](https://www.postgresql.org/).
 
 ## Available Scripts
