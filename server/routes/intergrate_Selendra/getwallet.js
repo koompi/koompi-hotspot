@@ -2,18 +2,19 @@ const router = require("express").Router();
 const axios = require("axios");
 const pool = require("../../db");
 require("dotenv").config();
+const authorization = require("../../middleware/authorization");
 
 //  Generate Wallet or Get wallet for userAcc
-router.post("/get-wallet", async (req, res) => {
+router.get("/get-wallet", authorization, async (req, res) => {
   try {
     const giveWallet = {
       apikey: process.env.API_KEYs,
       apisec: process.env.API_SEC,
     };
-    const { email } = req.body;
+
     const checkWallet = await pool.query(
-      "SELECT ids FROM users_email WHERE email = $1",
-      [email]
+      "SELECT ids FROM users_email WHERE id = $1",
+      [req.user]
     );
 
     if (checkWallet.rows[0].ids === null) {
@@ -38,19 +39,19 @@ router.post("/get-wallet", async (req, res) => {
 });
 
 // Transaction of RSEL or payment
-router.post("/transaction", async (req, res) => {
+router.post("/payment", authorization, async (req, res) => {
   try {
-    const { email, destination, asset, amount, memo } = req.body;
+    const { amount, memo } = req.body;
     const checkWallet = await pool.query(
-      "SELECT ids FROM users_email WHERE email = $1",
-      [email]
+      "SELECT ids FROM users_email WHERE id = $1",
+      [req.user]
     );
-    const userTransaction = {
+    const userPayment = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
       apisec: process.env.API_SEC,
-      destination: destination,
-      asset_code: asset,
+      destination: process.env.API_KEYs,
+      asset_code: "RSEL",
       amount: amount,
       memo: memo,
     };
@@ -58,12 +59,43 @@ router.post("/transaction", async (req, res) => {
       res.send("Get wallet first!");
     } else {
       axios
+        .post("https://testnet-api.selendra.com/apis/v1/payment", userPayment)
+        .then(async (r) => {
+          await res.send(r.data.message);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error!");
+  }
+});
+
+// Porfilio user balance
+router.get("/portfolio", authorization, async (req, res) => {
+  try {
+    const checkWallet = await pool.query(
+      "SELECT ids FROM users_email WHERE id = $1",
+      [req.user]
+    );
+
+    const userPortfolio = {
+      id: checkWallet.rows[0].ids,
+      apikey: process.env.API_KEYs,
+      apisec: process.env.API_SEC,
+    };
+    if (checkWallet.rows[0].ids === null) {
+      res.send("Please get wallet first!");
+    } else {
+      axios
         .post(
-          "https://testnet-api.selendra.com/apis/v1/payment",
-          userTransaction
+          "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
+          userPortfolio
         )
-        .then((r) => {
-          res.send(r.data.message);
+        .then(async (r) => {
+          await res.send(JSON.parse(JSON.stringify(r.data.body.data)));
         })
         .catch((err) => {
           console.error(err);
