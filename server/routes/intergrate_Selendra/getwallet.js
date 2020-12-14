@@ -106,6 +106,39 @@ router.get("/portfolio", authorization, async (req, res) => {
     res.status(500).send("Server error!");
   }
 });
+// Porfilio user balance
+router.get("/history", authorization, async (req, res) => {
+  try {
+    const checkWallet = await pool.query(
+      "SELECT ids FROM users_email WHERE id = $1",
+      [req.user]
+    );
+
+    const userPortfolio = {
+      id: checkWallet.rows[0].ids,
+      apikey: process.env.API_KEYs,
+      apisec: process.env.API_SEC,
+    };
+    if (checkWallet.rows[0].ids === null) {
+      res.send("Please get wallet first!");
+    } else {
+      axios
+        .post(
+          "https://testnet-api.selendra.com/apis/v1/history-by-api",
+          userPortfolio
+        )
+        .then(async (r) => {
+          await res.send(JSON.parse(JSON.stringify(r.data)));
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error!");
+  }
+});
 
 router.get("/history", authorization, async (req, res) => {
   try {
