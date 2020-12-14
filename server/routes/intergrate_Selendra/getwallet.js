@@ -41,7 +41,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
 // Transaction of RSEL or payment
 router.post("/payment", authorization, async (req, res) => {
   try {
-    const { amount, memo } = req.body;
+    const { asset, amount, memo } = req.body;
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
       [req.user]
@@ -50,8 +50,8 @@ router.post("/payment", authorization, async (req, res) => {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
       apisec: process.env.API_SEC,
-      destination: process.env.API_KEYs,
-      asset_code: "RSEL",
+      destination: process.env.BANK_wallet,
+      asset_code: asset,
       amount: amount,
       memo: memo,
     };
@@ -61,7 +61,7 @@ router.post("/payment", authorization, async (req, res) => {
       axios
         .post("https://testnet-api.selendra.com/apis/v1/payment", userPayment)
         .then(async (r) => {
-          await res.send(r.data.message);
+          await res.send(r.data);
         })
         .catch((err) => {
           console.error(err);
@@ -107,4 +107,36 @@ router.get("/portfolio", authorization, async (req, res) => {
   }
 });
 
+router.get("/history", authorization, async (req, res) => {
+  try {
+    const checkWallet = await pool.query(
+      "SELECT ids FROM users_email WHERE id = $1",
+      [req.user]
+    );
+
+    const userPortfolio = {
+      id: checkWallet.rows[0].ids,
+      apikey: process.env.API_KEYs,
+      apisec: process.env.API_SEC,
+    };
+    if (checkWallet.rows[0].ids === null) {
+      res.send("Please get wallet first!");
+    } else {
+      axios
+        .post(
+          "https://testnet-api.selendra.com/apis/v1/history-by-api",
+          userPortfolio
+        )
+        .then(async (r) => {
+          await res.send(JSON.parse(JSON.stringify(r.data)));
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error!");
+  }
+});
 module.exports = router;
