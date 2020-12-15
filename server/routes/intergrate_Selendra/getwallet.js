@@ -94,8 +94,8 @@ router.get("/portfolio", authorization, async (req, res) => {
           "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
-        .then(async (r) => {
-          await res.send(JSON.parse(JSON.stringify(r.data.body.data)));
+        .then((r) => {
+          res.send(JSON.parse(JSON.stringify(r.data.body.data)));
         })
         .catch((err) => {
           console.error(err);
