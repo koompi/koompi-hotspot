@@ -22,8 +22,8 @@ router.get("/get-wallet", authorization, async (req, res) => {
         .post("https://testnet-api.selendra.com/apis/v1/get-wallet", giveWallet)
         .then(async (res) => {
           await pool.query(
-            "UPDATE users_email SET ids = $2, wallet = $3 WHERE email=$1",
-            [email, res.data.message.id, res.data.message.wallet]
+            "UPDATE users_email SET ids = $2, wallet = $3 WHERE id = $1",
+            [req.user, res.data.message.id, res.data.message.wallet]
           );
         })
         .catch((err) => {
