@@ -1,41 +1,44 @@
-This project was bootstrapped with [Postgresql](https://www.postgresql.org/).
+This project was bootstrapped with [Postgresql](https://www.postgresql.org/).  
+
+[![CircleCI](https://circleci.com/gh/koompi/koompi-hotspot.svg?style=shield)](https://circleci.com/gh/koompi/koompi-hotspot)
+
 
 ## Available Scripts
 
-### In the project directory, you can run:
+In the project directory, you can run:
 
 ```
 $ cd server
 $ npm install express pg bcrypt cors dotenv body-parser aws-sdk
 ```
 
-### For JWT Json Web Token
+For JWT Json Web Token.
 
 ```
 $ cd server
 $ npm install jsonwebtoken
 ```
 
-<<<<<<< HEAD
-for date format
+
+For date format.
 
 ```
 cd server
 $ npm install moment
 ```
 
-# for run server machine
+## Run server machine
 
-### Connection Database
+Connection Database.
 
 ```
 $ cd server
 $ cp db.js.example db.js
 ```
 
-And then change your connection in `db.js`
+And then change your connection in `db.js`.
 
-### Your secret connection with AWS SES
+Your secret connection with AWS SES.
 
 ```
 $ cd server
@@ -44,9 +47,8 @@ $ cp .env.example .env
 
 And then change your connection in `.env`
 
-### Run server
+Run server.
 
-> > > > > > > 9359d04cf512d6adf8eff4ff99e0e3adbbb80661
 
 ```
 cd server
