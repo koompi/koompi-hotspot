@@ -1,0 +1,3 @@
+[submodule "koompi-hotspot-mobile"]
+	path = koompi-hotspot-mobile
+	url = https://github.com/sokunsamnang/koompi-hotspot-mobile.git
