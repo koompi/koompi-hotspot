@@ -1,11 +1,12 @@
 const router = require("express").Router();
 const pool = require("../../db");
 const moment = require("moment");
+const authorization = require("../../middleware/authorization");
 const validHotspot = require("../../middleware/valid_hot_planInfo");
 
 // Create Account User
 
-router.post("/set-plan", async (req, res) => {
+router.post("/set-plan", authorization, async (req, res) => {
   try {
     //1. destructure the req.body(username,password)
     // for attributeMD5 & op it is default from database
@@ -178,6 +179,5 @@ router.post("/free-plan", async (req, res) => {
     res.status(500).send("Server Error!");
   }
 });
-
 
 module.exports = router;

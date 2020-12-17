@@ -3,6 +3,7 @@ const axios = require("axios");
 const pool = require("../../db");
 require("dotenv").config();
 const authorization = require("../../middleware/authorization");
+// const chkBalance = require("../../utils/check_validwallet");
 
 //  Generate Wallet or Get wallet for userAcc
 router.get("/get-wallet", authorization, async (req, res) => {
@@ -28,6 +29,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
         })
         .catch((err) => {
           console.error(err);
+          res.send("server error on selendra.");
         });
       res.send("You got a Selendra Wallet.");
     } else {
@@ -75,7 +77,14 @@ router.post("/payment", authorization, async (req, res) => {
 
 // Porfilio user balance
 router.get("/portfolio", authorization, async (req, res) => {
+  // try {
+  //   chkBalance.checkBalance(req.user);
+  // } catch (error) {
+  //   console.error(error)
+  // }
+
   try {
+    // let balance;
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
       [req.user]
@@ -94,8 +103,12 @@ router.get("/portfolio", authorization, async (req, res) => {
           "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
-        .then((r) => {
-          res.send(JSON.parse(JSON.stringify(r.data.body.data)));
+        .then(async (r) => {
+          // await r.send(JSON.parse(JSON.stringify(r.data)));
+          await res.send(JSON.parse(JSON.stringify(r.data.body)));
+
+          // console.log(balance);
+          // res.send(balance)
         })
         .catch((err) => {
           console.error(err);
