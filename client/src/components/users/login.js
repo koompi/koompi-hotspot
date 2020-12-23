@@ -12,7 +12,6 @@ const Login = () => {
   const history = useHistory();
   const [size] = useState("large");
   const [loading, setLoading] = useState(false);
-  // const [message, setMessage] = useState("");
   const onSubmit = (data) => {
     console.log("Success:", data);
     const userLogin = {
