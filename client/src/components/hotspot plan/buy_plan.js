@@ -1,13 +1,21 @@
 import React, { Fragment, useState } from "react";
 import { Form, Input, Button, Radio, message } from "antd";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link, Redirect } from "react-router-dom";
 
 const Buy_plan = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [size] = useState("large");
+  const token = localStorage.getItem("token");
+
+  if (token === null) {
+    setLoading(false);
+  }
   const onFinish = (values) => {
+    if (setLoading(false)) {
+      return <Redirect to="/" />;
+    }
     const userWiFi = {
       username: values.username,
       password: values.password,
@@ -23,7 +31,7 @@ const Buy_plan = () => {
         if (res.data === "Set plan successfully.") {
           message.success(res.data);
           setLoading(true);
-          history.push("/login");
+          history.push("/home");
         }
       })
       .catch(async (err) => {
@@ -85,6 +93,9 @@ const Buy_plan = () => {
                 * This user for loggin to <span>Koompi Hotspot Wi-Fi</span>{" "}
               </p>
             </Form>
+            <Button>
+              <Link to="/home">back</Link>
+            </Button>
           </div>
         </div>
       </div>

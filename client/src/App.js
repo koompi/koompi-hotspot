@@ -7,6 +7,7 @@ import ForgotPassword from "./components/users/register/fogot_password";
 import EmailVerification from "./components/users/register/email-verification";
 import CompleteInfo from "./components/users/register/completeInfo";
 import BuyHotspot from "./components/hotspot plan/buy_plan";
+import Dashboard from "./components/dashboard";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
@@ -19,12 +20,14 @@ import "./assets/css/App.css";
 function App() {
   return (
     <Switch>
+      <Route exact path="/" restrict component={Login} />
       <Route exact path="/login" restrict component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/forgot-passwd" component={ForgotPassword} />
       <Route path="/email-verify" component={EmailVerification} />
       <Route path="/complete-info" component={CompleteInfo} />
       <Route path="/buy-hotspot" component={BuyHotspot} />
+      <Route path="/home" component={Dashboard} />
     </Switch>
   );
 }
