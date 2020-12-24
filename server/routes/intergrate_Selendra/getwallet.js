@@ -3,6 +3,7 @@ const axios = require("axios");
 const pool = require("../../db");
 require("dotenv").config();
 const authorization = require("../../middleware/authorization");
+
 // const chkBalance = require("../../utils/check_validwallet");
 
 //  Generate Wallet or Get wallet for userAcc
@@ -44,10 +45,18 @@ router.get("/get-wallet", authorization, async (req, res) => {
 router.post("/payment", authorization, async (req, res) => {
   try {
     const { asset, amount, memo } = req.body;
+    var amnt = parseInt(amount, 10);
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
       [req.user]
     );
+
+    const userPortfolio = {
+      id: checkWallet.rows[0].ids,
+      apikey: process.env.API_KEYs,
+      apisec: process.env.API_SEC,
+    };
+
     const userPayment = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
@@ -57,13 +66,34 @@ router.post("/payment", authorization, async (req, res) => {
       amount: amount,
       memo: memo,
     };
+
+    //=====================================check if user doesn't have a wallet=================
     if (checkWallet.rows[0].ids === null) {
-      res.send("Get wallet first!");
+      res.send("please get a wallet first!");
     } else {
       axios
-        .post("https://testnet-api.selendra.com/apis/v1/payment", userPayment)
+        .post(
+          "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
+          userPortfolio
+        )
         .then(async (r) => {
-          await res.send(r.data);
+          wallet = await JSON.parse(JSON.stringify(r.data.body.data.balance));
+          if (wallet < amnt) {
+            res.send("You don't have anough money!");
+          } else {
+            axios
+              .post(
+                "https://testnet-api.selendra.com/apis/v1/payment",
+                userPayment
+              )
+              .then(async (re) => {
+                await console.log(r.data);
+                res.send("Paid successfull.");
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -77,14 +107,7 @@ router.post("/payment", authorization, async (req, res) => {
 
 // Porfilio user balance
 router.get("/portfolio", authorization, async (req, res) => {
-  // try {
-  //   chkBalance.checkBalance(req.user);
-  // } catch (error) {
-  //   console.error(error)
-  // }
-
   try {
-    // let balance;
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
       [req.user]
@@ -106,9 +129,6 @@ router.get("/portfolio", authorization, async (req, res) => {
         .then(async (r) => {
           // await r.send(JSON.parse(JSON.stringify(r.data)));
           await res.send(JSON.parse(JSON.stringify(r.data.body)));
-
-          // console.log(balance);
-          // res.send(balance)
         })
         .catch((err) => {
           console.error(err);
@@ -153,8 +173,11 @@ router.get("/history", authorization, async (req, res) => {
   }
 });
 
-router.get("/history", authorization, async (req, res) => {
+router.get("/testing", authorization, async (req, res) => {
   try {
+    var wallet = 0;
+    const { amount } = req.body;
+    var amnt = parseInt(amount, 10);
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
       [req.user]
@@ -170,11 +193,16 @@ router.get("/history", authorization, async (req, res) => {
     } else {
       axios
         .post(
-          "https://testnet-api.selendra.com/apis/v1/history-by-api",
+          "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
         .then(async (r) => {
-          await res.send(JSON.parse(JSON.stringify(r.data)));
+          wallet = JSON.parse(JSON.stringify(r.data.body.data.balance));
+          if (wallet < amnt) {
+            res.send(wallet);
+          } else {
+            res.send("welcome");
+          }
         })
         .catch((err) => {
           console.error(err);
