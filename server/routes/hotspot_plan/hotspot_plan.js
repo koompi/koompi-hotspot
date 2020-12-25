@@ -11,7 +11,6 @@ router.post("/set-plan", authorization, async (req, res) => {
     //1. destructure the req.body(username,password)
     // for attributeMD5 & op it is default from database
     const { username, password, simultaneous, value } = req.body; // value : 30 , 365
-    // console.log(username);
     const op = ":=";
     const attributeMD5 = "MD5-Password";
     const priority = "1";
