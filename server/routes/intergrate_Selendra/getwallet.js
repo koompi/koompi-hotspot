@@ -41,11 +41,21 @@ router.get("/get-wallet", authorization, async (req, res) => {
   }
 });
 
-// Transaction of RSEL or payment
+// Transaction of SEL or payment
 router.post("/payment", authorization, async (req, res) => {
   try {
     const { asset, amount, memo } = req.body;
     var amnt = parseInt(amount, 10);
+
+    //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
+    //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
+    if (amnt === 30) {
+      amnt = 50;
+    }
+    if (amnt === 365) {
+      amnt = 600;
+    }
+
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
       [req.user]
@@ -77,7 +87,10 @@ router.post("/payment", authorization, async (req, res) => {
           userPortfolio
         )
         .then(async (r) => {
-          wallet = await JSON.parse(JSON.stringify(r.data.body.data.balance));
+          const wallet = await JSON.parse(
+            JSON.stringify(r.data.body.data.balance)
+          );
+          //=============================check if the money is enough or not=========
           if (wallet < amnt) {
             res.send("You don't have anough money!");
           } else {
@@ -87,8 +100,7 @@ router.post("/payment", authorization, async (req, res) => {
                 userPayment
               )
               .then(async (re) => {
-                await console.log(r.data);
-                res.send("Paid successfull.");
+                res.status(200).send("Paid successfull.");
               })
               .catch((err) => {
                 console.error(err);
@@ -128,7 +140,8 @@ router.get("/portfolio", authorization, async (req, res) => {
         )
         .then(async (r) => {
           // await r.send(JSON.parse(JSON.stringify(r.data)));
-          await res.send(JSON.parse(JSON.stringify(r.data.body)));
+          // await res.send(JSON.parse(JSON.stringify(r.data.body)));
+          await res.send(r.data.data);
         })
         .catch((err) => {
           console.error(err);
@@ -173,11 +186,15 @@ router.get("/history", authorization, async (req, res) => {
   }
 });
 
-router.get("/testing", authorization, async (req, res) => {
+router.post("/transfer", authorization, async (req, res) => {
   try {
-    var wallet = 0;
-    const { amount } = req.body;
+    const { dest_email, asset, amount, memo } = req.body;
     var amnt = parseInt(amount, 10);
+
+    const checkDestWallet = await pool.query(
+      "SELECT wallet FROM users_email WHERE email = $1",
+      [dest_email]
+    );
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
       [req.user]
@@ -188,26 +205,78 @@ router.get("/testing", authorization, async (req, res) => {
       apikey: process.env.API_KEYs,
       apisec: process.env.API_SEC,
     };
-    if (checkWallet.rows[0].ids === null) {
-      res.send("Please get wallet first!");
+
+    //====================check is destination have an acc or not===============
+    if (checkDestWallet.rows.length === 0) {
+      res.send("Make sure that your friend has an account KOOMPI hotspot!");
+    }
+
+    // ====================check is acc destination have a selendra's wallet or not
+    else if (checkDestWallet.rows[0].wallet === null) {
+      res.send("Make sure your friend has a wallet!");
+    }
+
+    //======================check if user doesn't have a wallet=================
+    else if (checkWallet.rows[0].ids === null) {
+      res.send("Please get a wallet first!");
     } else {
+      const userTransfer = {
+        id: checkWallet.rows[0].ids,
+        apikey: process.env.API_KEYs,
+        apisec: process.env.API_SEC,
+        destination: checkDestWallet.rows[0].wallet,
+        asset_code: asset,
+        amount: amount,
+        memo: memo,
+      };
       axios
         .post(
           "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
         .then(async (r) => {
-          wallet = JSON.parse(JSON.stringify(r.data.body.data.balance));
+          const wallet = await JSON.parse(
+            JSON.stringify(r.data.body.data.balance)
+          );
+          //=================check wallet has money or not======================
           if (wallet < amnt) {
-            res.send(wallet);
+            res.send("You don't have enough money!");
           } else {
-            res.send("welcome");
+            axios
+              .post(
+                "https://testnet-api.selendra.com/apis/v1/payment",
+                userTransfer
+              )
+              .then(async (re) => {
+                res.status(200).send("Transfer successfull.");
+              })
+              .catch((err) => {
+                console.error(err);
+              });
           }
         })
         .catch((err) => {
           console.error(err);
         });
     }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error!");
+  }
+});
+
+router.post("/testing", async (req, res) => {
+  try {
+    const { amount } = req.body;
+    var amnt = parseInt(amount, 10);
+
+    if (amnt === 30) {
+      amnt = 50;
+    }
+    if (amnt === 365) {
+      amnt = 600;
+    }
+    res.status(200).send(`${amnt}`);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error!");
