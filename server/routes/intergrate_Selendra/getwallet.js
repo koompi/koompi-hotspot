@@ -45,17 +45,20 @@ router.get("/get-wallet", authorization, async (req, res) => {
 // Transaction of SEL or payment
 router.post("/payment", authorization, async (req, res) => {
   try {
-    const { asset, amount, memo } = req.body;
-    var amnt = parseInt(amount, 10);
+    const { asset, plan, memo } = req.body;
+    let amnt = parseInt(plan, 10);
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
     if (amnt === 30) {
-      amnt = 50;
+      amnt = "50";
     }
     if (amnt === 365) {
-      amnt = 600;
+      amnt = "600";
     }
+    // if ((amnt = !365) | (amnt = !30)) {
+    //   res.send("Please select plan!");
+    // }
 
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
@@ -74,7 +77,7 @@ router.post("/payment", authorization, async (req, res) => {
       apisec: process.env.API_SEC,
       destination: process.env.BANK_wallet,
       asset_code: asset,
-      amount: amount,
+      amount: amnt,
       memo: memo,
     };
 
@@ -88,10 +91,13 @@ router.post("/payment", authorization, async (req, res) => {
           userPortfolio
         )
         .then(async (r) => {
-          const wallet = await r.data.body.data.balance;
+          const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
           if (wallet < amnt) {
             res.send("You don't have enough money!");
+            console.log(plan);
+            console.log(amnt);
+            console.log(wallet);
           } else {
             axios
               .post(
@@ -161,7 +167,7 @@ router.post("/transfer", authorization, async (req, res) => {
           userPortfolio
         )
         .then(async (r) => {
-          const wallet = await r.data.body.data.balance;
+          const wallet = await r.data.token;
 
           //=============================check if the money is enough or not=========
           if (wallet < amnt) {
