@@ -33,8 +33,10 @@ router.get("/get-wallet", authorization, async (req, res) => {
           res.status(500).send("Internal server error.");
         });
       res.status(200).send("You got a Selendra Wallet.");
+
+      ///============================= for function========================
     } else {
-      res.status(200).send("You already have a Selendra Wallet!");
+      res.status(400).send("You already have a Selendra Wallet!");
     }
   } catch (err) {
     console.error(err);
@@ -47,18 +49,24 @@ router.post("/payment", authorization, async (req, res) => {
   try {
     const { asset, plan, memo } = req.body;
     let amnt = parseInt(plan, 10);
+    var amount = 0;
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
+    //============ amnt for push data to selendra as string
+    //============ amount for checking condition
+
+    // if (amnt !== 30 || amnt !== 365) {
+    //   res.send("Please select plan!");
+    // }
     if (amnt === 30) {
       amnt = "50";
+      amount = 50;
     }
     if (amnt === 365) {
       amnt = "600";
+      amount = 600;
     }
-    // if ((amnt = !365) | (amnt = !30)) {
-    //   res.send("Please select plan!");
-    // }
 
     const checkWallet = await pool.query(
       "SELECT ids FROM users_email WHERE id = $1",
@@ -83,7 +91,7 @@ router.post("/payment", authorization, async (req, res) => {
 
     //=====================================check if user doesn't have a wallet=================
     if (checkWallet.rows[0].ids === null) {
-      res.send("Please get a wallet first!");
+      res.status(400).send("Please get a wallet first!");
     } else {
       axios
         .post(
@@ -93,11 +101,9 @@ router.post("/payment", authorization, async (req, res) => {
         .then(async (r) => {
           const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
-          if (wallet < amnt) {
-            res.send("You don't have enough money!");
-            console.log(plan);
-            console.log(amnt);
-            console.log(wallet);
+          //============================= 0.001 if for fee ==========================
+          if (wallet < amount + 0.001) {
+            res.status(400).send("You don't have enough money!");
           } else {
             axios
               .post(
@@ -138,7 +144,7 @@ router.post("/transfer", authorization, async (req, res) => {
       "SELECT wallet FROM users_email WHERE wallet = $1",
       [dest_wallet]
     );
-
+    console.log(checkDestWallet.rows.length);
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
@@ -157,9 +163,9 @@ router.post("/transfer", authorization, async (req, res) => {
 
     //=====================================check if user doesn't have a wallet=================
     if (checkWallet.rows[0].ids === null) {
-      res.send("Please get a wallet first!");
-    } else if (checkDestWallet.rows[0].wallet === null) {
-      res.send("Make sure that your friend has a wallet!");
+      res.status(400).send("Please get a wallet first!");
+    } else if (checkDestWallet.rows.length === 0) {
+      res.status(400).send("Make sure that your friend has a wallet!");
     } else {
       axios
         .post(
@@ -170,8 +176,8 @@ router.post("/transfer", authorization, async (req, res) => {
           const wallet = await r.data.token;
 
           //=============================check if the money is enough or not=========
-          if (wallet < amnt) {
-            res.send("You don't have enough money!");
+          if (wallet < amnt + 0.001) {
+            res.status(400).send("You don't have enough money!");
           } else {
             axios
               .post(
@@ -212,7 +218,7 @@ router.get("/portfolio", authorization, async (req, res) => {
       apisec: process.env.API_SEC,
     };
     if (checkWallet.rows[0].ids === null) {
-      res.send("Please get wallet first!");
+      res.status(400).send("Please get wallet first!");
     } else {
       axios
         .post(
@@ -247,7 +253,7 @@ router.get("/history", authorization, async (req, res) => {
       apisec: process.env.API_SEC,
     };
     if (checkWallet.rows[0].ids === null) {
-      res.send("Please get wallet first!");
+      res.status(400).send("Please get wallet first!");
     } else {
       axios
         .post(
@@ -255,7 +261,7 @@ router.get("/history", authorization, async (req, res) => {
           userPortfolio
         )
         .then(async (r) => {
-          await res.status(500).send(JSON.parse(JSON.stringify(r.data)));
+          await res.status(200).send(JSON.parse(JSON.stringify(r.data)));
         })
         .catch((err) => {
           res.status(500).send("Internal server error");
@@ -268,4 +274,37 @@ router.get("/history", authorization, async (req, res) => {
   }
 });
 
+router.get("/test", authorization, async (req, res) => {
+  try {
+    let a;
+    let b;
+    const checkWallet = await pool.query(
+      "SELECT ids FROM users_email WHERE id = $1",
+      [req.user]
+    );
+    const userPortfolio = {
+      id: checkWallet.rows[0].ids,
+      apikey: process.env.API_KEYs,
+      apisec: process.env.API_SEC,
+    };
+    axios
+      .post(
+        "https://testnet-api.selendra.com/apis/v1/history-by-api",
+        userPortfolio
+      )
+      .then(async (r) => {
+        a = await r.data[0].hash;
+        res.send(a);
+        // await res.status(200).send(JSON.parse(JSON.stringify(r.data)));
+        // await res.status(200).send(r.data);
+      })
+      .catch((err) => {
+        res.status(500).send("Internal server error");
+        console.error(err);
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error!");
+  }
+});
 module.exports = router;
