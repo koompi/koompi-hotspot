@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const path = require("path");
 const authorization = require("../../middleware/authorization");
+const express = require("express");
 
 // enable files upload
 router.use(
@@ -14,11 +15,12 @@ router.use(
   })
 );
 
-//add other middleware
+// add other middleware
 router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(morgan("dev"));
+
 router.post("/upload-avatar", authorization, async (req, res) => {
   try {
     if (!req.files) {
@@ -28,7 +30,8 @@ router.post("/upload-avatar", authorization, async (req, res) => {
       });
     } else {
       //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
-      let avatar = req.files.avatar;
+      let avatar = req.files.file;
+      // res.send(avatar.file.name);
       let name = "avatar" + "_" + Date.now() + path.extname(avatar.name);
 
       if (
@@ -56,6 +59,7 @@ router.post("/upload-avatar", authorization, async (req, res) => {
           },
         });
       } else {
+        console.log(avatar.mimetype);
         res
           .status(500)
           .send(

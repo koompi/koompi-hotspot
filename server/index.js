@@ -7,6 +7,9 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// to access profile
+app.use(express.static("./"));
+
 /// midlleware
 
 app.use(express.json()); // allow us for req.body
