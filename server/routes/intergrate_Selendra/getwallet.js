@@ -4,8 +4,6 @@ const pool = require("../../db");
 require("dotenv").config();
 const authorization = require("../../middleware/authorization");
 
-// const chkBalance = require("../../utils/check_validwallet");
-
 //  Generate Wallet or Get wallet for userAcc
 router.get("/get-wallet", authorization, async (req, res) => {
   try {
@@ -18,25 +16,67 @@ router.get("/get-wallet", authorization, async (req, res) => {
       "SELECT ids FROM users_email WHERE id = $1",
       [req.user]
     );
+    const checkFreeToken = await pool.query(
+      "SELECT ids FROM users_email WHERE ids != 'null'"
+    );
 
-    if (checkWallet.rows[0].ids === null) {
+    ///============================= free for firstly 1000 users to got 50 SEL from koompi ========================
+    if (
+      checkWallet.rows[0].ids === null &&
+      checkFreeToken.rows.length <= 1000
+    ) {
       axios
         .post("https://testnet-api.selendra.com/apis/v1/get-wallet", giveWallet)
-        .then(async (res) => {
+        .then(async (respond) => {
           await pool.query(
             "UPDATE users_email SET ids = $2, wallet = $3 WHERE id = $1",
-            [req.user, res.data.message.id, res.data.message.wallet]
+            [req.user, respond.data.message.id, respond.data.message.wallet]
+          );
+          {
+            await axios.post(
+              "https://testnet-api.selendra.com/apis/v1/payment",
+              {
+                id: process.env.BANK_id,
+                apikey: process.env.API_KEYs,
+                apisec: process.env.API_SEC,
+                destination: respond.data.message.wallet,
+                asset_code: "SEL",
+                amount: "0.0001", // by de faull we have to send  amount 50.001 SEL
+                memo: `Free balance: you are in number ${
+                  checkFreeToken.rows.length + 1
+                }`,
+              }
+            );
+            // res.status(200).json({
+            //   message: "You got 50 SEL for free.",
+            // });
+          }
+          res
+            .status(200)
+            .send("You got 50 SEL for free.  in face you got 0.0001 SEL");
+        })
+        .catch((err) => {
+          console.error(err);
+          res.status(500).send("Internal server error. ");
+        });
+
+      ///============================= by default get the wallet ========================
+    } else if (checkWallet.rows[0].ids === null) {
+      axios
+        .post("https://testnet-api.selendra.com/apis/v1/get-wallet", giveWallet)
+        .then(async (respond) => {
+          await pool.query(
+            "UPDATE users_email SET ids = $2, wallet = $3 WHERE id = $1",
+            [req.user, respond.data.message.id, respond.data.message.wallet]
           );
         })
         .catch((err) => {
           console.error(err);
           res.status(500).send("Internal server error.");
         });
-      res.status(200).send("You got a Selendra Wallet.");
-
-      ///============================= for function========================
+      res.status(200).send("You got a selendra wallet.");
     } else {
-      res.status(400).send("You already have a Selendra Wallet!");
+      res.status(400).send("You already have a selendra wallet!");
     }
   } catch (err) {
     console.error(err);
@@ -144,7 +184,7 @@ router.post("/transfer", authorization, async (req, res) => {
       "SELECT wallet FROM users_email WHERE wallet = $1",
       [dest_wallet]
     );
-    console.log(checkDestWallet.rows.length);
+
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
