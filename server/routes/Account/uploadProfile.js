@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const path = require("path");
 const authorization = require("../../middleware/authorization");
-const express = require("express");
 
 // enable files upload
 router.use(
