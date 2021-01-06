@@ -23,9 +23,9 @@ router.post("/set-plan", authorization, async (req, res) => {
 
     //   //  ======---===== For Expiration amount of day =====---======
     if (val === 30) {
-      optName = "30days";
+      optName = "30";
     } else if (val === 365) {
-      optName = "1year";
+      optName = "365";
     } else {
       return res.send("Please choose!");
     }
@@ -35,13 +35,20 @@ router.post("/set-plan", authorization, async (req, res) => {
       [username]
     );
     if (user.rows.length !== 0) {
-      return res.status(401).send("Account already exist");
+      return res.status(401).send("Account already exist!");
     }
 
+    const setPlanAlready = await pool.query(
+      "select * from radcheck WHERE acc_id = $1",
+      [req.user]
+    );
+    if (setPlanAlready.rows.length !== 0) {
+      return res.status(401).send("You already set plan!");
+    }
     // 2. enter the user inside database
     await pool.query(
-      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,MD5($4))",
-      [username, attributeMD5, op, password]
+      "insert into radcheck(username, attribute,op,value,acc_id) VALUES($1,$2,$3,MD5($4),$5)",
+      [username, attributeMD5, op, password, req.user]
     );
 
     //  insert into table RAD_GROUP_CHECK
@@ -93,9 +100,9 @@ router.put("/reset-plan", validHotspot, async (req, res) => {
 
     //   //  ======---===== For Expiration amount of day =====---======
     if (val === 30) {
-      optName = "30days";
+      optName = "30";
     } else if (val === 365) {
-      optName = "1year";
+      optName = "365";
     } else {
       res.send("Please choose!");
     }
@@ -151,7 +158,7 @@ router.put("/reset-plan", validHotspot, async (req, res) => {
   }
 });
 
-router.post("/free-plan", async (req, res) => {
+router.post("/free-plan", authorization, async (req, res) => {
   try {
     const { username, password } = req.body;
     const op = ":=";
@@ -168,11 +175,43 @@ router.post("/free-plan", async (req, res) => {
 
     // 2. enter the user inside database
     await pool.query(
-      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,MD5($4))",
-      [username, attributeMD5, op, password]
+      "insert into radcheck(username, attribute,op,value,acc_id) VALUES($1,$2,$3,MD5($4),$5)",
+      [username, attributeMD5, op, password, req.user]
     );
 
     res.send("Set plan successfully.");
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error!");
+  }
+});
+router.get("/get-plan", authorization, async (req, res) => {
+  try {
+    const user = await pool.query(
+      "select username from radcheck WHERE acc_id = $1",
+      [req.user]
+    );
+
+    if (user.rows.length === 0) {
+      return res.status(401).json(message, "Username is not exist");
+    }
+    const detail = await pool.query(
+      "select * from radusergroup WHERE username = $1",
+      [user.rows[0].username]
+    );
+
+    if (detail.rows.length === 0) {
+      return res.status(401).json(message, "No plan!");
+    }
+
+    let a = detail.rows[0].groupname;
+    let b = detail.rows[1].groupname;
+    let n1 = a.lastIndexOf("_");
+    let n2 = b.lastIndexOf("_");
+    res.status(200).json({
+      device: a.slice(n1 + 1, a.length),
+      plan: b.slice(n2 + 1, b.length),
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error!");
