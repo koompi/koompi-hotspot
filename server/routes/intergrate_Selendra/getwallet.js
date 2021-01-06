@@ -23,7 +23,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
     ///============================= free for firstly 1000 users to got 50 SEL from koompi ========================
     if (
       checkWallet.rows[0].ids === null &&
-      checkFreeToken.rows.length <= 1000
+      checkFreeToken.rows.length <= 2000
     ) {
       axios
         .post("https://testnet-api.selendra.com/apis/v1/get-wallet", giveWallet)
@@ -41,19 +41,19 @@ router.get("/get-wallet", authorization, async (req, res) => {
                 apisec: process.env.API_SEC,
                 destination: respond.data.message.wallet,
                 asset_code: "SEL",
-                amount: "0.0001", // by de faull we have to send  amount 50.001 SEL
+                amount: "0.1", // by de faull we have to send  amount 0.1 SEL
                 memo: `Free balance: you are in number ${
                   checkFreeToken.rows.length + 1
                 }`,
               }
             );
-            // res.status(200).json({
-            //   message: "You got 50 SEL for free.",
-            // });
           }
+          // res.status(200).json({
+          //   message: "You got 50 SEL for free.",
+          // });
           res
             .status(200)
-            .send("You got 50 SEL for free.  in face you got 0.0001 SEL");
+            .send("You got 50 SEL for free.  in face you got 0.1 SEL");
         })
         .catch((err) => {
           console.error(err);
