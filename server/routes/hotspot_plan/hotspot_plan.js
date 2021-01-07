@@ -172,6 +172,13 @@ router.post("/free-plan", authorization, async (req, res) => {
     if (user.rows.length !== 0) {
       return res.status(401).send("Account already exist");
     }
+    const setPlanAlready = await pool.query(
+      "select * from radcheck WHERE acc_id = $1",
+      [req.user]
+    );
+    if (setPlanAlready.rows.length !== 0) {
+      return res.status(401).send("You already set plan!");
+    }
 
     // 2. enter the user inside database
     await pool.query(
@@ -193,7 +200,7 @@ router.get("/get-plan", authorization, async (req, res) => {
     );
 
     if (user.rows.length === 0) {
-      return res.status(401).json(message, "Username is not exist");
+      return res.status(401).json({ message: "Username is not exist" });
     }
     const detail = await pool.query(
       "select * from radusergroup WHERE username = $1",
@@ -201,14 +208,25 @@ router.get("/get-plan", authorization, async (req, res) => {
     );
 
     if (detail.rows.length === 0) {
-      return res.status(401).json(message, "No plan!");
+      return res.status(401).json({ message: "No plan!" });
     }
 
     let a = detail.rows[0].groupname;
     let b = detail.rows[1].groupname;
     let n1 = a.lastIndexOf("_");
     let n2 = b.lastIndexOf("_");
+
+    let bal = b.slice(n2 + 1, b.length);
+    let balance = parseInt(bal, 10);
+    if (balance === 30) {
+      balance = "50";
+    }
+    if (balance === 365) {
+      balance = "365";
+    }
     res.status(200).json({
+      username: user.rows[0].username,
+      balance: balance,
       device: a.slice(n1 + 1, a.length),
       plan: b.slice(n2 + 1, b.length),
     });
