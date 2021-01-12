@@ -16,7 +16,7 @@ router.post("/forgot-password", validInfo, async (req, res) => {
       [email]
     );
     if (account.rows.length === 0) {
-      return res.status(401).send("Account was not exist");
+      return res.status(401).json({ message: "Account was not exist" });
     }
 
     //3. random code to send via email
@@ -42,10 +42,10 @@ router.post("/forgot-password", validInfo, async (req, res) => {
       code,
       email,
     ]);
-    res.send("Please check your E-mail!");
+    res.status(200).json({ message: "Please check your E-mail!" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -59,11 +59,11 @@ router.post("/confirm-forgot-code", async (req, res) => {
       [email]
     );
     if (rCode.rows[0].code === vCode) {
-      res.send("Correct Code.");
-    } else res.send("Incorrect Code!");
+      res.status(200).json({ message: "Correct Code." });
+    } else res.status(401).json({ message: "Incorrect Code!" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -82,10 +82,10 @@ router.put("/reset-password", async (req, res) => {
       email,
     ]);
 
-    res.send("Reset password successfully.");
+    res.status(200).json({ message: "Reset password successfully." });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error" });
   }
 });
 

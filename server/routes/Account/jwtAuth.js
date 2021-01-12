@@ -21,7 +21,7 @@ router.post("/register-full", validInfo, async (req, res) => {
       [email]
     );
     if (user.rows.length !== 0) {
-      return res.status(401).send("User already exist");
+      return res.status(401).json({ message: "User already exist!" });
     }
 
     //3. bcrypt the user password
@@ -55,10 +55,10 @@ router.post("/register-full", validInfo, async (req, res) => {
       [name, gender, email, bcryptPassword, birthdate, address, code]
     );
 
-    res.send("Please check your E-mail!");
+    res.status(200).json({ message: "Please check your E-mail!" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 
@@ -73,7 +73,7 @@ router.post("/register", validInfo, async (req, res) => {
       [email]
     );
     if (user.rows.length !== 0) {
-      return res.status(401).send("Account already exist.");
+      return res.status(401).json({ message: "Account already exist." });
     }
 
     //3. bcrypt the user password
@@ -104,10 +104,10 @@ router.post("/register", validInfo, async (req, res) => {
       "INSERT INTO users_email ( email, password, code) VALUES($1,$2,$3)",
       [email, bcryptPassword, code]
     );
-    res.send("Please check your E-mail!");
+    res.status(200).json({ message: "Please check your E-mail!" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 
@@ -124,12 +124,14 @@ router.post("/login", validInfo, async (req, res) => {
       email,
     ]);
     if (user.rows.length === 0) {
-      return res.status(401).json("Incorrect E-mail!");
+      return res.status(401).json({ message: "Incorrect E-mail!" });
     }
 
     const activate = await user.rows[0].activate;
     if (!activate) {
-      return res.status(401).json("Please active your acount first!");
+      return res
+        .status(401)
+        .json({ message: "Please active your acount first!" });
     }
 
     //3. check if incomming password is the same database password
@@ -137,7 +139,7 @@ router.post("/login", validInfo, async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.rows[0].password);
 
     if (!validPassword) {
-      return res.status(401).json("Incorrect Password!");
+      return res.status(401).json({ message: "Incorrect Password!" });
     }
 
     //3. give them the jwt token
@@ -148,7 +150,7 @@ router.post("/login", validInfo, async (req, res) => {
     });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 
@@ -159,7 +161,7 @@ router.get("/is-verify", authorization, async (req, res) => {
     res.json(true);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -174,15 +176,15 @@ router.post("/confirm-email", async (req, res) => {
     );
 
     if (rCode.rows[0].code === vCode) {
-    await pool.query(
+      await pool.query(
         "UPDATE users_email SET activate = true WHERE email=$1",
         [email]
       );
-      res.send("Correct Code.");
-    } else res.send("Incorrect Code!");
+      res.status(200).json({ message: "Correct Code." });
+    } else res.status(401).json({ message: "Incorrect Code!" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error" });
   }
 });
 

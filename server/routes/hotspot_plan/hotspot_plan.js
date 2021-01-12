@@ -27,7 +27,7 @@ router.post("/set-plan", authorization, async (req, res) => {
     } else if (val === 365) {
       optName = "365";
     } else {
-      return res.send("Please choose!");
+      return res.status(401).json({ message: "Please choose!" });
     }
     // if username already exist
     const user = await pool.query(
@@ -35,7 +35,7 @@ router.post("/set-plan", authorization, async (req, res) => {
       [username]
     );
     if (user.rows.length !== 0) {
-      return res.status(401).send("Account already exist!");
+      return res.status(401).json({ message: "Account already exist!" });
     }
 
     const setPlanAlready = await pool.query(
@@ -43,7 +43,7 @@ router.post("/set-plan", authorization, async (req, res) => {
       [req.user]
     );
     if (setPlanAlready.rows.length !== 0) {
-      return res.status(401).send("You already set plan!");
+      return res.status(401).json({ message: "You already set plan!" });
     }
     // 2. enter the user inside database
     await pool.query(
@@ -77,10 +77,10 @@ router.post("/set-plan", authorization, async (req, res) => {
       [username, exp_Name, priority]
     );
 
-    res.send("Set plan successfully.");
+    res.status(200).json({ message: "Set plan successfully." });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 
@@ -104,7 +104,7 @@ router.put("/reset-plan", validHotspot, async (req, res) => {
     } else if (val === 365) {
       optName = "365";
     } else {
-      res.send("Please choose!");
+      res.status(401).json({ message: "Please choose!" });
     }
 
     // // if username isn't exist
@@ -112,7 +112,7 @@ router.put("/reset-plan", validHotspot, async (req, res) => {
       username,
     ]);
     if (user.rows.length === 0) {
-      return res.status(401).send("Account isn't exist");
+      return res.status(401).json({ message: "Account isn't exist!" });
     }
     // delete all histories form radacc, radgroupcheck, radusergroup
     await pool.query("DELETE FROM radacct WHERE username = $1", [username]);
@@ -151,10 +151,10 @@ router.put("/reset-plan", validHotspot, async (req, res) => {
       [username, exp_Name, priority]
     );
 
-    res.send("Reset plan successfully");
+    res.status(200).json({ message: "Reset plan successfully." });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 
@@ -170,14 +170,14 @@ router.post("/free-plan", authorization, async (req, res) => {
     );
 
     if (user.rows.length !== 0) {
-      return res.status(401).send("Account already exist");
+      return res.status(401).json({ message: "Account already exist!" });
     }
     const setPlanAlready = await pool.query(
       "select * from radcheck WHERE acc_id = $1",
       [req.user]
     );
     if (setPlanAlready.rows.length !== 0) {
-      return res.status(401).send("You already set plan!");
+      return res.status(401).json({ message: "You already set plan!" });
     }
 
     // 2. enter the user inside database
@@ -186,10 +186,10 @@ router.post("/free-plan", authorization, async (req, res) => {
       [username, attributeMD5, op, password, req.user]
     );
 
-    res.send("Set plan successfully.");
+    res.status(401).json({ message: "Set plan successfully." });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 router.get("/get-plan", authorization, async (req, res) => {
@@ -200,7 +200,7 @@ router.get("/get-plan", authorization, async (req, res) => {
     );
 
     if (user.rows.length === 0) {
-      return res.status(401).json({ message: "Username is not exist" });
+      return res.status(401).json({ message: "Username is not exist!" });
     }
     const detail = await pool.query(
       "select * from radusergroup WHERE username = $1",
@@ -232,7 +232,7 @@ router.get("/get-plan", authorization, async (req, res) => {
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 

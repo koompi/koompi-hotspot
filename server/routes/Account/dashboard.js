@@ -12,12 +12,14 @@ router.get("/", authorization, async (req, res) => {
       [req.user]
     );
     if (user.rows.length === 0) {
-      return res.status(401).json("Please active your acount first!");
+      return res
+        .status(401)
+        .json({ message: "Please active your acount first!" });
     }
     res.json(user.rows[0]);
   } catch (error) {
     console.error(error.message);
-    res.status(500).json("Server Error");
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
