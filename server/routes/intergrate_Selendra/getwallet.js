@@ -51,13 +51,13 @@ router.get("/get-wallet", authorization, async (req, res) => {
           // res.status(200).json({
           //   message: "You got 50 SEL for free.",
           // });
-          res
-            .status(200)
-            .send("You got 50 SEL for free.  in face you got 0.1 SEL");
+          res.status(200).json({
+            message: "You got 50 SEL for free.  in face you got 0.1 SEL",
+          });
         })
         .catch((err) => {
           console.error(err);
-          res.status(500).send("Internal server error. ");
+          res.status(500).json({ message: "Internal server error." });
         });
 
       ///============================= by default get the wallet ========================
@@ -72,15 +72,15 @@ router.get("/get-wallet", authorization, async (req, res) => {
         })
         .catch((err) => {
           console.error(err);
-          res.status(500).send("Internal server error.");
+          res.status(500).json({ message: "Internal server error!" });
         });
-      res.status(200).send("You got a selendra wallet.");
+      res.status(200).json({ message: "You got a selendra wallet." });
     } else {
-      res.status(400).send("You already have a selendra wallet!");
+      res.status(401).json({ message: "You already have a selendra wallet!" });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -131,7 +131,7 @@ router.post("/payment", authorization, async (req, res) => {
 
     //=====================================check if user doesn't have a wallet=================
     if (checkWallet.rows[0].ids === null) {
-      res.status(400).send("Please get a wallet first!");
+      res.status(401).json({ message: "Please get a wallet first!" });
     } else {
       axios
         .post(
@@ -143,7 +143,7 @@ router.post("/payment", authorization, async (req, res) => {
           //=============================check if the money is enough or not=========
           //============================= 0.001 if for fee ==========================
           if (wallet < amount + 0.001) {
-            res.status(400).send("You don't have enough money!");
+            res.status(401).json({ message: "You don't have enough money!" });
           } else {
             axios
               .post(
@@ -151,22 +151,22 @@ router.post("/payment", authorization, async (req, res) => {
                 userPayment
               )
               .then(async (re) => {
-                res.status(200).send("Paid successfull.");
+                res.status(200).json({ message: "Paid successfull." });
               })
               .catch((err) => {
-                res.status(500).send("Internal server error");
+                res.status(500).json({ message: "Internal server error" });
                 console.error(err);
               });
           }
         })
         .catch((err) => {
-          res.status(500).send("Internal server error");
+          res.status(500).json({ message: "Internal server error" });
           console.error(err);
         });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error!");
+    res.status(500).json({ message: "Server error!" });
   }
 });
 
@@ -203,9 +203,11 @@ router.post("/transfer", authorization, async (req, res) => {
 
     //=====================================check if user doesn't have a wallet=================
     if (checkWallet.rows[0].ids === null) {
-      res.status(400).send("Please get a wallet first!");
+      res.status(401).json({ message: "Please get a wallet first!" });
     } else if (checkDestWallet.rows.length === 0) {
-      res.status(400).send("Make sure that your friend has a wallet!");
+      res
+        .status(401)
+        .json({ message: "Make sure that your friend has a wallet!" });
     } else {
       axios
         .post(
@@ -217,7 +219,7 @@ router.post("/transfer", authorization, async (req, res) => {
 
           //=============================check if the money is enough or not=========
           if (wallet < amnt + 0.001) {
-            res.status(400).send("You don't have enough money!");
+            res.status(401).json({ message: "You don't have enough money!" });
           } else {
             axios
               .post(
@@ -225,22 +227,22 @@ router.post("/transfer", authorization, async (req, res) => {
                 userPayment
               )
               .then(async (re) => {
-                res.status(200).send("Transfer successfull.");
+                res.status(200).json({ message: "Transfer successfull." });
               })
               .catch((err) => {
                 console.error(err);
-                res.status(500).send("Interal server error");
+                res.status(500).json({ message: "Interal server error!" });
               });
           }
         })
         .catch((err) => {
           console.error(err);
-          res.status(500).send("Interal server error");
+          res.status(500).json({ message: "Interal server error" });
         });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error!");
+    res.status(500).json({ message: "Server error!" });
   }
 });
 
@@ -258,7 +260,7 @@ router.get("/portfolio", authorization, async (req, res) => {
       apisec: process.env.API_SEC,
     };
     if (checkWallet.rows[0].ids === null) {
-      res.status(400).send("Please get wallet first!");
+      res.status(401).json({ message: "Please get wallet first!" });
     } else {
       axios
         .post(
@@ -266,16 +268,16 @@ router.get("/portfolio", authorization, async (req, res) => {
           userPortfolio
         )
         .then(async (r) => {
-          await res.status(200).send(r.data);
+          await res.status(200).json(r.data);
         })
         .catch((err) => {
           console.error(err);
-          res.status(500).send("Internal server error");
+          res.status(500).json({ message: "Internal server error!" });
         });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error!");
+    res.status(500).json({ message: "Server error!" });
   }
 });
 
@@ -293,7 +295,7 @@ router.get("/history", authorization, async (req, res) => {
       apisec: process.env.API_SEC,
     };
     if (checkWallet.rows[0].ids === null) {
-      res.status(400).send("Please get wallet first!");
+      res.status(401).json({ message: "Please get wallet first!" });
     } else {
       axios
         .post(
@@ -301,16 +303,16 @@ router.get("/history", authorization, async (req, res) => {
           userPortfolio
         )
         .then(async (r) => {
-          await res.status(200).send(JSON.parse(JSON.stringify(r.data)));
+          await res.status(200).json(JSON.parse(JSON.stringify(r.data)));
         })
         .catch((err) => {
-          res.status(500).send("Internal server error");
+          res.status(500).json({ message: "Internal server error" });
           console.error(err);
         });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error!");
+    res.status(500).json({ message: "Server error!" });
   }
 });
 
@@ -339,12 +341,12 @@ router.get("/test", authorization, async (req, res) => {
         // await res.status(200).send(r.data);
       })
       .catch((err) => {
-        res.status(500).send("Internal server error");
+        res.status(500).json({ message: "Internal server error!" });
         console.error(err);
       });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error!");
+    res.status(500).json({ message: "Server error!" });
   }
 });
 module.exports = router;

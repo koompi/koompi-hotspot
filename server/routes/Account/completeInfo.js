@@ -14,22 +14,24 @@ router.put("/complete-info", async (req, res) => {
       [email]
     );
     if (user.rows.length === 0) {
-      return res.status(401).send("Account isn't exist yet!");
+      return res.status(401).json({ message: "Account isn't exist yet!" });
     }
     const activate = await user.rows[0].activate;
 
     if (!activate) {
-      return res.status(401).json("Please active your acount first!");
+      return res
+        .status(401)
+        .json({ message: "Please active your acount first!" });
     } else {
       await pool.query(
         "UPDATE users_email SET name=$1, gender=$2, birthdate=$3, address=$4  WHERE email=$5 AND activate = true",
         [name, gender, birthdate, address, email]
       );
-      res.send("Completed Info.");
+      res.status(200).json({ message: "Completed Information." });
     }
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 module.exports = router;

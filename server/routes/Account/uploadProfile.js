@@ -47,7 +47,7 @@ router.post("/upload-avatar", authorization, async (req, res) => {
         ]);
 
         //send response
-        res.send({
+        res.status(200).json({
           status: true,
           message: "File is uploaded",
           data: {
@@ -59,15 +59,14 @@ router.post("/upload-avatar", authorization, async (req, res) => {
         });
       } else {
         console.log(avatar.mimetype);
-        res
-          .status(500)
-          .send(
-            "This format is not allowed , please upload file with '.png','.gif','.jpg'!"
-          );
+        res.status(401).json({
+          message:
+            "This format is not allowed , please upload file with '.png','.gif','.jpg'!",
+        });
       }
     }
   } catch (err) {
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
     console.log(err);
   }
 });

@@ -3,7 +3,7 @@ require("dotenv").config();
 const pool = require("../../db");
 
 
-const checkBalance = (usr)=>{
+const checkBalance = (usr,res,req)=>{
     const balance;
     try{
     const checkWallet = await pool.query(
@@ -17,7 +17,7 @@ const checkBalance = (usr)=>{
         apisec: process.env.API_SEC,
     };
     if (checkWallet.rows[0].ids === null) {
-        res.send("Please get wallet first!");
+        res.status(401).json({message:"Please get wallet first!"});
     } else {
         axios
             .post(
@@ -33,7 +33,7 @@ const checkBalance = (usr)=>{
     }
 } catch (err) {
     console.error(err);
-    res.status(500).send("Server error!");
+    res.status(500).json({message:"Server error!"});
 }
 }
 
