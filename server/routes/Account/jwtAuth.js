@@ -5,6 +5,7 @@ const jwtGenerator = require("../../utils/jwtGenerator");
 const validInfo = require("../../middleware/validInfo");
 const authorization = require("../../middleware/authorization");
 const sesClient = require("../Account/aws/aws_ses_client");
+const twilio_sms_Client = require("../Account/twilioSMS/sendSMS");
 
 //         RESGISTERING //
 
@@ -110,6 +111,44 @@ router.post("/register", validInfo, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
+router.post("/register-phone", async (req, res) => {
+  try {
+    // //1. destructure the req.body
+    const { phone, password } = req.body;
+
+    // //2. check if user doesn't exist(if not then throw error)
+    // const user = await pool.query(
+    //   "SELECT * FROM users_email WHERE email = $1",
+    //   [email]
+    // );
+    // if (user.rows.length !== 0) {
+    //   return res.status(401).json({ message: "Account already exist." });
+    // }
+
+    //3. bcrypt the user password
+    const saltRound = 10;
+    const salt = await bcrypt.genSalt(saltRound);
+    const bcryptPassword = await bcrypt.hash(password, salt);
+
+    //4. bcrypt the confirm code
+    var code = Math.floor(Math.random() * 1000000 + 1);
+    const message = `Your KOOMPI Hotspot verification code: ${code} `;
+
+    //4. call sesClient to send an email
+
+    twilio_sms_Client.sendSMS(message, phone);
+
+    //5. enter the new user inside our database
+    // await pool.query(
+    //   "INSERT INTO users_email ( phone, password, code) VALUES($1,$2,$3)",
+    //   [phone, bcryptPassword, code]
+    // );
+    res.status(200).json({ message: "Please check SMS!" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
 
 //         LOGIN ROUTE //
 
@@ -179,6 +218,27 @@ router.post("/confirm-email", async (req, res) => {
       await pool.query(
         "UPDATE users_email SET activate = true WHERE email=$1",
         [email]
+      );
+      res.status(200).json({ message: "Correct Code." });
+    } else res.status(401).json({ message: "Incorrect Code!" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+router.post("/confirm-sms", async (req, res) => {
+  try {
+    const { phone, vCode } = req.body;
+
+    const rCode = await pool.query(
+      "SELECT code FROM users_email WHERE phone =$1",
+      [phone]
+    );
+
+    if (rCode.rows[0].code === vCode) {
+      await pool.query(
+        "UPDATE users_email SET activate = true WHERE phone=$1",
+        [phone]
       );
       res.status(200).json({ message: "Correct Code." });
     } else res.status(401).json({ message: "Incorrect Code!" });
