@@ -10,7 +10,7 @@ In the project directory, you can run:
 
 ```
 $ cd server
-$ npm install express pg bcrypt cors dotenv body-parser aws-sdk
+$ npm install express pg bcrypt cors dotenv body-parser aws-sdk twilio
 ```
 
 For JWT Json Web Token.

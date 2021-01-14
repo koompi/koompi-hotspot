@@ -41,8 +41,8 @@ router.get("/get-wallet", authorization, async (req, res) => {
                 apisec: process.env.API_SEC,
                 destination: respond.data.message.wallet,
                 asset_code: "SEL",
-                amount: "0.1", // by de faull we have to send  amount 0.1 SEL
-                memo: `Free balance: you are in number ${
+                amount: "50", 
+                memo: `Free balance: you are the user number ${
                   checkFreeToken.rows.length + 1
                 }`,
               }
@@ -52,7 +52,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
           //   message: "You got 50 SEL for free.",
           // });
           res.status(200).json({
-            message: "You got 50 SEL for free.  in face you got 0.1 SEL",
+            message: "You just recieve free 50 SEL to buy Wifi Hotspot.",
           });
         })
         .catch((err) => {
@@ -74,7 +74,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
           console.error(err);
           res.status(500).json({ message: "Internal server error!" });
         });
-      res.status(200).json({ message: "You got a selendra wallet." });
+      res.status(200).json({ message: "You've got a selendra wallet." });
     } else {
       res.status(401).json({ message: "You already have a selendra wallet!" });
     }

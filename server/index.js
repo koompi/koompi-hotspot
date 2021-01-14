@@ -45,6 +45,10 @@ app.use("/api", require("./routes/Account/uploadProfile"));
 
 // integration with selendra wallet
 app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
+
+// send sms to phone
+// app.use("/api", require("./routes/Account/twilioSMS/sendSMS"));
+
 app.listen(5000, () => {
   console.log("server is running on port 5000...");
 });
