@@ -41,7 +41,7 @@ router.post("/upload-avatar", authorization, async (req, res) => {
       ) {
         //Use the mv() method to place the file in upload directory (i.e. "uploads")
         avatar.mv("./uploads/" + name);
-        await pool.query("update users_email set image=$1 where id = $2", [
+        await pool.query("update useraccount set image=$1 where id = $2", [
           name,
           req.user,
         ]);
