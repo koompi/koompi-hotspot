@@ -8,7 +8,7 @@ router.get("/", authorization, async (req, res) => {
     // res.json(req.user); user
 
     const user = await pool.query(
-      "SELECT * FROM users_email WHERE id = $1 AND activate = true",
+      "SELECT * FROM useraccount WHERE id = $1 AND activate = true",
       [req.user]
     );
     if (user.rows.length === 0) {

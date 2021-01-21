@@ -10,7 +10,7 @@ router.post("/set-plan", authorization, async (req, res) => {
   try {
     //1. destructure the req.body(username,password)
     // for attributeMD5 & op it is default from database
-    const { username, password, simultaneous, value } = req.body; // value : 30 , 365
+    const { username, password, simultaneous, value } = req.body; // value : 30 , 365  // username=phone number example 098939699
     const op = ":=";
     const attributeMD5 = "MD5-Password";
     const priority = "1";

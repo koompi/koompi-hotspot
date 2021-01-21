@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const validInfo = require("../../middleware/validInfo");
 const sesClient = require("../Account/aws/aws_ses_client");
 
+///////////////////////////// Email //////////////////////////////////////////////
+
 //         FORGOT PASSWORD
 router.post("/forgot-password", validInfo, async (req, res) => {
   try {
@@ -81,6 +83,82 @@ router.put("/reset-password", async (req, res) => {
       bcryptPassword,
       email,
     ]);
+
+    res.status(200).json({ message: "Reset password successfully." });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+////////////////////////////// Phone /////////////////////////////////////////////
+router.post("/forgot-password-phone", async (req, res) => {
+  try {
+    //1. destructure the req.body
+    const { phone } = req.body;
+
+    //2. check if user doesn't exist(if not then throw error)
+    const account = await pool.query(
+      "SELECT * FROM useraccount WHERE phone = $1",
+      [phone]
+    );
+    if (account.rows.length === 0) {
+      return res.status(401).json({ message: "Account was not exist" });
+    }
+
+    //4. bcrypt the confirm code
+    var code = Math.floor(Math.random() * 1000000 + 1);
+    const message = `Your KOOMPI Hotspot verification code: ${code} `;
+
+    //4. call sesClient to send an email
+    try {
+      twilio_sms_Client.sendSMS(phone, message);
+
+      res.status(200).json({ message: `Message send to ${phone}` });
+    } catch (error) {
+      res.status(401).json({ message: `This number is incorrect ${phone}` });
+    }
+    //5. update this code inside our database
+    await pool.query("UPDATE useraccount SET code = $1 WHERE phone = $2", [
+      code,
+      phone,
+    ]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.put("/reset-password-phone", async (req, res) => {
+  try {
+    const { phone, new_password } = req.body;
+
+    const account = await pool.query(
+      "SELECT * FROM useraccount WHERE phone = $1",
+      [phone]
+    );
+
+    const passwordHotsport = await pool.query(
+      "SELECT * FROM radcheck WHERE acc_id = $1",
+      [account.rows[0].id]
+    );
+    // console.log(account.rows[0].id);
+    // bcrypt the account password
+    const saltRound = 10;
+    const salt = await bcrypt.genSalt(saltRound);
+    const bcryptPassword = await bcrypt.hash(new_password, salt);
+    // update into database
+    await pool.query("UPDATE useraccount SET password = $1 WHERE phone = $2", [
+      bcryptPassword,
+      phone,
+    ]);
+
+    if (passwordHotsport.rows.length !== 0) {
+      await pool.query(
+        "insert into radcheck(username, attribute,op,value,acc_id) VALUES($1,$2,$3,MD5($4),$5)",
+        [phone, "MD5-Password", ":=", new_password, account.rows[0].id]
+      );
+    }
 
     res.status(200).json({ message: "Reset password successfully." });
   } catch (err) {
