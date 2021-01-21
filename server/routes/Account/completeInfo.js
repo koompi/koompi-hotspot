@@ -39,7 +39,7 @@ router.put("/complete-info", async (req, res) => {
   try {
     //1. destructure the req.body (full_name,gender , email, password,bithdate,address)
 
-    const { name, gender, phone, email, birthdate, address } = req.body;
+    const { fullname, gender, phone, email, birthdate, address } = req.body;
 
     //2. check if user exist (if user exist then throw error)
 
@@ -59,9 +59,9 @@ router.put("/complete-info", async (req, res) => {
     } else {
       await pool.query(
         "UPDATE useraccount SET fullname=$1, gender=$2, birthdate=$3, address=$4, email=$5  WHERE phone=$6 AND activate = true",
-        [name, gender, birthdate, address, email, phone]
+        [fullname, gender, birthdate, address, email, phone]
       );
-      // console.log(user.rows[0].id);
+
       res.status(200).json({ message: "Completed Information." });
     }
   } catch (error) {

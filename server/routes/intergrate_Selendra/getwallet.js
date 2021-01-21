@@ -13,11 +13,11 @@ router.get("/get-wallet", authorization, async (req, res) => {
     };
 
     const checkWallet = await pool.query(
-      "SELECT ids FROM users_email WHERE id = $1",
+      "SELECT ids FROM useraccount WHERE id = $1",
       [req.user]
     );
     const checkFreeToken = await pool.query(
-      "SELECT ids FROM users_email WHERE ids != 'null'"
+      "SELECT ids FROM useraccount WHERE ids != 'null'"
     );
 
     ///============================= free for firstly 1000 users to got 50 SEL from koompi ========================
@@ -29,7 +29,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
         .post("https://testnet-api.selendra.com/apis/v1/get-wallet", giveWallet)
         .then(async (respond) => {
           await pool.query(
-            "UPDATE users_email SET ids = $2, wallet = $3 WHERE id = $1",
+            "UPDATE useraccount SET ids = $2, wallet = $3 WHERE id = $1",
             [req.user, respond.data.message.id, respond.data.message.wallet]
           );
           {
@@ -41,18 +41,15 @@ router.get("/get-wallet", authorization, async (req, res) => {
                 apisec: process.env.API_SEC,
                 destination: respond.data.message.wallet,
                 asset_code: "SEL",
-                amount: "50", 
+                amount: "100.002", 
                 memo: `Free balance: you are the user number ${
                   checkFreeToken.rows.length + 1
                 }`,
               }
             );
           }
-          // res.status(200).json({
-          //   message: "You got 50 SEL for free.",
-          // });
           res.status(200).json({
-            message: "You just recieve free 50 SEL to buy Wifi Hotspot.",
+            message: "You recieve free 100 SEL to buy Wifi Hotspot.",
           });
         })
         .catch((err) => {
@@ -66,7 +63,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
         .post("https://testnet-api.selendra.com/apis/v1/get-wallet", giveWallet)
         .then(async (respond) => {
           await pool.query(
-            "UPDATE users_email SET ids = $2, wallet = $3 WHERE id = $1",
+            "UPDATE useraccount SET ids = $2, wallet = $3 WHERE id = $1",
             [req.user, respond.data.message.id, respond.data.message.wallet]
           );
         })
@@ -109,7 +106,7 @@ router.post("/payment", authorization, async (req, res) => {
     }
 
     const checkWallet = await pool.query(
-      "SELECT ids FROM users_email WHERE id = $1",
+      "SELECT ids FROM useraccount WHERE id = $1",
       [req.user]
     );
 
@@ -176,12 +173,12 @@ router.post("/transfer", authorization, async (req, res) => {
     var amnt = parseInt(amount, 10);
 
     const checkWallet = await pool.query(
-      "SELECT ids FROM users_email WHERE id = $1",
+      "SELECT ids FROM useraccount WHERE id = $1",
       [req.user]
     );
 
     const checkDestWallet = await pool.query(
-      "SELECT wallet FROM users_email WHERE wallet = $1",
+      "SELECT wallet FROM useraccount WHERE wallet = $1",
       [dest_wallet]
     );
 
