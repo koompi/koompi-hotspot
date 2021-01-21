@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const pool = require("../../db");
 const moment = require("moment");
+const bcrypt = require("bcrypt");
+
 const authorization = require("../../middleware/authorization");
 const validHotspot = require("../../middleware/valid_hot_planInfo");
 
@@ -10,12 +12,15 @@ router.post("/set-plan", authorization, async (req, res) => {
   try {
     //1. destructure the req.body(username,password)
     // for attributeMD5 & op it is default from database
-    const { username, password, simultaneous, value } = req.body; // value : 30 , 365  // username=phone number example 098939699
+    const { phone, password, simultaneous, value } = req.body; // value : 30 , 365  // username=phone number example 098939699
     const op = ":=";
     const attributeMD5 = "MD5-Password";
     const priority = "1";
     const attributeSim = "Simultaneous-Use";
     const attributeExp = "Expiration";
+
+    let username = phone.slice(4, phone.length);
+    username = "0" + username;
 
     var val = parseInt(value, 10);
     var sim = parseInt(simultaneous, 10);
@@ -29,22 +34,25 @@ router.post("/set-plan", authorization, async (req, res) => {
     } else {
       return res.status(401).json({ message: "Please choose!" });
     }
-    // if username already exist
-    const user = await pool.query(
-      "select * from radcheck WHERE username = $1",
-      [username]
-    );
-    if (user.rows.length !== 0) {
-      return res.status(401).json({ message: "Account already exist!" });
-    }
 
     const setPlanAlready = await pool.query(
       "select * from radcheck WHERE acc_id = $1",
       [req.user]
     );
     if (setPlanAlready.rows.length !== 0) {
-      return res.status(401).json({ message: "You already set plan!" });
+      return res.status(401).json({ message: "You had already set plan!" });
     }
+
+    ////            check password
+    const pass = await pool.query("select * from useraccount WHERE id = $1", [
+      req.user,
+    ]);
+    // compare password
+    const validPassword = await bcrypt.compare(password, pass.rows[0].password);
+    if (!validPassword) {
+      return res.status(401).json({ message: "Incorect Password!" });
+    }
+
     // 2. enter the user inside database
     await pool.query(
       "insert into radcheck(username, attribute,op,value,acc_id) VALUES($1,$2,$3,MD5($4),$5)",
@@ -160,18 +168,38 @@ router.put("/reset-plan", validHotspot, async (req, res) => {
 
 router.post("/free-plan", authorization, async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { phone, password, simultaneous, value } = req.body; // value : 30 , 365  // username=phone number example 098939699
     const op = ":=";
     const attributeMD5 = "MD5-Password";
+    const priority = "1";
+    const attributeSim = "Simultaneous-Use";
+    const attributeExp = "Expiration";
 
+    let username = phone.slice(2, phone.length);
+
+    username = "0" + username;
+
+    var val = parseInt(value, 10);
+    var sim = parseInt(simultaneous, 10);
+    var optName;
+
+    //   //  ======---===== For Expiration amount of day =====---======
+    if (val === 30) {
+      optName = "30";
+    } else if (val === 365) {
+      optName = "365";
+    } else {
+      return res.status(401).json({ message: "Please choose!" });
+    }
+    // if username already exist
     const user = await pool.query(
       "select * from radcheck WHERE username = $1",
       [username]
     );
-
     if (user.rows.length !== 0) {
       return res.status(401).json({ message: "Account already exist!" });
     }
+
     const setPlanAlready = await pool.query(
       "select * from radcheck WHERE acc_id = $1",
       [req.user]
@@ -180,13 +208,18 @@ router.post("/free-plan", authorization, async (req, res) => {
       return res.status(401).json({ message: "You already set plan!" });
     }
 
-    // 2. enter the user inside database
-    await pool.query(
-      "insert into radcheck(username, attribute,op,value,acc_id) VALUES($1,$2,$3,MD5($4),$5)",
-      [username, attributeMD5, op, password, req.user]
-    );
+    const pass = await pool.query("select * from useraccount WHERE id = $1", [
+      req.user,
+    ]);
 
-    res.status(401).json({ message: "Set plan successfully." });
+    // compare password
+    const validPassword = await bcrypt.compare(password, pass.rows[0].password);
+
+    if (!validPassword) {
+      return res.status(401).json({ message: "Incorect Password!" });
+    }
+
+    res.status(401).json({ message: "successfull" });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server Error!" });
