@@ -41,7 +41,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
                 apisec: process.env.API_SEC,
                 destination: respond.data.message.wallet,
                 asset_code: "SEL",
-                amount: "100.002", 
+                amount: "100.002",
                 memo: `Free balance: you are the user number ${
                   checkFreeToken.rows.length + 1
                 }`,
@@ -282,7 +282,7 @@ router.get("/portfolio", authorization, async (req, res) => {
 router.get("/history", authorization, async (req, res) => {
   try {
     const checkWallet = await pool.query(
-      "SELECT ids FROM users_email WHERE id = $1",
+      "SELECT ids FROM useraccount WHERE id = $1",
       [req.user]
     );
 
@@ -318,7 +318,7 @@ router.get("/test", authorization, async (req, res) => {
     let a;
     let b;
     const checkWallet = await pool.query(
-      "SELECT ids FROM users_email WHERE id = $1",
+      "SELECT ids FROM useraccount WHERE id = $1",
       [req.user]
     );
     const userPortfolio = {
