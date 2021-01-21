@@ -247,7 +247,7 @@ router.post("/transfer", authorization, async (req, res) => {
 router.get("/portfolio", authorization, async (req, res) => {
   try {
     const checkWallet = await pool.query(
-      "SELECT ids FROM users_email WHERE id = $1",
+      "SELECT ids FROM useraccount WHERE id = $1",
       [req.user]
     );
 
