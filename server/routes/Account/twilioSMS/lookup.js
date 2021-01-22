@@ -12,18 +12,7 @@ router.get("/testing", async (req, res) => {
     client.lookups
       .phoneNumbers("+85598939699")
       .fetch({ countryCode: "KH" })
-      .then((phone_number) => res.send(phone_number.toJSON));
-    // .then(async (phone_number) => {
-    //   if (phone_number === undefined) {
-    //     console.log(phone_number);
-    //     return await res.status(401).send("incorrect number");
-    //   }
-    // if (error) {
-    //   return res.send("error");
-    // }
-    //   res.send("ok");
-    // });
-
+      .then((phone_number) => console.log(phone_number));
     //   client.phoneNumbers("+15108675309").get(
     //     {
     //       type: "carrier",
