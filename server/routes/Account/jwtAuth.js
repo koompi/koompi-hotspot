@@ -223,11 +223,11 @@ router.post("/register-phone", async (req, res) => {
       res.status(401).json({ message: `This number is incorrect ${phone}` });
     }
 
-    //5. enter the new user inside our database
-    await pool.query(
-      "INSERT INTO useraccount ( phone, password, code) VALUES($1,$2,$3)",
-      [phone, bcryptPassword, code]
-    );
+    // //5. enter the new user inside our database
+    // await pool.query(
+    //   "INSERT INTO useraccount ( phone, password, code) VALUES($1,$2,$3)",
+    //   [phone, bcryptPassword, code]
+    // );
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error!" });
