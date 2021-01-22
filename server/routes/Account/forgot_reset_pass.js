@@ -3,6 +3,7 @@ const pool = require("../../db");
 const bcrypt = require("bcrypt");
 const validInfo = require("../../middleware/validInfo");
 const sesClient = require("../Account/aws/aws_ses_client");
+const twilio_sms_Client = require("../Account/twilioSMS/sendSMS");
 
 ///////////////////////////// Email //////////////////////////////////////////////
 
@@ -110,13 +111,13 @@ router.post("/forgot-password-phone", async (req, res) => {
     var code = Math.floor(Math.random() * 1000000 + 1);
     const message = `Your KOOMPI Hotspot verification code: ${code} `;
 
-    //4. call sesClient to send an email
+    //4. call twilio to send an sms
     try {
       twilio_sms_Client.sendSMS(phone, message);
-
       res.status(200).json({ message: `Message send to ${phone}` });
     } catch (error) {
       res.status(401).json({ message: `This number is incorrect ${phone}` });
+      console.error(error.message);
     }
     //5. update this code inside our database
     await pool.query("UPDATE useraccount SET code = $1 WHERE phone = $2", [
@@ -138,12 +139,6 @@ router.put("/reset-password-phone", async (req, res) => {
       [phone]
     );
 
-    const passwordHotsport = await pool.query(
-      "SELECT * FROM radcheck WHERE acc_id = $1",
-      [account.rows[0].id]
-    );
-    // console.log(account.rows[0].id);
-    // bcrypt the account password
     const saltRound = 10;
     const salt = await bcrypt.genSalt(saltRound);
     const bcryptPassword = await bcrypt.hash(new_password, salt);
@@ -153,10 +148,14 @@ router.put("/reset-password-phone", async (req, res) => {
       phone,
     ]);
 
+    const passwordHotsport = await pool.query(
+      "SELECT * FROM radcheck WHERE acc_id = $1",
+      [account.rows[0].id]
+    );
     if (passwordHotsport.rows.length !== 0) {
       await pool.query(
-        "insert into radcheck(username, attribute,op,value,acc_id) VALUES($1,$2,$3,MD5($4),$5)",
-        [phone, "MD5-Password", ":=", new_password, account.rows[0].id]
+        "UPDATE radcheck SET value = MD5($1) WHERE acc_id = $2",
+        [new_password, account.rows[0].id]
       );
     }
 
