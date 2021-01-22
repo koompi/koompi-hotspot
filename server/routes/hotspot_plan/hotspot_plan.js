@@ -262,6 +262,7 @@ router.get("/get-plan", authorization, async (req, res) => {
       balance: balance,
       device: a.slice(n1 + 1, a.length),
       plan: b.slice(n2 + 1, b.length),
+      time_left: detail.rows[1].value,
     });
   } catch (err) {
     console.error(err.message);
