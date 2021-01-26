@@ -166,7 +166,6 @@ router.post("/payment", authorization, async (req, res) => {
     res.status(500).json({ message: "Server error!" });
   }
 });
-
 router.post("/transfer", authorization, async (req, res) => {
   try {
     const { dest_wallet, asset, amount, memo } = req.body;
