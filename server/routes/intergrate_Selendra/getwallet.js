@@ -3,6 +3,7 @@ const axios = require("axios");
 const pool = require("../../db");
 require("dotenv").config();
 const authorization = require("../../middleware/authorization");
+const confirmPass = require("../intergrate_Selendra/payment");
 
 //  Generate Wallet or Get wallet for userAcc
 router.get("/get-wallet", authorization, async (req, res) => {
@@ -168,14 +169,16 @@ router.post("/payment", authorization, async (req, res) => {
 });
 router.post("/transfer", authorization, async (req, res) => {
   try {
-    const { dest_wallet, asset, amount, memo } = req.body;
+    const { password, dest_wallet, asset, amount, memo } = req.body;
     var amnt = parseInt(amount, 10);
 
+    //////////////// check password ////////////////////////
+    const confirm = await confirmPass.confirm_pass(req, password);
+
     const checkWallet = await pool.query(
-      "SELECT ids FROM useraccount WHERE id = $1",
+      "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
     );
-
     const checkDestWallet = await pool.query(
       "SELECT wallet FROM useraccount WHERE wallet = $1",
       [dest_wallet]
@@ -198,11 +201,13 @@ router.post("/transfer", authorization, async (req, res) => {
     };
 
     //=====================================check if user doesn't have a wallet=================
-    if (checkWallet.rows[0].ids === null) {
-      res.status(401).json({ message: "Please get a wallet first!" });
+    if (!confirm) {
+      res.status(401).json({ message: "Incorrect password!" });
+    } else if (checkWallet.rows[0].ids === null) {
+      res.status(400).json({ message: "Please get a wallet first!" });
     } else if (checkDestWallet.rows.length === 0) {
       res
-        .status(401)
+        .status(400)
         .json({ message: "Make sure that your friend has a wallet!" });
     } else {
       axios
@@ -215,29 +220,29 @@ router.post("/transfer", authorization, async (req, res) => {
 
           //=============================check if the money is enough or not=========
           if (wallet < amnt + 0.001) {
-            res.status(401).json({ message: "You don't have enough money!" });
+            res.status(400).json({ message: "You don't have enough money!" });
           } else {
             axios
               .post(
                 "https://testnet-api.selendra.com/apis/v1/payment",
                 userPayment
               )
-              .then(async (re) => {
+              .then(async () => {
                 res.status(200).json({ message: "Transfer successfull." });
               })
               .catch((err) => {
-                console.error(err);
+                console.log("Error on transfer", err);
                 res.status(500).json({ message: "Interal server error!" });
               });
           }
         })
         .catch((err) => {
-          console.error(err);
+          console.log("error with portfolio", err);
           res.status(500).json({ message: "Interal server error" });
         });
     }
   } catch (err) {
-    console.error(err);
+    console.log("bug on get wallet function", err);
     res.status(500).json({ message: "Server error!" });
   }
 });
@@ -312,34 +317,17 @@ router.get("/history", authorization, async (req, res) => {
   }
 });
 
-router.get("/test", authorization, async (req, res) => {
+router.post("/test", authorization, async (req, res) => {
   try {
-    let a;
-    let b;
-    const checkWallet = await pool.query(
-      "SELECT ids FROM useraccount WHERE id = $1",
-      [req.user]
-    );
-    const userPortfolio = {
-      id: checkWallet.rows[0].ids,
-      apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
-    };
-    axios
-      .post(
-        "https://testnet-api.selendra.com/apis/v1/history-by-api",
-        userPortfolio
-      )
-      .then(async (r) => {
-        a = await r.data[0].hash;
-        res.send(a);
-        // await res.status(200).send(JSON.parse(JSON.stringify(r.data)));
-        // await res.status(200).send(r.data);
-      })
-      .catch((err) => {
-        res.status(500).json({ message: "Internal server error!" });
-        console.error(err);
-      });
+    const { password } = req.body;
+    // //////////////// check password ////////////////////////
+    const verify = await confirmPass.confirm_pass(req, password);
+    if (!verify) {
+      res.status(401).json({ message: "Incorrect password" });
+    } else {
+      console.log(verify);
+      res.status(200).json({ message: "correct pass" });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error!" });

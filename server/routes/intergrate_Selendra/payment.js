@@ -1,6 +1,7 @@
 const axios = require("axios");
 const pool = require("../../db");
 require("dotenv").config();
+const bcrypt = require("bcrypt");
 
 const payment = async (req, asset, plan, memo) => {
   try {
@@ -126,18 +127,12 @@ const checking = async (req, plan) => {
           //=============================check if the money is enough or not=========
           //============================= 0.001 if for fee ==========================
           if (wallet < amount + 0.001) {
-            // return false;
-            console.log("you don't have enough money!");
-            // return [200, "12"];
-            // return false;
             return [401, "You don't have enough money!"];
           }
         })
         .catch((err) => {
           console.log("internal! with portfolio", err);
-          // res.status(500).json({ message: "Internal server error" });
-
-          return [((status = 501), (message = "Selendra server error."))];
+          return [501, "Selendra server error."];
         });
       return data;
     }
@@ -147,4 +142,22 @@ const checking = async (req, plan) => {
     // return false;
   }
 };
-module.exports = { checking, payment };
+
+const confirm_pass = async (req, password) => {
+  try {
+    ////            check password
+    const pass = await pool.query("select * from useraccount WHERE id = $1", [
+      req.user,
+    ]);
+    // compare password
+    const validPassword = await bcrypt.compare(password, pass.rows[0].password);
+    if (!validPassword) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.log("bug with confrim password function", error);
+    return false;
+  }
+};
+module.exports = { checking, payment, confirm_pass };
