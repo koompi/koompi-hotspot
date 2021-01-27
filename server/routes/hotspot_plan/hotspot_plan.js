@@ -7,7 +7,7 @@ const authorization = require("../../middleware/authorization");
 const validHotspot = require("../../middleware/valid_hot_planInfo");
 
 // const confirmPass = require("../intergrate_Selendra/payment");
-const Payment = require("../intergrate_Selendra/payment");
+const Payment = require("../../utils/payment");
 
 // Create Account User
 

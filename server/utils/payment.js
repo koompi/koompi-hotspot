@@ -1,5 +1,5 @@
 const axios = require("axios");
-const pool = require("../../db");
+const pool = require("../db");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 

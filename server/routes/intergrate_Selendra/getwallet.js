@@ -3,7 +3,7 @@ const axios = require("axios");
 const pool = require("../../db");
 require("dotenv").config();
 const authorization = require("../../middleware/authorization");
-const confirmPass = require("../intergrate_Selendra/payment");
+const confirmPass = require("../../utils/payment");
 
 //  Generate Wallet or Get wallet for userAcc
 router.get("/get-wallet", authorization, async (req, res) => {
