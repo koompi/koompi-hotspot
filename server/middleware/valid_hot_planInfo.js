@@ -1,12 +1,12 @@
 module.exports = (req, res, next) => {
-  const { username, password, simultaneous, value } = req.body;
+  const { phone, password, simultaneous, value, asset, memo } = req.body;
   if (req.path === "/set-plan") {
-    if (![username, password, simultaneous, value].every(Boolean)) {
+    if (![phone, password, simultaneous, value, asset, memo].every(Boolean)) {
       return res.status(401).json("Missing Credentials");
     }
   }
   if (req.path === "/reset-plan") {
-    if (![username, simultaneous, value].every(Boolean)) {
+    if (![phone, simultaneous, value, asset, memo].every(Boolean)) {
       return res.status(401).json("Missing Credentials");
     }
   }
