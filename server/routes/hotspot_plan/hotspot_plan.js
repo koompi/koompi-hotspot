@@ -98,7 +98,7 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
   }
 });
 
-router.delete("/cancel-plan", authorization, async (req, res) => {
+router.put("/cancel-plan", authorization, async (req, res) => {
   try {
     const { password } = req.body;
 
