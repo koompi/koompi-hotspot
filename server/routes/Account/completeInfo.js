@@ -10,7 +10,7 @@ router.put("/complete-inf", async (req, res) => {
     //2. check if user exist (if user exist then throw error)
 
     const user = await pool.query(
-      "SELECT * FROM users_email WHERE email = $1",
+      "SELECT * FROM useraccount WHERE email = $1",
       [email]
     );
     if (user.rows.length === 0) {
@@ -24,7 +24,7 @@ router.put("/complete-inf", async (req, res) => {
         .json({ message: "Please active your acount first!" });
     } else {
       await pool.query(
-        "UPDATE users_email SET name=$1, gender=$2, birthdate=$3, address=$4  WHERE email=$5 AND activate = true",
+        "UPDATE useraccount SET name=$1, gender=$2, birthdate=$3, address=$4  WHERE email=$5 AND activate = true",
         [name, gender, birthdate, address, email]
       );
       res.status(200).json({ message: "Completed Information." });

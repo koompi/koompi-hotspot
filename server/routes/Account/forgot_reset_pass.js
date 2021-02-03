@@ -15,7 +15,7 @@ router.post("/forgot-password", validInfo, async (req, res) => {
 
     //2. check if user doesn't exist(if not then throw error)
     const account = await pool.query(
-      "SELECT * FROM users_email WHERE email = $1",
+      "SELECT * FROM useraccount WHERE email = $1",
       [email]
     );
     if (account.rows.length === 0) {
@@ -41,9 +41,9 @@ router.post("/forgot-password", validInfo, async (req, res) => {
     sesClient.sendEmail(email, "Account Verification", html);
 
     //5. update this code inside our database
-    await pool.query("UPDATE users_email SET code = $1 WHERE email = $2", [
+    await pool.query("UPDATE useraccount SET code = $1 WHERE email = $2", [
       code,
-      email,
+      email
     ]);
     res.status(200).json({ message: "Please check your E-mail!" });
   } catch (error) {
@@ -58,7 +58,7 @@ router.post("/confirm-forgot-code", async (req, res) => {
     const { email, vCode } = req.body;
 
     const rCode = await pool.query(
-      "SELECT code FROM users_email WHERE email =$1",
+      "SELECT code FROM useraccount WHERE email =$1",
       [email]
     );
     if (rCode.rows[0].code === vCode) {
@@ -80,9 +80,9 @@ router.put("/reset-password", async (req, res) => {
     const salt = await bcrypt.genSalt(saltRound);
     const bcryptPassword = await bcrypt.hash(new_password, salt);
     // update into database
-    await pool.query("UPDATE users_email SET password = $1 WHERE email = $2", [
+    await pool.query("UPDATE useraccount SET password = $1 WHERE email = $2", [
       bcryptPassword,
-      email,
+      email
     ]);
 
     res.status(200).json({ message: "Reset password successfully." });
@@ -122,7 +122,7 @@ router.post("/forgot-password-phone", async (req, res) => {
     //5. update this code inside our database
     await pool.query("UPDATE useraccount SET code = $1 WHERE phone = $2", [
       code,
-      phone,
+      phone
     ]);
   } catch (error) {
     console.error(error.message);
@@ -145,7 +145,7 @@ router.put("/reset-password-phone", async (req, res) => {
     // update into database
     await pool.query("UPDATE useraccount SET password = $1 WHERE phone = $2", [
       bcryptPassword,
-      phone,
+      phone
     ]);
 
     const passwordHotsport = await pool.query(

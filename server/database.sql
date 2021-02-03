@@ -1,4 +1,4 @@
-CREATE TABLE users_email
+CREATE TABLE useraccount
 (
     id uuid PRIMARY KEY DEFAULT
     uuid_generate_v4(),

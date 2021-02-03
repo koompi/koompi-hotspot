@@ -7,7 +7,7 @@ const checkBalance = (usr,res,req)=>{
     const balance;
     try{
     const checkWallet = await pool.query(
-        "SELECT ids FROM users_email WHERE id = $1",
+        "SELECT ids FROM useraccount WHERE id = $1",
         [usr]
     );
 

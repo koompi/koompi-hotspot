@@ -18,7 +18,7 @@ router.post("/register-full", validInfo, async (req, res) => {
     //2. check if user exist (if user exist then throw error)
 
     const user = await pool.query(
-      "SELECT * FROM users_email WHERE email = $1",
+      "SELECT * FROM useraccount WHERE email = $1",
       [email]
     );
     if (user.rows.length !== 0) {
@@ -52,7 +52,7 @@ router.post("/register-full", validInfo, async (req, res) => {
     //5. enter the new user inside our database
 
     const newUserAcc = await pool.query(
-      "INSERT INTO users_email (name, gender, email, password, birthdate, address,verify) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
+      "INSERT INTO useraccount (name, gender, email, password, birthdate, address,verify) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
       [name, gender, email, bcryptPassword, birthdate, address, code]
     );
 
@@ -70,7 +70,7 @@ router.post("/register", validInfo, async (req, res) => {
 
     //2. check if user doesn't exist(if not then throw error)
     const user = await pool.query(
-      "SELECT * FROM users_email WHERE email = $1",
+      "SELECT * FROM useraccount WHERE email = $1",
       [email]
     );
     if (user.rows.length !== 0) {
@@ -102,7 +102,7 @@ router.post("/register", validInfo, async (req, res) => {
 
     //5. enter the new user inside our database
     await pool.query(
-      "INSERT INTO users_email ( email, password, code) VALUES($1,$2,$3)",
+      "INSERT INTO useraccount ( email, password, code) VALUES($1,$2,$3)",
       [email, bcryptPassword, code]
     );
     res.status(200).json({ message: "Please check your E-mail!" });
@@ -121,8 +121,8 @@ router.post("/login", validInfo, async (req, res) => {
 
     //2. check if user doesn't exist(if not then throw error)
 
-    const user = await pool.query("SELECT * FROM users_email WHERE email =$1", [
-      email,
+    const user = await pool.query("SELECT * FROM useraccount WHERE email =$1", [
+      email
     ]);
     if (user.rows.length === 0) {
       return res.status(401).json({ message: "Incorrect E-mail!" });
@@ -147,7 +147,7 @@ router.post("/login", validInfo, async (req, res) => {
 
     const token = jwtGenerator(user.rows[0].id);
     res.json({
-      token,
+      token
     });
   } catch (error) {
     console.error(error.message);
@@ -172,13 +172,13 @@ router.post("/confirm-email", async (req, res) => {
     const { email, vCode } = req.body;
 
     const rCode = await pool.query(
-      "SELECT code FROM users_email WHERE email =$1",
+      "SELECT code FROM useraccount WHERE email =$1",
       [email]
     );
 
     if (rCode.rows[0].code === vCode) {
       await pool.query(
-        "UPDATE users_email SET activate = true WHERE email=$1",
+        "UPDATE useraccount SET activate = true WHERE email=$1",
         [email]
       );
       res.status(200).json({ message: "Correct Code." });
@@ -251,7 +251,7 @@ router.post("/login-phone", async (req, res) => {
     //2. check if user doesn't exist(if not then throw error)
 
     const user = await pool.query("SELECT * FROM useraccount WHERE phone =$1", [
-      phone,
+      phone
     ]);
     if (user.rows.length === 0) {
       return res.status(401).json({ message: "Incorrect phone number!" });
@@ -276,7 +276,7 @@ router.post("/login-phone", async (req, res) => {
 
     const token = jwtGenerator(user.rows[0].id);
     res.json({
-      token,
+      token
     });
   } catch (error) {
     console.error(error.message);
