@@ -33,20 +33,20 @@ router.put("/renew", authorization, async (req, res) => {
     }
 
     ///////////// check balance with payment /////////////////////////
-    // const paid = await Payment.payment(req, "SEL", value, "Renew plan.");
-    // if (paid[0] === 200) {
-    const due = moment()
-      .add(value, "days")
-      .format("YYYY MMM DD");
+    const paid = await Payment.payment(req, "SEL", value, "Renew plan.");
+    if (paid[0] === 200) {
+      const due = moment()
+        .add(value, "days")
+        .format("YYYY MMM DD");
 
-    await pool.query("UPDATE radgroupcheck SET value = $1 WHERE acc_id = $2", [
-      due,
-      req.user
-    ]);
-    res.status(200).json({ message: due });
-    // } else {
-    //   res.status(paid[0]).json({ message: paid[1] });
-    // }
+      await pool.query(
+        "UPDATE radgroupcheck SET value = $1 WHERE acc_id = $2",
+        [due, req.user]
+      );
+      res.status(200).json({ message: due });
+    } else {
+      res.status(paid[0]).json({ message: paid[1] });
+    }
   } catch (err) {
     console.log("error on renew plan", err);
     res.status(500).json({ message: "Server Error!" });
