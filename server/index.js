@@ -26,16 +26,17 @@ app.use("/api/dashboard", require("./routes/Account/dashboard"));
 
 // Hotspot Plan
 app.use("/api/hotspot", require("./routes/hotspot_plan/hotspot_plan"));
+app.use("/api/hotspot", require("./routes/hotspot_plan/renewPlan"));
 
 //  change password
 app.use(
   "/api/change-password",
   require("./routes/Account/change_password_Acc")
 );
-app.use(
-  "/api/change-password",
-  require("./routes/hotspot_plan/change_password_User")
-);
+// app.use(
+//   "/api/change-password",
+//   require("./routes/hotspot_plan/change_password_User")
+// );
 
 //  forgot and reset password
 app.use("/api", require("./routes/Account/forgot_reset_pass"));

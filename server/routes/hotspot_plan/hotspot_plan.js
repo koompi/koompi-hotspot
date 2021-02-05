@@ -71,10 +71,12 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
 
       const exp_Name = attributeExp + "_" + username + "_" + optName;
       //   Format Date
-      var due = moment().add(val, "days").format("YYYY MMM DD");
+      var due = moment()
+        .add(val, "days")
+          ;
       await pool.query(
-        "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4)",
-        [exp_Name, attributeExp, op, due]
+        "insert into radgroupcheck(groupname, attribute, op, value,acc_id) VALUES($1, $2, $3, $4, $5)",
+        [exp_Name, attributeExp, op, due, req.user]
       );
 
       //  insert into table RAD_USER_GROUP
@@ -104,7 +106,7 @@ router.put("/cancel-plan", authorization, async (req, res) => {
 
     // // if username isn't exist
     const user = await pool.query("select * from radcheck where acc_id = $1", [
-      req.user,
+      req.user
     ]);
     const username = user.rows[0].username;
     if (user.rows.length === 0) {
@@ -120,7 +122,7 @@ router.put("/cancel-plan", authorization, async (req, res) => {
       await pool.query("DELETE FROM radcheck where acc_id = $1", [req.user]);
       await pool.query("DELETE FROM radacct WHERE username = $1", [username]);
       await pool.query("DELETE FROM radusergroup WHERE username = $1", [
-        username,
+        username
       ]);
       await pool.query(
         "DELETE FROM radgroupcheck WHERE groupname like '%' || $1 ||'%'",
@@ -178,7 +180,7 @@ router.post("/free-plan", authorization, async (req, res) => {
     }
 
     const pass = await pool.query("select * from useraccount WHERE id = $1", [
-      req.user,
+      req.user
     ]);
 
     // compare password
@@ -228,7 +230,7 @@ router.get("/get-plan", authorization, async (req, res) => {
       balance = "50";
     }
     if (balance === 365) {
-      balance = "365";
+      balance = "600";
     }
 
     res.status(200).json({
@@ -236,7 +238,7 @@ router.get("/get-plan", authorization, async (req, res) => {
       balance: balance,
       device: a.slice(n1 + 1, a.length),
       plan: b.slice(n2 + 1, b.length),
-      time_left: timeLeft.rows[0].value,
+      time_left: timeLeft.rows[0].value
     });
   } catch (err) {
     console.error(err.message);
