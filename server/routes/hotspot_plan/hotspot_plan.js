@@ -73,7 +73,7 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
       //   Format Date
       var due = moment()
         .add(val, "days")
-          ;
+        .format("YYYY MMM DD");
       await pool.query(
         "insert into radgroupcheck(groupname, attribute, op, value,acc_id) VALUES($1, $2, $3, $4, $5)",
         [exp_Name, attributeExp, op, due, req.user]
