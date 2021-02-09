@@ -10,7 +10,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
   try {
     const giveWallet = {
       apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
+      apisec: process.env.API_SEC
     };
 
     const checkWallet = await pool.query(
@@ -28,7 +28,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
     ) {
       axios
         .post("https://testnet-api.selendra.com/apis/v1/get-wallet", giveWallet)
-        .then(async (respond) => {
+        .then(async respond => {
           await pool.query(
             "UPDATE useraccount SET ids = $2, wallet = $3 WHERE id = $1",
             [req.user, respond.data.message.id, respond.data.message.wallet]
@@ -42,18 +42,17 @@ router.get("/get-wallet", authorization, async (req, res) => {
                 apisec: process.env.API_SEC,
                 destination: respond.data.message.wallet,
                 asset_code: "SEL",
-                amount: "100.002",
-                memo: `Free balance: you are the user number ${
-                  checkFreeToken.rows.length + 1
-                }`,
+                amount: "100.0002",
+                memo: `Free balance: you are the user number ${checkFreeToken
+                  .rows.length + 1}`
               }
             );
           }
           res.status(200).json({
-            message: "You recieve free 100 SEL to buy Wifi Hotspot.",
+            message: "You recieve free 100 SEL to buy Wifi Hotspot."
           });
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
           res.status(500).json({ message: "Internal server error." });
         });
@@ -62,13 +61,13 @@ router.get("/get-wallet", authorization, async (req, res) => {
     } else if (checkWallet.rows[0].ids === null) {
       axios
         .post("https://testnet-api.selendra.com/apis/v1/get-wallet", giveWallet)
-        .then(async (respond) => {
+        .then(async respond => {
           await pool.query(
             "UPDATE useraccount SET ids = $2, wallet = $3 WHERE id = $1",
             [req.user, respond.data.message.id, respond.data.message.wallet]
           );
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
           res.status(500).json({ message: "Internal server error!" });
         });
@@ -114,7 +113,7 @@ router.post("/payment", authorization, async (req, res) => {
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
+      apisec: process.env.API_SEC
     };
 
     const userPayment = {
@@ -124,7 +123,7 @@ router.post("/payment", authorization, async (req, res) => {
       destination: process.env.BANK_wallet,
       asset_code: asset,
       amount: amnt,
-      memo: memo,
+      memo: memo
     };
 
     //=====================================check if user doesn't have a wallet=================
@@ -136,7 +135,7 @@ router.post("/payment", authorization, async (req, res) => {
           "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
-        .then(async (r) => {
+        .then(async r => {
           const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
           //============================= 0.001 if for fee ==========================
@@ -148,16 +147,16 @@ router.post("/payment", authorization, async (req, res) => {
                 "https://testnet-api.selendra.com/apis/v1/payment",
                 userPayment
               )
-              .then(async (re) => {
+              .then(async re => {
                 res.status(200).json({ message: "Paid successfull." });
               })
-              .catch((err) => {
+              .catch(err => {
                 res.status(500).json({ message: "Internal server error" });
                 console.error(err);
               });
           }
         })
-        .catch((err) => {
+        .catch(err => {
           res.status(500).json({ message: "Internal server error" });
           console.error(err);
         });
@@ -187,7 +186,7 @@ router.post("/transfer", authorization, async (req, res) => {
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
+      apisec: process.env.API_SEC
     };
 
     const userPayment = {
@@ -197,7 +196,7 @@ router.post("/transfer", authorization, async (req, res) => {
       destination: dest_wallet,
       asset_code: asset,
       amount: amount,
-      memo: memo,
+      memo: memo
     };
 
     //=====================================check if user doesn't have a wallet=================
@@ -215,11 +214,11 @@ router.post("/transfer", authorization, async (req, res) => {
           "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
-        .then(async (r) => {
+        .then(async r => {
           const wallet = await r.data.token;
 
           //=============================check if the money is enough or not=========
-          if (wallet < amnt + 0.001) {
+          if (wallet < amnt + 0.0001) {
             res.status(400).json({ message: "You don't have enough money!" });
           } else {
             axios
@@ -230,13 +229,13 @@ router.post("/transfer", authorization, async (req, res) => {
               .then(async () => {
                 res.status(200).json({ message: "Transfer successfull." });
               })
-              .catch((err) => {
+              .catch(err => {
                 console.log("Error on transfer", err);
                 res.status(500).json({ message: "Interal server error!" });
               });
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("error with portfolio", err);
           res.status(500).json({ message: "Interal server error" });
         });
@@ -258,7 +257,7 @@ router.get("/portfolio", authorization, async (req, res) => {
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
+      apisec: process.env.API_SEC
     };
     if (checkWallet.rows[0].ids === null) {
       res.status(401).json({ message: "Please get wallet first!" });
@@ -268,10 +267,10 @@ router.get("/portfolio", authorization, async (req, res) => {
           "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
-        .then(async (r) => {
+        .then(async r => {
           await res.status(200).json(r.data);
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
           res.status(500).json({ message: "Internal server error!" });
         });
@@ -293,7 +292,7 @@ router.get("/history", authorization, async (req, res) => {
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
+      apisec: process.env.API_SEC
     };
     if (checkWallet.rows[0].ids === null) {
       res.status(401).json({ message: "Please get wallet first!" });
@@ -303,10 +302,10 @@ router.get("/history", authorization, async (req, res) => {
           "https://testnet-api.selendra.com/apis/v1/history-by-api",
           userPortfolio
         )
-        .then(async (r) => {
+        .then(async r => {
           await res.status(200).json(JSON.parse(JSON.stringify(r.data)));
         })
-        .catch((err) => {
+        .catch(err => {
           res.status(500).json({ message: "Internal server error" });
           console.error(err);
         });

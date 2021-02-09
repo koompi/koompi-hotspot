@@ -55,8 +55,8 @@ const payment = async (req, asset, plan, memo) => {
         .then(async (r) => {
           const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
-          //============================= 0.001 if for fee ==========================
-          if (wallet < amount + 0.001) {
+          //============================= 0.0001 if for fee ==========================
+          if (wallet < amount + 0.0001) {
             return [400, "You don't have enough money!"];
           } else {
             const done = await axios
@@ -126,7 +126,7 @@ const checking = async (req, plan) => {
           const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
           //============================= 0.001 if for fee ==========================
-          if (wallet < amount + 0.001) {
+          if (wallet < amount + 0.0001) {
             return [401, "You don't have enough money!"];
           }
         })

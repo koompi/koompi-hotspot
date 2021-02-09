@@ -43,6 +43,9 @@ router.put("/renew", authorization, async (req, res) => {
         "UPDATE radgroupcheck SET value = $1 WHERE acc_id = $2",
         [due, req.user]
       );
+      await pool.query("UPDATE radcheck SET status = true WHERE acc_id = $1", [
+        req.user
+      ]);
       res.status(200).json({ message: due });
     } else {
       res.status(paid[0]).json({ message: paid[1] });
