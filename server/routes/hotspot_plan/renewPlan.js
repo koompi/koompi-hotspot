@@ -56,4 +56,19 @@ router.put("/renew", authorization, async (req, res) => {
   }
 });
 
+router.put("/auto", authorization, async (req, res) => {
+  try {
+    const { automatically } = req.body;
+
+    await pool.query("UPDATE radcheck SET auto = $1 WHERE acc_id = $2", [
+      automatically,
+      req.user
+    ]);
+
+    res.status(200).json({ message: "Done" });
+  } catch (err) {
+    console.log("error on renew plan", err);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
 module.exports = router;
