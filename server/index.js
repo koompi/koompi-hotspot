@@ -1,7 +1,12 @@
 const express = require("express");
+
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
+
+// For auto checking
+const cron = require("node-cron");
+const autoCheck = require("./routes/hotspot_plan/auto/autoCheck");
 
 // AWS sending email middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -52,4 +57,10 @@ app.use("/api/test", require("./routes/Account/twilioSMS/lookup"));
 
 app.listen(5000, () => {
   console.log("server is running on port 5000...");
+
+  // Check deadline at 11:59 PM every day.
+  cron.schedule("59 23 * * *", () => {
+    autoCheck.statusPlan();
+    console.log("checking a plan every day");
+  });
 });

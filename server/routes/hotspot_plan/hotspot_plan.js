@@ -198,10 +198,9 @@ router.post("/free-plan", authorization, async (req, res) => {
 });
 router.get("/get-plan", authorization, async (req, res) => {
   try {
-    const user = await pool.query(
-      "select username from radcheck WHERE acc_id = $1",
-      [req.user]
-    );
+    const user = await pool.query("select * from radcheck WHERE acc_id = $1", [
+      req.user
+    ]);
 
     if (user.rows.length === 0) {
       return res.status(401).json({ message: "Username is not exist!" });
