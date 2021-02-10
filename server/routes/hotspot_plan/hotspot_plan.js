@@ -58,8 +58,8 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
     if (paid[0] === 200) {
       // 2. enter the user inside database
       await pool.query(
-        "insert into radcheck(username, attribute,op,value,acc_id,status) VALUES($1,$2,$3,MD5($4),$5,$6)",
-        [username, attributeMD5, op, password, req.user, 1]
+        "insert into radcheck(username, attribute,op,value,acc_id,status) VALUES($1,$2,$3,MD5($4),$5,$6,$7)",
+        [username, attributeMD5, op, password, req.user, 1, 1]
       );
 
       //  insert into table RAD_GROUP_CHECK
@@ -238,7 +238,8 @@ router.get("/get-plan", authorization, async (req, res) => {
       device: a.slice(n1 + 1, a.length),
       plan: b.slice(n2 + 1, b.length),
       time_left: timeLeft.rows[0].value,
-      status: user.rows[0].status
+      status: user.rows[0].status,
+      automatically: user.rows[0].auto
     });
   } catch (err) {
     console.error(err.message);

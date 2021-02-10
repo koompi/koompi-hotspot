@@ -1,5 +1,4 @@
 const moment = require("moment");
-var cron = require("node-cron");
 const pool = require("../../../db");
 const statusPlan = async () => {
   try {
