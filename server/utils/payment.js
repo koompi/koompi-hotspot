@@ -30,7 +30,7 @@ const payment = async (req, asset, plan, memo) => {
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
+      apisec: process.env.API_SEC
     };
 
     const userPayment = {
@@ -40,7 +40,7 @@ const payment = async (req, asset, plan, memo) => {
       destination: process.env.BANK_wallet,
       asset_code: asset,
       amount: amnt,
-      memo: memo,
+      memo: memo
     };
 
     // =====================================check if user doesn't have a wallet=================
@@ -52,7 +52,7 @@ const payment = async (req, asset, plan, memo) => {
           "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
-        .then(async (r) => {
+        .then(async r => {
           const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
           //============================= 0.0001 if for fee ==========================
@@ -67,14 +67,14 @@ const payment = async (req, asset, plan, memo) => {
               .then(() => {
                 return [200, "Paid successfull"];
               })
-              .catch((err) => {
+              .catch(err => {
                 console.log("selendra's bug with payment", err);
                 return [501, "Selendra server is in maintenance."];
               });
             return done;
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("selendra's bug with payment portfolio", err);
           return [501, "Selendra server is in maintenance."];
         });
@@ -108,7 +108,7 @@ const checking = async (req, plan) => {
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
       apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
+      apisec: process.env.API_SEC
     };
     if (checkWallet.rows[0].ids === null) {
       console.log("get wallet first.");
@@ -122,7 +122,7 @@ const checking = async (req, plan) => {
         )
         // .done()
 
-        .then(async (r) => {
+        .then(async r => {
           const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
           //============================= 0.001 if for fee ==========================
@@ -130,7 +130,7 @@ const checking = async (req, plan) => {
             return [401, "You don't have enough money!"];
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("internal! with portfolio", err);
           return [501, "Selendra server error."];
         });
@@ -147,7 +147,7 @@ const confirm_pass = async (req, password) => {
   try {
     ////            check password
     const pass = await pool.query("select * from useraccount WHERE id = $1", [
-      req.user,
+      req.user
     ]);
     // compare password
     const validPassword = await bcrypt.compare(password, pass.rows[0].password);
@@ -160,4 +160,5 @@ const confirm_pass = async (req, password) => {
     return false;
   }
 };
+
 module.exports = { checking, payment, confirm_pass };

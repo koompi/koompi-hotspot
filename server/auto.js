@@ -1,8 +1,5 @@
-const cron = require("node-cron");
-const autoCheck = require("./routes/hotspot_plan/auto/autoCheck");
+require("dotenv").config();
 
-// Check deadline at 11:59 PM every day.
-cron.schedule("* * * * *", () => {
-  autoCheck.statusPlan();
-  console.log("checking a plan every day");
-});
+let a = process.env.API_KEYs;
+let b = process.env.API_SEC;
+console.log(a, b);

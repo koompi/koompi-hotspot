@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 // For auto checking
 const cron = require("node-cron");
 const autoCheck = require("./routes/hotspot_plan/auto/autoCheck");
+const autoTopUp = require("./routes/hotspot_plan/auto/autoTopup");
 
 // AWS sending email middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -61,6 +62,7 @@ app.listen(5000, () => {
   // Check deadline at 11:59 PM every day.
   cron.schedule("59 23 * * *", () => {
     autoCheck.statusPlan();
+    autoTopUp.autoRenew();
     console.log("checking a plan every day");
   });
 });

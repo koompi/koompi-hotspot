@@ -14,7 +14,6 @@ router.put("/renew", authorization, async (req, res) => {
     );
 
     let deadline = detail.rows[0].value;
-    deadline;
     let mydate = moment(deadline, "YYYY-MM-DD").toDate();
     const check = moment().isAfter(mydate);
 
