@@ -60,9 +60,10 @@ app.listen(5000, () => {
   console.log("server is running on port 5000...");
 
   // Check deadline at 11:59 PM every day.
+
   cron.schedule("* * * * *", () => {
     autoCheck.statusPlan();
     autoTopUp.autoRenew();
-    console.log("checking a plan every day");
+    console.log("checking automatically plan and topup every day");
   });
 });

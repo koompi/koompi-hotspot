@@ -86,7 +86,7 @@ const autopayment = async (id, asset, plan, memo) => {
 const autoRenew = async () => {
   try {
     const result = await pool.query(
-      "SELECT * FROM  radcheck WHERE status = false and auto = false"
+      "SELECT * FROM  radcheck WHERE status = false and auto = true"
     );
 
     let n = result.rows.length;
