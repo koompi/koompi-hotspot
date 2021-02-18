@@ -118,7 +118,7 @@ const autoRenew = async () => {
             [due, result.rows[0].acc_id]
           );
           await pool.query(
-            "UPDATE radcheck SET status = true, WHERE acc_id = $1",
+            "UPDATE radcheck SET status = true WHERE acc_id = $1",
             [result.rows[0].acc_id]
           );
 
