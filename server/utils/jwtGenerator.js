@@ -7,7 +7,7 @@ function jwtGenerator(id) {
   };
 
   return jwt.sign(payload, process.env.jwtSecret, {
-    expiresIn: "365000" //never expired
+    expiresIn: "365000days" //never expired
   });
 }
 
