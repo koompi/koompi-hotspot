@@ -58,7 +58,7 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
     if (paid[0] === 200) {
       // 2. enter the user inside database
       await pool.query(
-        "insert into radcheck(username, attribute,op,value,acc_id,status) VALUES($1,$2,$3,MD5($4),$5,$6,$7)",
+        "insert into radcheck( username, attribute, op, value, acc_id, status, auto) VALUES($1, $2, $3, MD5($4), $5, $6, $7)",
         [username, attributeMD5, op, password, req.user, 1, 1]
       );
 
