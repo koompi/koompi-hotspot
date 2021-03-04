@@ -12,12 +12,12 @@ router.put("/renew", authorization, async (req, res) => {
       "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and acc_id = $1",
       [req.user]
     );
-
     let deadline = detail.rows[0].value;
     let mydate = moment(deadline, "YYYY-MM-DD").toDate();
-    const check = moment().isAfter(mydate);
+    const checkDate = moment().isAfter(mydate);
+    // res.send({ date: detail.rows[0].value, status: check });
 
-    if (check) {
+    if (!checkDate) {
       return res.status(200).json({ message: mydate });
     }
 
@@ -32,6 +32,7 @@ router.put("/renew", authorization, async (req, res) => {
     }
 
     ///////////// check balance with payment /////////////////////////
+
     const paid = await Payment.payment(req, "SEL", value, "Renew plan.");
     if (paid[0] === 200) {
       const due = moment()
@@ -45,7 +46,8 @@ router.put("/renew", authorization, async (req, res) => {
       await pool.query("UPDATE radcheck SET status = true WHERE acc_id = $1", [
         req.user
       ]);
-      res.status(200).json({ message: due });
+      res.status(200).json({ message: paid[1] });
+      console.log(`user ${req.user} renew their plan`);
     } else {
       res.status(paid[0]).json({ message: paid[1] });
     }
