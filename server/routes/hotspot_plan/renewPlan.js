@@ -15,13 +15,12 @@ router.put("/renew", authorization, async (req, res) => {
     let deadline = detail.rows[0].value;
     let mydate = moment(deadline, "YYYY-MM-DD").toDate();
     const checkDate = moment().isAfter(mydate);
-    // res.send({ date: detail.rows[0].value, status: check });
 
     if (!checkDate) {
       return res.status(200).json({ message: mydate });
     }
-
     let a = detail.rows[0].groupname;
+
     let val = a.lastIndexOf("_");
     let value = a.slice(val + 1, a.length);
 
@@ -46,7 +45,7 @@ router.put("/renew", authorization, async (req, res) => {
       await pool.query("UPDATE radcheck SET status = true WHERE acc_id = $1", [
         req.user
       ]);
-      res.status(200).json({ message: paid[1] });
+      res.status(paid[0]).json({ message: paid[1] });
       console.log(`user ${req.user} renew their plan`);
     } else {
       res.status(paid[0]).json({ message: paid[1] });
