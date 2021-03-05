@@ -81,16 +81,80 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
 
       //  insert into table RAD_USER_GROUP
       await pool.query(
-        "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
+        "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3)",
         [username, sim_Name, priority]
       );
 
       await pool.query(
-        "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
-        [username, exp_Name, priority]
+        "insert into radusergroup(username, groupname, priority,acc_id) VALUES($1, $2, $3, $4)",
+        [username, exp_Name, priority, req.user]
       );
 
       res.status(200).json({ message: "Set plan successfully." });
+    } else {
+      res.status(paid[0]).json({ message: paid[1] });
+    }
+  } catch (err) {
+    console.log("error", err);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
+
+router.put("/change-plan", authorization, async (req, res) => {
+  try {
+    //1. destructure the req.body(username,password)
+    // for attributeMD5 & op it is default from database
+    const { password, value } = req.body; // value : 30 , 365  // username=phone number example 098939699
+
+    ////            check password
+    const confirm = await Payment.confirm_pass(req, password);
+    if (!confirm) {
+      return res.status(401).json({ message: "Incorrect Password!" });
+    }
+
+    const info1 = await pool.query(
+      "SELECT * FROM  radcheck WHERE acc_id = $1",
+      [req.user]
+    );
+
+    var val = parseInt(value, 10);
+
+    //  ======---===== For Expiration amount of day =====---======
+    if (val !== 30 && val !== 365) {
+      return res.status(400).json({ message: "Please choose!" });
+    }
+
+    const info2 = await pool.query(
+      "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and acc_id = $1",
+      [req.user]
+    );
+
+    let gnameOld = info2.rows[0].groupname;
+    let gname = gnameOld.lastIndexOf("_");
+    let gnameNew = gnameOld.substr(0, gname + 1);
+    gnameNew = gnameNew + value;
+
+    ///////////////// check balance with payment /////////////////////////
+    const paid = await Payment.payment(req, "SEL", val, "Change new plan");
+
+    if (paid[0] === 200) {
+      const due = moment()
+        .add(val, "days")
+        .format("YYYY MMM DD");
+
+      await pool.query(
+        "UPDATE radgroupcheck SET value = $1,groupname = $2 WHERE acc_id = $3",
+        [due, gnameNew, req.user]
+      );
+      await pool.query(
+        "UPDATE radusergroup SET groupname = $1 WHERE acc_id = $2",
+        [gnameNew, req.user]
+      );
+      await pool.query("UPDATE radcheck SET status = true WHERE acc_id = $1", [
+        req.user
+      ]);
+      res.status(200).json({ message: "Change plan done" });
+      console.log(`User ${req.user} change plan to ${value} `);
     } else {
       res.status(paid[0]).json({ message: paid[1] });
     }

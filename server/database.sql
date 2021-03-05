@@ -16,3 +16,7 @@ INSERT INTO users
     (user_name,user_email,user_password)
 VALUES('kalin', 'kalin123@gmail.com', 'kit123');
 
+
+-- some sql command 
+-- UPDATE radgroupcheck SET groupname= REPLACE(groupname,'30','50') WHERE acc_id = '.......'
+
