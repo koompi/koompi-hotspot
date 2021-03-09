@@ -254,7 +254,7 @@ router.post("/login-phone", async (req, res) => {
       phone
     ]);
     if (user.rows.length === 0) {
-      return res.status(401).json({ message: "Incorrect phone number!" });
+      return res.status(401).json({ message: "Account was not exist!" });
     }
 
     const activate = await user.rows[0].activate;
