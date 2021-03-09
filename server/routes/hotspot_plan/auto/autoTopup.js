@@ -92,15 +92,14 @@ const autoRenew = async () => {
     let n = result.rows.length;
     if (n > 0) {
       for (i = 0; i < n; i++) {
-        const detail = await pool.query(
+        const info = await pool.query(
           "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and acc_id = $1",
           [result.rows[0].acc_id]
         );
 
-        let a = detail.rows[0].groupname;
-        let val = a.lastIndexOf("_");
-        let value = a.slice(val + 1, a.length);
-
+        let str = info.rows[0].groupname;
+        let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
+        const value = parseInt(plan, 10);
         /////////// check balance with payment /////////////////////////
         const paid = await autopayment(
           result.rows[0].acc_id,

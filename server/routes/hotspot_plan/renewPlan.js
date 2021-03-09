@@ -8,21 +8,22 @@ router.put("/renew", authorization, async (req, res) => {
   try {
     const { password } = req.body;
 
-    const detail = await pool.query(
+    const info = await pool.query(
       "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and acc_id = $1",
       [req.user]
     );
-    let deadline = detail.rows[0].value;
+
+    let deadline = info.rows[0].value;
     let mydate = moment(deadline, "YYYY-MM-DD").toDate();
     const checkDate = moment().isAfter(mydate);
 
     if (!checkDate) {
-      return res.status(200).json({ message: mydate });
+      return res.status(200).json({ message: "Your plan doesn't expire yet." });
     }
-    let a = detail.rows[0].groupname;
 
-    let val = a.lastIndexOf("_");
-    let value = a.slice(val + 1, a.length);
+    let str = info.rows[0].groupname;
+    let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
+    const value = parseInt(plan, 10);
 
     ////            check password
     const confirm = await Payment.confirm_pass(req, password);
@@ -39,7 +40,7 @@ router.put("/renew", authorization, async (req, res) => {
         .format("YYYY MMM DD");
 
       await pool.query(
-        "UPDATE radgroupcheck SET value = $1 WHERE acc_id = $2",
+        "UPDATE radgroupcheck SET value = $1 WHERE attribute = 'Expiration' and acc_id = $2",
         [due, req.user]
       );
       await pool.query("UPDATE radcheck SET status = true WHERE acc_id = $1", [
