@@ -2,9 +2,9 @@ const moment = require("moment");
 const pool = require("../../../db");
 const statusPlan = async () => {
   try {
-    const now = moment().format("YYYY MMM DD");
+    const now = moment();
     const result = await pool.query(
-      "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and value <= $1",
+      "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and  Date(value) <= $1",
       [now]
     );
 
