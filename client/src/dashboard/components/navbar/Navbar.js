@@ -2,12 +2,9 @@ import React from "react";
 import "./Navbar.css";
 import avatar from "../../../assets/images/images.jpeg";
 
-const Navbar = ({ sidebarOpen, openSidebar }) => {
+const Navbar = () => {
   return (
     <nav className="navbar">
-      {/* <div className="nav_icon" onClick={() => openSidebar()}>
-        <i className="fa fa-bars"></i>
-      </div> */}
       <div className="navbar__left">
         <a href="#">Subscribers</a>
         <a href="#">Video Management</a>
