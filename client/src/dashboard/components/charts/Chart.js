@@ -8,7 +8,6 @@ import {
   VerticalGridLines,
   HorizontalGridLines
 } from "react-vis";
-import xyPlot from "react-vis/dist/plot/xy-plot";
 
 const Chart = () => {
   const data = [
