@@ -202,7 +202,6 @@ router.get("/get-plan", authorization, async (req, res) => {
       req.user
     ]);
 
-    console.log(user.rows[0].username);
     if (user.rows.length === 0) {
       return res.status(401).json({ message: "Username is not exist!" });
     }
@@ -221,7 +220,7 @@ router.get("/get-plan", authorization, async (req, res) => {
     let str = detail.rows[0].groupname;
     let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
 
-    let balance = parseInt(n1, 10);
+    let balance = parseInt(plan, 10);
     if (balance === 30) {
       balance = "50";
     }
