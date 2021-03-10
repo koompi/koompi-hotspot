@@ -7,33 +7,32 @@ const authorization = require("../../middleware/authorization");
 router.put("/renew", authorization, async (req, res) => {
   try {
     const { password } = req.body;
-
-    const info = await pool.query(
-      "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and acc_id = $1",
-      [req.user]
-    );
-
-    let deadline = info.rows[0].value;
-    let mydate = moment(deadline, "YYYY-MM-DD").toDate();
-    const checkDate = moment().isAfter(mydate);
-
-    if (!checkDate) {
-      return res.status(200).json({ message: "Your plan doesn't expire yet." });
-    }
-
-    let str = info.rows[0].groupname;
-    let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
-    const value = parseInt(plan, 10);
-
     ////            check password
     const confirm = await Payment.confirm_pass(req, password);
     if (!confirm) {
       return res.status(401).json({ message: "Incorrect Password!" });
     }
 
-    ///////////// check balance with payment /////////////////////////
+    const checkStatus = await pool.query(
+      "select * from radcheck where status=false and auto=false and acc_id = $1",
+      [req.user]
+    );
 
+    if (checkStatus.rows.length === 0) {
+      return res.status(400).json({ message: "Your plan doesn't expire yet." });
+    }
+    const info = await pool.query(
+      "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and acc_id = $1",
+      [req.user]
+    );
+
+    let str = info.rows[0].groupname;
+    let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
+    const value = parseInt(plan, 10);
+
+    /////////// check balance with payment /////////////////////////
     const paid = await Payment.payment(req, "SEL", value, "Renew plan.");
+
     if (paid[0] === 200) {
       const due = moment()
         .add(value, "days")
