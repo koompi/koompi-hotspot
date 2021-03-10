@@ -7,8 +7,7 @@ const statusPlan = async () => {
       "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and  Date(value) <= $1",
       [now]
     );
-    console.log(result.rows);
-
+    
     let n = result.rows.length;
     if (n > 0) {
       for (i = 0; i < n; i++) {
