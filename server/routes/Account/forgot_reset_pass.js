@@ -23,7 +23,9 @@ router.post("/forgot-password", validInfo, async (req, res) => {
     }
 
     //3. random code to send via email
-    var code = Math.floor(Math.random() * 1000000 + 1);
+    var min = 100000;
+    var max = 999999;
+    var code = Math.floor(Math.random() * (max - min + 1) + min);
     const html = `Hi there,
       <br/>
       Reset your password account hotspot!

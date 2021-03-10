@@ -93,8 +93,6 @@ const autoRenew = async () => {
     );
 
     let n = result.rows.length;
-    console.log(n);
-    console.log(result.rows);
 
     if (n > 0) {
       let i = 0;
