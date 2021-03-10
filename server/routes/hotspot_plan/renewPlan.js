@@ -14,7 +14,7 @@ router.put("/renew", authorization, async (req, res) => {
     }
 
     const checkStatus = await pool.query(
-      "select * from radcheck where status=false and auto=false and acc_id = $1",
+      "SELECT * FROM radcheck WHERE status = false AND auto = false AND acc_id = $1",
       [req.user]
     );
 
@@ -22,7 +22,7 @@ router.put("/renew", authorization, async (req, res) => {
       return res.status(400).json({ message: "Your plan doesn't expire yet." });
     }
     const info = await pool.query(
-      "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and acc_id = $1",
+      "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' AND acc_id = $1",
       [req.user]
     );
 
@@ -56,6 +56,7 @@ router.put("/renew", authorization, async (req, res) => {
   }
 });
 
+// for user select automatically top up or just top up by manually
 router.put("/auto", authorization, async (req, res) => {
   try {
     const { automatically } = req.body;
