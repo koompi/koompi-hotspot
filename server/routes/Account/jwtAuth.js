@@ -32,7 +32,9 @@ router.post("/register-full", validInfo, async (req, res) => {
     const bcryptPassword = await bcrypt.hash(password, salt);
 
     //4. bcrypt the verify code
-    var code = Math.floor(Math.random() * 1000000 + 1);
+    var min = 100000;
+    var max = 999999;
+    var code = Math.floor(Math.random() * (max - min + 1) + min);
     const html = `Hi there,
       <br/>
       Thank you for registering!
@@ -83,7 +85,9 @@ router.post("/register", validInfo, async (req, res) => {
     const bcryptPassword = await bcrypt.hash(password, salt);
 
     //4. bcrypt the confirm code
-    var code = Math.floor(Math.random() * 1000000 + 1);
+    var min = 100000;
+    var max = 999999;
+    var code = Math.floor(Math.random() * (max - min + 1) + min);
     const html = `Hi there,
       <br/>
       Thank you for registering!
@@ -211,7 +215,9 @@ router.post("/register-phone", async (req, res) => {
       const bcryptPassword = await bcrypt.hash(password, salt);
 
       //4. bcrypt the confirm code
-      var code = Math.floor(Math.random() * 1000000 + 1);
+      var min = 100000;
+      var max = 999999;
+      var code = Math.floor(Math.random() * (max - min + 1) + min);
       const message = `Your KOOMPI Hotspot verification code: ${code} `;
 
       //4. call twilio send sms
