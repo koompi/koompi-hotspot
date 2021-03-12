@@ -4,6 +4,7 @@ const pool = require("../../db");
 require("dotenv").config();
 const authorization = require("../../middleware/authorization");
 const confirmPass = require("../../utils/payment");
+const AddressIsValid = require("../../utils/check_validwallet");
 
 //  Generate Wallet or Get wallet for userAcc
 router.get("/get-wallet", authorization, async (req, res) => {
@@ -85,7 +86,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
 router.post("/payment", authorization, async (req, res) => {
   try {
     const { asset, plan, memo } = req.body;
-    let amnt = parseInt(plan, 10);
+    let amnt = parseFloat(plan, 10);
     var amount = 0;
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
@@ -169,18 +170,23 @@ router.post("/payment", authorization, async (req, res) => {
 router.post("/transfer", authorization, async (req, res) => {
   try {
     const { password, dest_wallet, asset, amount, memo } = req.body;
-    var amnt = parseInt(amount, 10);
 
+    const isValidAddress = AddressIsValid.isValidAddressPolkadotAddress(
+      dest_wallet
+    );
+    if (!isValidAddress) {
+      return res
+        .status(400)
+        .json({ message: "Please fill in a valid address!" });
+    }
+
+    var amnt = parseFloat(amount, 10);
     //////////////// check password ////////////////////////
     const confirm = await confirmPass.confirm_pass(req, password);
 
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
-    );
-    const checkDestWallet = await pool.query(
-      "SELECT wallet FROM useraccount WHERE wallet = $1",
-      [dest_wallet]
     );
 
     const userPortfolio = {
@@ -204,10 +210,6 @@ router.post("/transfer", authorization, async (req, res) => {
       res.status(401).json({ message: "Incorrect password!" });
     } else if (checkWallet.rows[0].ids === null) {
       res.status(400).json({ message: "Please get a wallet first!" });
-    } else if (checkDestWallet.rows.length === 0) {
-      res
-        .status(400)
-        .json({ message: "Make sure that your friend has a wallet!" });
     } else {
       axios
         .post(

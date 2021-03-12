@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 
 const payment = async (req, asset, plan, memo) => {
   try {
-    let amnt = parseInt(plan, 10);
+    let amnt = parseFloat(plan, 10);
     var amount = 0;
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
@@ -88,7 +88,7 @@ const payment = async (req, asset, plan, memo) => {
 
 const checking = async (req, plan) => {
   try {
-    let amnt = parseInt(plan, 10);
+    let amnt = parseFloat(plan, 10);
     var amount = 0;
 
     if (amnt === 30) {

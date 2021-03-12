@@ -25,8 +25,8 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
     let username = phone.slice(4, phone.length);
     username = "0" + username;
 
-    var val = parseInt(value, 10);
-    var sim = parseInt(simultaneous, 10);
+    var val = parseFloat(value, 10);
+    var sim = parseFloat(simultaneous, 10);
 
     //   //  ======---===== For Expiration amount of day =====---======
     if (val !== 30 && val !== 365) {
@@ -104,7 +104,7 @@ router.put("/change-plan", authorization, async (req, res) => {
       return res.status(401).json({ message: "Incorrect Password!" });
     }
 
-    var val = parseInt(value, 10);
+    var val = parseFloat(value, 10);
 
     //  ======---===== For Expiration amount of day =====---======
     if (val !== 30 && val !== 365) {
@@ -220,7 +220,7 @@ router.get("/get-plan", authorization, async (req, res) => {
     let str = detail.rows[0].groupname;
     let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
 
-    let balance = parseInt(plan, 10);
+    let balance = parseFloat(plan, 10);
     if (balance === 30) {
       balance = "50";
     }

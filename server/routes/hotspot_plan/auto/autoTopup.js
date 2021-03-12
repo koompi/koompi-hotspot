@@ -5,7 +5,7 @@ require("dotenv").config({ path: `../../../.env` });
 
 const payment = async (req, asset, plan, memo) => {
   try {
-    let amnt = parseInt(plan, 10);
+    let amnt = parseFloat(plan, 10);
     var amount = 0;
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
@@ -104,7 +104,7 @@ const autoRenew = async () => {
 
         let str = info.rows[0].groupname;
         let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
-        const value = parseInt(plan, 10);
+        const value = parseFloat(plan, 10);
 
         /////////// check balance with payment /////////////////////////
 

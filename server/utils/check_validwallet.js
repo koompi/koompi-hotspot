@@ -2,6 +2,10 @@ const axios = require("axios");
 require("dotenv").config();
 const pool = require("../../db");
 
+const { hexToU8a, isHex } = require("@polkadot/util");
+const { decodeAddress, encodeAddress } = require("@polkadot/keyring");
+
+
 
 const checkBalance = (usr,res,req)=>{
     const balance;
@@ -37,4 +41,18 @@ const checkBalance = (usr,res,req)=>{
 }
 }
 
-module.exports={checkBalance};
+
+const isValidAddressPolkadotAddress = address => {
+    try {
+      encodeAddress(
+        isHex(address) ? hexToU8a(address) : decodeAddress(address, false, 42)
+      );
+  
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+  
+
+module.exports={checkBalance,isValidAddressPolkadotAddress};

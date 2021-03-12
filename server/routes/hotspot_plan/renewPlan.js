@@ -28,7 +28,7 @@ router.put("/renew", authorization, async (req, res) => {
 
     let str = info.rows[0].groupname;
     let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
-    const value = parseInt(plan, 10);
+    const value = parseFloat(plan, 10);
 
     /////////// check balance with payment /////////////////////////
     const paid = await Payment.payment(req, "SEL", value, "Renew plan.");
