@@ -15,4 +15,4 @@ const isValidAddressPolkadotAddress = address => {
   }
 };
 
-module.exports = { checkBalance, isValidAddressPolkadotAddress };
+module.exports = { isValidAddressPolkadotAddress };
