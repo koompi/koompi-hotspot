@@ -1,6 +1,6 @@
 import React from "react";
 import "./Sidebar.css";
-import logo from "../../../assets/images/Koompi-WiFi-Icon.png";
+import logo from "../../../../assets/images/Koompi-WiFi-Icon.png";
 
 function Sidebar({ sidebarOpen, closeSidebar }) {
   return (
