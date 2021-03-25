@@ -277,13 +277,6 @@ router.post("/login-phone", async (req, res) => {
     if (!validPassword) {
       return res.status(401).json({ message: "Incorrect Password!" });
     }
-
-    //3. give them the jwt token
-
-    const token = jwtGenerator(user.rows[0].id);
-    res.json({
-      token
-    });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error!" });
