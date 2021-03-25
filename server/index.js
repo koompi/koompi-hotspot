@@ -39,10 +39,9 @@ app.use(
   "/api/change-password",
   require("./routes/Account/change_password_Acc")
 );
-// app.use(
-//   "/api/change-password",
-//   require("./routes/hotspot_plan/change_password_User")
-// );
+
+//  Admin
+app.use("/api/auth/admin", require("./routes/admin/adminAuth"));
 
 //  forgot and reset password
 app.use("/api", require("./routes/Account/forgot_reset_pass"));
@@ -60,14 +59,14 @@ app.listen(5000, () => {
   console.log("server is running on port 5000...");
 
   // Check deadline at 11:59 PM every day.
-  // cron.schedule("59 23 * * *", () => {
-  //   autoCheck.statusPlan();
-  //   console.log("checking automatically plan every day");
-  // });
-  cron.schedule("* * * * *", () => {
+  cron.schedule("59 23 * * *", () => {
     autoCheck.statusPlan();
-    console.log("checking automatically plan every a minute");
+    console.log("checking automatically plan every day");
   });
+  // cron.schedule("* * * * *", () => {
+  //   autoCheck.statusPlan();
+  //   console.log("checking automatically plan every a minute");
+  // });
 
   // Check  every minute for automatically to up.
   cron.schedule("* * * * *", () => {

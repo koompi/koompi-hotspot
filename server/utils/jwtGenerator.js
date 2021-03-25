@@ -10,5 +10,14 @@ function jwtGenerator(id) {
     expiresIn: "365000days" //never expired
   });
 }
+function jwtGeneratorAdmin(id) {
+  const payload = {
+    user: id
+  };
 
-module.exports = jwtGenerator;
+  return jwt.sign(payload, process.env.jwtSecret, {
+    expiresIn: "30min"
+  });
+}
+
+module.exports = { jwtGenerator, jwtGeneratorAdmin };

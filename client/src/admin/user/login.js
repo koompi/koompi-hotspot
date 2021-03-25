@@ -1,14 +1,13 @@
 import React, { Fragment, useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { Link, useHistory } from "react-router-dom";
-import jwt from "jsonwebtoken";
 import axios from "axios";
 
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 import logo from "../../assets/images/koompi_logo_signal.png";
-import image_animation from "../../assets/images/digital_nomad.png";
-import bottom_image from "../../assets/images/image_02.png";
+// import image_animation from "../../assets/images/digital_nomad.png";
+// import bottom_image from "../../assets/images/image_02.png";
 
 const Login = () => {
   const history = useHistory();
@@ -16,35 +15,37 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const onSubmit = data => {
     console.log("Success:", data);
-    const userLogin = {
+    const adminLogin = {
       email: data.email,
       password: data.password
     };
     axios
       .post(
-        "https://api-hotspot.koompi.org/api/auth/login",
-        userLogin,
+        "http://localhost:5000/api/auth/admin/login",
+        adminLogin,
         setLoading(true)
       )
       .then(async res => {
         setLoading(true);
-        message.success("Login successfully.");
-        // message
+        // message.success("Login successfully.");
 
-        const { token } = res.data;
-        await localStorage.setItem("token", token);
-        history.push("/buy-hotspot");
+        message.success(res.data.message);
+
+        history.push("/admin/login/confirm-admin");
+
+        // const { token } = res.data;
+        // await localStorage.setItem("token", token);
+        // history.push("/buy-hotspot");
       })
-      .then(() => {
-        let token = localStorage.getItem("token");
-        let user = jwt.decode(token);
-      })
+      // .then(() => {
+      //   let token = localStorage.getItem("token");
+      //   let user = jwt.decode(token);
+      // })
       .catch(err => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);
-        message.error(err.response.data);
-        // console.log(err.response.data);
+        message.error(err.response.data.message);
       });
   };
 
@@ -97,9 +98,9 @@ const Login = () => {
               {/* =============== Remember and Forgot password ============== */}
 
               <Form.Item>
-                <Link to="forgot-passwd" className="login-form-forgot">
-                  Forgot password
-                </Link>
+                {/* <Link to="forgot-passwd" className="login-form-forgot"> */}
+                Forgot password
+                {/* </Link> */}
               </Form.Item>
 
               {/* =============== Button Submit ============== */}
@@ -113,7 +114,6 @@ const Login = () => {
                   Log in
                 </Button>
                 <br />
-                Don't have an account? <Link to="/register">register now!</Link>
               </Form.Item>
             </Form>
           </div>
