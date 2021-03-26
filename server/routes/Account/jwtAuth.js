@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const pool = require("../../db");
 const bcrypt = require("bcrypt");
-const jwtGenerator = require("../../utils/jwtGenerator");
+const { jwtGenerator } = require("../../utils/jwtGenerator");
 const validInfo = require("../../middleware/validInfo");
 const authorization = require("../../middleware/authorization");
 const sesClient = require("../Account/aws/aws_ses_client");
@@ -277,6 +277,12 @@ router.post("/login-phone", async (req, res) => {
     if (!validPassword) {
       return res.status(401).json({ message: "Incorrect Password!" });
     }
+    //3. give them the jwt token
+
+    const token = jwtGenerator(user.rows[0].id);
+    res.json({
+      token
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error!" });
