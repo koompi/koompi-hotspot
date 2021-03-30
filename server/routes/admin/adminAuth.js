@@ -91,4 +91,24 @@ router.post("/confirm-admin", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+router.get("/dashboard", async (req, res) => {
+  try {
+    const allregister = await pool.query("SELECT count(*) FROM useraccount");
+    const allbuyplan = await pool.query("SELECT count(*) FROM radcheck");
+    const activelogin = await pool.query(
+      "select count(*) from radacct where calledstationid='01' and acctterminatecause = 'NAS-Reboot'"
+    );
+
+    res.status(200).json({
+      users_resgistered: allregister.rows[0].count,
+      users_bought_plan: allbuyplan.rows[0].count,
+      users_activate_login: activelogin.rows[0].count
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
+
 module.exports = router;
