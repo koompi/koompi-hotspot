@@ -1,5 +1,5 @@
 import React from "react";
-import "./Main.css";
+// import "./Main.css";
 import Chart from "../charts/Chart";
 import { TeamOutlined } from "@ant-design/icons";
 

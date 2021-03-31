@@ -1,5 +1,6 @@
-import React from "react";
-import { Layout, Menu } from "antd";
+import React, { useState } from "react";
+import { useHistory, Redirect, Link } from "react-router-dom";
+import { Layout, Menu, Button } from "antd";
 import "./index.css";
 import {
   AppstoreOutlined,
@@ -13,8 +14,14 @@ import {
 } from "@ant-design/icons";
 import Main from "./components/pages/main/Main";
 
+
 const { Header, Content, Footer, Sider } = Layout;
-function Dashboard() {
+const Dashboard = () => {
+  const history = useHistory();
+  const [loading, setLoading] = useState(false);
+  const [size] = useState("large");
+  const token = localStorage.getItem("token");
+
   return (
     <Layout>
       <Sider
@@ -48,9 +55,9 @@ function Dashboard() {
           <Menu.Item key="7" icon={<TeamOutlined />}>
             nav 7
           </Menu.Item>
-          <Menu.Item key="8" icon={<ShopOutlined />}>
-            nav 8
-          </Menu.Item>
+          {/* <Menu.Item key="8" icon={<ShopOutlined />}>
+            <Link>Log Out</Link>
+          </Menu.Item> */}
         </Menu>
       </Sider>
       <Layout className="site-layout" style={{ marginLeft: 200 }}>
@@ -63,12 +70,15 @@ function Dashboard() {
             <Main />
           </div>
         </Content>
+        {/* <Button htmlType={logout}> */}
+        <Link to="/admin/">Logut</Link>
+        {/* </Button> */}
         <Footer style={{ textAlign: "center" }}>
           Ant Design ©2018 Created by Ant UED
         </Footer>
       </Layout>
     </Layout>
   );
-}
+};
 
 export default Dashboard;

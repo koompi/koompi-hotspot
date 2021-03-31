@@ -19,6 +19,7 @@ const Login = () => {
       email: data.email,
       password: data.password
     };
+
     axios
       .post(
         "http://localhost:5000/api/auth/admin/login",
@@ -26,21 +27,18 @@ const Login = () => {
         setLoading(true)
       )
       .then(async res => {
+        const { token } = res.data;
+        await localStorage.setItem("token", token);
+        console.log(token);
+      })
+      .then(async res => {
         setLoading(true);
-        // message.success("Login successfully.");
-
-        message.success(res.data.message);
+        message.success("Please check your email.");
+        // message.success(res.data.message);
 
         history.push("/admin/login/confirm-admin");
-
-        // const { token } = res.data;
-        // await localStorage.setItem("token", token);
-        // history.push("/buy-hotspot");
       })
-      // .then(() => {
-      //   let token = localStorage.getItem("token");
-      //   let user = jwt.decode(token);
-      // })
+
       .catch(err => {
         setTimeout(() => {
           setLoading(false);
