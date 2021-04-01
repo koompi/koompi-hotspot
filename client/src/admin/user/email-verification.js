@@ -1,11 +1,22 @@
 import React, { Fragment, useState } from "react";
-import { Form, InputNumber, Button, Input, message } from "antd";
+import { Form, InputNumber, Button, message } from "antd";
 import { useHistory, Link } from "react-router-dom";
 import axios from "axios";
-import jwt from "jsonwebtoken";
 
 import image_animation from "../../assets/images/email-verification.png";
 import bottom_image from "../../assets/images/image_02.png";
+// localStorage.removeItem("token");
+const accessToken = localStorage.getItem("token");
+console.log("token", accessToken);
+
+// const apiUrl = "http://localhost:5000/api/auth/admin/";
+
+const authAxios = axios.create({
+  // baseURL: apiUrl,
+  headers: {
+    Authorization: `Bearer ${accessToken}`
+  }
+});
 
 const Email_verification = () => {
   const history = useHistory();
@@ -13,23 +24,18 @@ const Email_verification = () => {
   const [size] = useState("large");
   const onFinish = data => {
     const verifyAcc = {
-      email: data.Email,
-      vCode: data.Code.toString()
+      vCode: data.code.toString()
     };
 
-    axios
-      .post("http://localhost:5000/api/auth/admin/confirm-admin", verifyAcc)
-      // .then(res => {
-      // console.log(res);
-      // if (res.data.message === "Incorrect Code!" || res.data.message) {
-      //   message.error(res.data.message);
-      //   setLoading(false);
-      // }
-      // if (res.data.message === "Correct Code.") {
-      //   message.success(res.data.message);
-      //   setLoading(true);
-      //   history.push("/admin/home");
-      // }
+    console.log("code ", typeof verifyAcc);
+    console.log("header ", typeof authAxios);
+
+    authAxios
+      .post(
+        `http://localhost:5000/api/auth/admin/confirm-admin`,
+        verifyAcc,
+        setLoading(true)
+      )
       .then(async res => {
         setLoading(true);
         message.success("Login successfully.");
@@ -38,11 +44,6 @@ const Email_verification = () => {
         const { token } = res.data;
         await localStorage.setItem("token", token);
         history.push("/admin/home");
-      })
-      .then(() => {
-        let token = localStorage.getItem("token");
-        token = jwt.decode(token);
-        console.log(token);
       })
       .catch(async err => {
         setTimeout(() => {
@@ -86,18 +87,9 @@ const Email_verification = () => {
             >
               {/* =============== email verification code ============== */}
               {/* =============== Email ============== */}
-              <Form.Item
-                name="Email"
-                rules={[
-                  { type: "email", message: "The input is not valid email" },
-                  { required: true, message: "Please input your email!" }
-                ]}
-              >
-                <Input placeholder="Enter your email again" size={size} />
-              </Form.Item>
 
               <Form.Item
-                name="Code"
+                name="code"
                 rules={[{ required: true, message: "Please input code!" }]}
               >
                 <InputNumber
@@ -122,6 +114,8 @@ const Email_verification = () => {
                 <br />
                 <br />
                 Back to <Link to="/admin/login">Login!</Link>
+                <br />
+                try again <Link to="">Try again!</Link>
               </Form.Item>
             </Form>
           </div>

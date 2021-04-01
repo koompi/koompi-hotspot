@@ -3,6 +3,7 @@ const pool = require("../../db");
 const bcrypt = require("bcrypt");
 const { jwtGeneratorAdmin } = require("../../utils/jwtGenerator");
 const validInfo = require("../../middleware/validInfo");
+const authorization = require("./../../middleware/authorization");
 
 const sesClient = require("../Account/aws/aws_ses_client");
 
@@ -60,24 +61,67 @@ router.post("/login", validInfo, async (req, res) => {
     await pool.query("UPDATE useraccount SET code=$2 WHERE email=$1", [
       email,
       code
-    ]);
-    res.status(200).json({ message: "Please check your E-mail!" });
+    ]); // 3. give them the jwt token
+    const token = jwtGeneratorAdmin(user.rows[0].id);
+    res.status(200).json({
+      token
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Server Error!" });
   }
 });
-router.post("/confirm-admin", async (req, res) => {
+router.post("/retry", authorization, async (req, res) => {
   try {
-    const { email, vCode } = req.body;
-
-    const user = await pool.query("SELECT * FROM useraccount WHERE email =$1", [
-      email
+    const user = await pool.query("SELECT * FROM useraccount WHERE id =$1", [
+      req.user
     ]);
 
-    if (user.rows.length === 0) {
-      return res.status(401).json({ message: "Incorrect E-mail!" });
-    }
+    const email = user.rows[0].email;
+    //4. bcrypt the confirm code
+    var min = 100000;
+    var max = 999999;
+    var code = Math.floor(Math.random() * (max - min + 1) + min);
+    const html = `Hi there,
+         <br/>
+         Welcome to admin KOOMPI Fi-Fi.
+         <br/><br/>
+         Please verify your email by typing following code:
+         <br/>
+         <h3>Code: <b>${code}</b></h3>
+         <br/>
+         Have a pleasant day.
+         <br/><br/>
+         `;
+
+    //4. call sesClient to send an email
+    sesClient.sendEmail(email, "Account Verification", html);
+
+    // //5. enter the new user inside our database
+    await pool.query("UPDATE useraccount SET code=$2 WHERE id=$1", [
+      req.user,
+      code
+    ]);
+    // 3. give them the jwt token
+    const token = jwtGeneratorAdmin(user.rows[0].id);
+    res.status(200).json({
+      token
+    });
+  } catch (error) {
+    console.error("bug on adminAuth", error);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
+router.post("/confirm-admin", authorization, async (req, res) => {
+  try {
+    const { vCode } = req.body;
+    console.log(req.user);
+    console.log(vCode);
+
+    const user = await pool.query("SELECT * FROM useraccount WHERE id =$1", [
+      req.user
+    ]);
+    console.log(user.rows[0].code);
 
     if (user.rows[0].code === vCode) {
       // 3. give them the jwt token
@@ -91,4 +135,25 @@ router.post("/confirm-admin", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+router.get("/dashboard", async (req, res) => {
+  try {
+    const allregister = await pool.query("SELECT count(*) FROM useraccount");
+    const allbuyplan = await pool.query("SELECT count(*) FROM radcheck");
+    const activelogin = await pool.query(
+      "SELECT count(*) FROM radacct WHERE calledstationid ='saang-school' AND acctterminatecause IS NULL"
+    );
+
+    res.status(200).json({
+      users_resgistered: allregister.rows[0].count,
+      users_bought_plan: allbuyplan.rows[0].count,
+      users_activate_login: activelogin.rows[0].count
+    });
+    // console.log(activelogin.rowCount);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
+
 module.exports = router;

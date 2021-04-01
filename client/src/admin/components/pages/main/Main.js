@@ -1,6 +1,7 @@
 import React from "react";
-import "./Main.css";
+// import "./Main.css";
 import Chart from "../charts/Chart";
+import { TeamOutlined } from "@ant-design/icons";
 
 const Main = () => {
   return (
@@ -16,9 +17,10 @@ const Main = () => {
 
         <div className="main__cards">
           <div className="card">
-            <i className="fa fa-user-o fa-2x text-lighblue"></i>
+            {/* <i className="fa fa-user-o fa-2x text-lighblue"></i> */}
+            <TeamOutlined />
             <div className="card_inner">
-              <p className="text-primary-p">Number of Subscribers</p>
+              <p className="text-primary-p">Number of Registers</p>
               <span className="font-bold text-title">583</span>
             </div>
           </div>
@@ -26,7 +28,7 @@ const Main = () => {
           <div className="card">
             <i className="fa fa-calendar fa-2x text-red"></i>
             <div className="card_inner">
-              <p className="text-primary-p">Time of Watching</p>
+              <p className="text-primary-p">Number of Bought Plans</p>
               <span className="font-bold text-title">1223</span>
             </div>
           </div>
@@ -34,7 +36,7 @@ const Main = () => {
           <div className="card">
             <i className="fa fa-video-camera fa-2x text-yellow"></i>
             <div className="card_inner">
-              <p className="text-primary-p">Number of Video</p>
+              <p className="text-primary-p">Number of Active Login</p>
               <span className="font-bold text-title">340</span>
             </div>
           </div>
@@ -42,7 +44,7 @@ const Main = () => {
           <div className="card">
             <i className="fa fa-thumbs-up fa-2x text-green"></i>
             <div className="card_inner">
-              <p className="text-primary-p">Number of Likes</p>
+              <p className="text-primary-p">Number of </p>
               <span className="font-bold text-title">56</span>
             </div>
           </div>

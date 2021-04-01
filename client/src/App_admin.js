@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 // import Navbar from "./admin/components/layout/navbar/Navbar";
 // import Main from "./admin/components/pages/main/Main";
@@ -7,18 +7,33 @@ import { Switch, Route } from "react-router-dom";
 import Dashboard from "./admin/index";
 import ConfirmAdmin from "./admin/user/email-verification";
 import Login from "./admin/user/login";
+import PrivateRoute from "./admin/PrivateRoute";
+import PublicRoute from "./admin/PublicRoute";
 
 import "./App.css";
 import "./assets/css/App.css";
 
 const AppDashboard = () => {
   return (
-    <Switch>
-      <Route exact path="/admin/" restrict component={Login} />
-      <Route exact path="/admin/login" restrict component={Login} />
-      <Route path="/admin/login/confirm-Admin" component={ConfirmAdmin} />
-      <Route path="/admin/home" component={Dashboard} />
-    </Switch>
+    <React.Fragment>
+      <Router>
+        <Switch>
+          <Route exact path="/admin/" restrict={true} component={Login} />
+          <PublicRoute
+            exact
+            path="/admin/login"
+            restrict={true}
+            component={Login}
+          />
+          <PrivateRoute
+            exact
+            path="/admin/login/confirm-Admin"
+            component={ConfirmAdmin}
+          />
+          <PrivateRoute exact path="/admin/home" component={Dashboard} />
+        </Switch>
+      </Router>
+    </React.Fragment>
   );
 };
 
