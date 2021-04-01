@@ -5,12 +5,11 @@ import axios from "axios";
 
 import image_animation from "../../assets/images/email-verification.png";
 import bottom_image from "../../assets/images/image_02.png";
-
+// localStorage.removeItem("token");
 const accessToken = localStorage.getItem("token");
-console.log(localStorage.getItem("token"));
+console.log("token", accessToken);
 
 // const apiUrl = "http://localhost:5000/api/auth/admin/";
-console.log(accessToken);
 
 const authAxios = axios.create({
   // baseURL: apiUrl,
@@ -25,16 +24,22 @@ const Email_verification = () => {
   const [size] = useState("large");
   const onFinish = data => {
     const verifyAcc = {
-      vCode: data.Code.toString()
+      vCode: data.code.toString()
     };
 
+    console.log("code ", typeof verifyAcc);
+    console.log("header ", typeof authAxios);
+
     authAxios
-      .post(`http://localhost:5000/api/auth/admin/confirm-admin`, verifyAcc)
+      .post(
+        `http://localhost:5000/api/auth/admin/confirm-admin`,
+        verifyAcc,
+        setLoading(true)
+      )
       .then(async res => {
         setLoading(true);
         message.success("Login successfully.");
         // message.success(res.data.message);
-        console.log(accessToken);
 
         const { token } = res.data;
         await localStorage.setItem("token", token);
@@ -84,7 +89,7 @@ const Email_verification = () => {
               {/* =============== Email ============== */}
 
               <Form.Item
-                name="Code"
+                name="code"
                 rules={[{ required: true, message: "Please input code!" }]}
               >
                 <InputNumber
@@ -109,6 +114,8 @@ const Email_verification = () => {
                 <br />
                 <br />
                 Back to <Link to="/admin/login">Login!</Link>
+                <br />
+                try again <Link to="">Try again!</Link>
               </Form.Item>
             </Form>
           </div>

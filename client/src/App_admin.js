@@ -19,8 +19,13 @@ const AppDashboard = () => {
       <Router>
         <Switch>
           <Route exact path="/admin/" restrict={true} component={Login} />
-          <PublicRoute exact path="/admin/login" restrict component={Login} />
-          <Route
+          <PublicRoute
+            exact
+            path="/admin/login"
+            restrict={true}
+            component={Login}
+          />
+          <PrivateRoute
             exact
             path="/admin/login/confirm-Admin"
             component={ConfirmAdmin}
