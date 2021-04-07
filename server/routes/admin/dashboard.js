@@ -2,9 +2,9 @@ const router = require("express").Router();
 const pool = require("../../db");
 const bcrypt = require("bcrypt");
 const { jwtGeneratorAdmin } = require("../../utils/jwtGenerator");
-// const authorization = require("../../middleware/authorization");
+const authorization = require("../../middleware/authorization");
 
-router.get("/dashboard", async (req, res) => {
+router.get("/dashboard",authorization, async (req, res) => {
   try {
     const allregister = await pool.query("SELECT count(*) FROM useraccount");
     const allbuyplan = await pool.query("SELECT count(*) FROM radcheck");

@@ -10,7 +10,7 @@ const authorization = require("../../middleware/authorization");
 // enable files upload
 router.use(
   fileUpload({
-    createParentPath: true,
+    createParentPath: true
   })
 );
 
@@ -25,7 +25,7 @@ router.post("/upload-avatar", authorization, async (req, res) => {
     if (!req.files) {
       res.send({
         status: false,
-        message: "No file uploaded",
+        message: "No file uploaded"
       });
     } else {
       //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
@@ -43,7 +43,7 @@ router.post("/upload-avatar", authorization, async (req, res) => {
         avatar.mv("./uploads/" + name);
         await pool.query("update useraccount set image=$1 where id = $2", [
           name,
-          req.user,
+          req.user
         ]);
 
         //send response
@@ -54,14 +54,14 @@ router.post("/upload-avatar", authorization, async (req, res) => {
             name: name,
             mimetype: avatar.mimetype,
             size: avatar.size,
-            file: `/uploads/${name}`,
-          },
+            file: `/uploads/${name}`
+          }
         });
       } else {
         console.log(avatar.mimetype);
         res.status(401).json({
           message:
-            "This format is not allowed , please upload file with '.png','.gif','.jpg'!",
+            "This format is not allowed , please upload file with '.png','.gif','.jpg'!"
         });
       }
     }
@@ -70,4 +70,5 @@ router.post("/upload-avatar", authorization, async (req, res) => {
     console.log(err);
   }
 });
+
 module.exports = router;

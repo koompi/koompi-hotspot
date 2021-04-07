@@ -18,4 +18,7 @@
 
 // async function validateAddress(address) {
 //   return new Promise(async (resolve, reject) => {
+const moment = require("moment");
 
+var due = moment().format("YYYY MMM DD");
+console.log(due);

@@ -136,18 +136,22 @@ router.post("/confirm-admin", authorization, async (req, res) => {
   }
 });
 
-router.get("/dashboard", async (req, res) => {
+router.get("/dashboard", authorization, async (req, res) => {
   try {
     const allregister = await pool.query("SELECT count(*) FROM useraccount");
     const allbuyplan = await pool.query("SELECT count(*) FROM radcheck");
     const activelogin = await pool.query(
       "SELECT count(*) FROM radacct WHERE calledstationid ='saang-school' AND acctterminatecause IS NULL"
     );
+    const alladmins = await pool.query(
+      "SELECT count(*) FROM useraccount WHERE role='Admin'"
+    );
 
     res.status(200).json({
       users_resgistered: allregister.rows[0].count,
       users_bought_plan: allbuyplan.rows[0].count,
-      users_activate_login: activelogin.rows[0].count
+      users_activate_login: activelogin.rows[0].count,
+      user_admins: alladmins.rows[0].count
     });
     // console.log(activelogin.rowCount);
   } catch (error) {
@@ -156,4 +160,26 @@ router.get("/dashboard", async (req, res) => {
   }
 });
 
+router.get("/users", authorization, async (req, res) => {
+  try {
+    const registers = await pool.query(
+      "SELECT fullname, phone, gender, birthdate, address, role, activate FROM useraccount"
+    );
+    const admins = await pool.query(
+      "SELECT fullname, phone, gender, birthdate, address, role, activate FROM useraccount WHERE role = 'Admin'"
+    );
+    const users_activelogin = await pool.query(
+      "SELECT count(*) FROM radacct WHERE calledstationid ='saang-school' AND acctterminatecause IS NULL"
+    );
+
+    res.status(200).json({
+      users_resgistered: registers.rows,
+      user_admins: admins.rows
+    });
+    // console.log(activelogin.rowCount);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
 module.exports = router;
