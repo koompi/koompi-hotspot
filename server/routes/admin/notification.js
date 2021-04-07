@@ -79,7 +79,7 @@ router.get("/notification", authorization, async (req, res) => {
       notification: noti.rows
     });
   } catch (error) {
-    console.message("error on get notification", error);
+    console.log("error on get notification", error);
     res.status(500).json({ message: "Server Error!" });
   }
 });
