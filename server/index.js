@@ -42,6 +42,7 @@ app.use(
 
 //  Admin
 app.use("/api/auth/admin", require("./routes/admin/adminAuth"));
+app.use("/api/admin", require("./routes/admin/notification"));
 
 //  forgot and reset password
 app.use("/api", require("./routes/Account/forgot_reset_pass"));

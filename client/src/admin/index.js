@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useHistory, Redirect, Link } from "react-router-dom";
 import { Layout, Menu, Button } from "antd";
 import "./index.css";
@@ -14,13 +15,19 @@ import {
 } from "@ant-design/icons";
 import Main from "./components/pages/main/Main";
 
-
 const { Header, Content, Footer, Sider } = Layout;
 const Dashboard = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [size] = useState("large");
-  const token = localStorage.getItem("token");
+
+  const accessToken = localStorage.getItem("token");
+
+  const authAxios = axios.create({
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
 
   return (
     <Layout>

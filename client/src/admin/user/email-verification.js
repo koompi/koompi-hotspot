@@ -5,14 +5,11 @@ import axios from "axios";
 
 import image_animation from "../../assets/images/email-verification.png";
 import bottom_image from "../../assets/images/image_02.png";
-// localStorage.removeItem("token");
-const accessToken = localStorage.getItem("token");
-console.log("token", accessToken);
 
 // const apiUrl = "http://localhost:5000/api/auth/admin/";
+const accessToken = localStorage.getItem("token");
 
 const authAxios = axios.create({
-  // baseURL: apiUrl,
   headers: {
     Authorization: `Bearer ${accessToken}`
   }
@@ -27,9 +24,6 @@ const Email_verification = () => {
       vCode: data.code.toString()
     };
 
-    console.log("code ", typeof verifyAcc);
-    console.log("header ", typeof authAxios);
-
     authAxios
       .post(
         `http://localhost:5000/api/auth/admin/confirm-admin`,
@@ -37,7 +31,8 @@ const Email_verification = () => {
         setLoading(true)
       )
       .then(async res => {
-        setLoading(true);
+        
+        // setLoading(true);
         message.success("Login successfully.");
         // message.success(res.data.message);
 
