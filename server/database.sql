@@ -19,3 +19,10 @@ VALUES('kalin', 'kalin123@gmail.com', 'kit123');
 
 -- some sql command 
 -- UPDATE radgroupcheck SET groupname= REPLACE(groupname,'30','50') WHERE acc_id = '.......'
+
+-- SELECT b.id,b.fullname, b.phone, b.gender, b.birthdate, b.address, b.role, b.activate, a.acc_id,a.calledstationid,a.acctterminatecause 
+--      FROM useraccount AS b INNER JOIN radacct as a ON (b.id::text like a.acc_id AND  a.calledstationid ='saang-school' AND a.acctterminatecause IS NULL);
+-- Or
+--SELECT detail.id,detail.fullname, detail.phone, detail.gender, detail.birthdate, detail.address, detail.role, detail.activate, c.acc_id,c.calledstationid,c.acctterminatecause
+--FROM  useraccount AS detail, radacct AS c
+--WHERE detail.id::text=c.acc_id AND  c.calledstationid ='saang-school' AND c.acctterminatecause IS NULL;

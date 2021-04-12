@@ -18,7 +18,17 @@
 
 // async function validateAddress(address) {
 //   return new Promise(async (resolve, reject) => {
-const moment = require("moment");
 
-var due = moment().format("YYYY MMM DD");
-console.log(due);
+// var due = moment().format("YYYY MMM DD");
+// console.log(due);
+
+const pool = require("./db");
+
+const users_activelogin = async (req, res) => {
+  const a = await pool.query(
+    "SELECT acc_id  FROM radacct WHERE calledstationid ='saang-school' AND acctterminatecause IS NULL and acc_id = '0a1d3284-f2ea-4c84-a6c6-aface91cc6e1'"
+  );
+  console.log(a.rows);
+};
+
+console.log(users_activelogin());

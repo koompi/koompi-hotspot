@@ -163,22 +163,22 @@ router.get("/dashboard", authorization, async (req, res) => {
 router.get("/users", authorization, async (req, res) => {
   try {
     const registers = await pool.query(
-      "SELECT fullname, phone, gender, birthdate, address, role, activate FROM useraccount"
+      "SELECT id, fullname, phone, gender, birthdate, address, role, activate, image FROM useraccount"
     );
     const admins = await pool.query(
-      "SELECT fullname, phone, gender, birthdate, address, role, activate FROM useraccount WHERE role = 'Admin'"
+      "SELECT id, fullname, phone, gender, birthdate, address, role, activate, image FROM useraccount WHERE role = 'Admin'"
     );
-    const users_activelogin = await pool.query(
-      "SELECT count(*) FROM radacct WHERE calledstationid ='saang-school' AND acctterminatecause IS NULL"
+    const users_login = await pool.query(
+      "SELECT detail.id,detail.fullname, detail.phone, detail.gender, detail.birthdate, detail.address, detail.role, detail.activate, detail.image, c.acc_id,c.calledstationid,c.acctterminatecause FROM  useraccount AS detail, radacct AS c WHERE detail.id::text=c.acc_id AND  c.calledstationid ='saang-school' AND c.acctterminatecause IS NULL"
     );
 
     res.status(200).json({
       users_resgistered: registers.rows,
-      user_admins: admins.rows
+      user_admins: admins.rows,
+      users_login: users_login.rows
     });
-    // console.log(activelogin.rowCount);
   } catch (error) {
-    console.error(error.message);
+    console.log("error on users adminAuth", error);
     res.status(500).json({ message: "Server Error!" });
   }
 });
