@@ -1,0 +1,210 @@
+
+@import "~antd/dist/antd.css";
+@import url("https://fonts.googleapis.com/css2?family=Quicksand&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Xanh+Mono&display=swap");
+* {
+  font-family: "Quicksand", sans-serif !important;
+  /* font-family: "Xanh Mono", monospace; */
+  font-size: 18px;
+}
+
+a,
+p,
+span {
+  font-size: 18px !important;
+}
+
+a {
+  color: #333333;
+}
+
+a:active {
+  color: #1088e9 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700 !important;
+  font-size: xx-large;
+}
+
+body {
+  background: #ffffff !important;
+}
+
+.loginBackground {
+  height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+.loginContainer {
+  width: 600px;
+  margin: 0px auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 8px;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+
+  background-color: white;
+  box-shadow: 0px 0px 30px 0px#888888;
+}
+.loginContainer-admin {
+  width: 700px;
+  margin: 0px auto;
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  border-radius: 8px;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+
+  background-color: white;
+  box-shadow: 0px 0px 30px 0px#888888;
+}
+
+.login-form {
+  padding: 40px;
+}
+
+.loginContainer .login-form-forgot {
+  float: right;
+}
+
+.login-form-button {
+  width: auto !important;
+  padding: 0px 50px;
+  border-radius: 0px !important;
+}
+
+.loginContainer h2 {
+  color: black !important;
+  text-transform: uppercase;
+}
+
+.loginContainer a {
+  color: #1088e9 !important;
+}
+
+.logo {
+  position: relative;
+  width: 75px;
+  float: left;
+  border-right: 2px solid;
+}
+
+.admin {
+  /* display: inline; */
+  text-align: center;
+  /* position: relative; */
+}
+
+.logo-admin {
+  /* position: absolute; */
+  width: 75px;
+  border-bottom: 2px solid;
+}
+
+.koompi-hotspot {
+  position: absolute;
+  top: 30px;
+  left: 100px;
+  z-index: 1;
+}
+
+.koompi-hotspot h2 {
+  float: right;
+}
+
+.koompi-hotspot-image {
+  position: absolute;
+  right: 100px;
+  top: 100px;
+  width: 30%;
+}
+.bottom-image {
+  position: absolute;
+  bottom: 20px;
+  width: 550px;
+  right: 35%;
+}
+
+/* forgot password */
+.forgotContainer {
+  width: 600px;
+  margin: 0px auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 8px;
+  transform: translate(-50%, -25%);
+  -webkit-transform: translate(-50%, -25%);
+  -moz-transform: translate(-50%, -25%);
+  -ms-transform: translate(-50%, -25%);
+  -o-transform: translate(-50%, -25%);
+  background-color: white;
+  box-shadow: 0px 0px 30px 0px#888888;
+}
+.forgotContainer a {
+  color: #1088e9 !important;
+}
+
+.forgotPassword-form {
+  padding: 40px;
+}
+.forgot-password {
+  text-align: center;
+  font-weight: bold;
+}
+.forgot-password h4 {
+  color: red;
+  margin: 0;
+  padding: 0;
+}
+.forgot-image {
+  width: 430px;
+  text-align: center;
+}
+
+.forgot-form-button {
+  width: auto !important;
+  padding: 0px 50px;
+  border-radius: 0px !important;
+}
+
+/*-------------------- email verification form -------------------*/
+.forgotPassword-form .input-code {
+  /* margin: 0 10px; */
+  width: 520px;
+}
+
+.forgotPassword-form .verification-cofirm-button {
+  width: auto !important;
+  padding: 0px 50px;
+  border-radius: 0px !important;
+  left: 34%;
+}
+
+/*-------------------- complete info form -------------------*/
+
+.input-full-in {
+  width: 520px;
+}
+
+.ant-input-affix-wrapper > input.ant-input {
+  margin: auto 10px;
+}
