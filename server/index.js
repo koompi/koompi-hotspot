@@ -43,6 +43,7 @@ app.use(
 //  Admin
 app.use("/api/auth/admin", require("./routes/admin/adminAuth"));
 app.use("/api/admin", require("./routes/admin/notification"));
+app.use("/api/admin", require("./routes/admin/discount_Teacher"));
 
 //  forgot and reset password
 app.use("/api", require("./routes/Account/forgot_reset_pass"));
@@ -64,10 +65,6 @@ app.listen(5000, () => {
     autoCheck.statusPlan();
     console.log("checking automatically plan every day");
   });
-  // cron.schedule("* * * * *", () => {
-  //   autoCheck.statusPlan();
-  //   console.log("checking automatically plan every a minute");
-  // });
 
   // Check  every minute for automatically to up.
   cron.schedule("* * * * *", () => {
