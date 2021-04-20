@@ -14,11 +14,12 @@ router.use(
   })
 );
 
-//add other middleware
+// add other middleware
 router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(morgan("dev"));
+
 router.post("/upload-avatar", authorization, async (req, res) => {
   try {
     if (!req.files) {
@@ -28,7 +29,8 @@ router.post("/upload-avatar", authorization, async (req, res) => {
       });
     } else {
       //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
-      let avatar = req.files.avatar;
+      let avatar = req.files.file;
+      // res.send(avatar.file.name);
       let name = "avatar" + "_" + Date.now() + path.extname(avatar.name);
 
       if (
@@ -39,13 +41,13 @@ router.post("/upload-avatar", authorization, async (req, res) => {
       ) {
         //Use the mv() method to place the file in upload directory (i.e. "uploads")
         avatar.mv("./uploads/" + name);
-        await pool.query("update users_email set image=$1 where id = $2", [
+        await pool.query("update useraccount set image=$1 where id = $2", [
           name,
           req.user,
         ]);
 
         //send response
-        res.send({
+        res.status(200).json({
           status: true,
           message: "File is uploaded",
           data: {
@@ -56,15 +58,15 @@ router.post("/upload-avatar", authorization, async (req, res) => {
           },
         });
       } else {
-        res
-          .status(500)
-          .send(
-            "This format is not allowed , please upload file with '.png','.gif','.jpg'!"
-          );
+        console.log(avatar.mimetype);
+        res.status(401).json({
+          message:
+            "This format is not allowed , please upload file with '.png','.gif','.jpg'!",
+        });
       }
     }
   } catch (err) {
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
     console.log(err);
   }
 });

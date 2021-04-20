@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const pool = require("../../db");
 
-router.put("/complete-info", async (req, res) => {
+router.put("/complete-inf", async (req, res) => {
   try {
     //1. destructure the req.body (full_name,gender , email, password,bithdate,address)
 
@@ -10,26 +10,63 @@ router.put("/complete-info", async (req, res) => {
     //2. check if user exist (if user exist then throw error)
 
     const user = await pool.query(
-      "SELECT * FROM users_email WHERE email = $1",
+      "SELECT * FROM useraccount WHERE email = $1",
       [email]
     );
     if (user.rows.length === 0) {
-      return res.status(401).send("Account isn't exist yet!");
+      return res.status(401).json({ message: "Account isn't exist yet!" });
     }
     const activate = await user.rows[0].activate;
 
     if (!activate) {
-      return res.status(401).json("Please active your acount first!");
+      return res
+        .status(401)
+        .json({ message: "Please active your acount first!" });
     } else {
       await pool.query(
-        "UPDATE users_email SET name=$1, gender=$2, birthdate=$3, address=$4  WHERE email=$5 AND activate = true",
+        "UPDATE useraccount SET name=$1, gender=$2, birthdate=$3, address=$4  WHERE email=$5 AND activate = true",
         [name, gender, birthdate, address, email]
       );
-      res.send("Completed Info.");
+      res.status(200).json({ message: "Completed Information." });
     }
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
+
+router.put("/complete-info", async (req, res) => {
+  try {
+    //1. destructure the req.body (full_name,gender , email, password,bithdate,address)
+
+    const { fullname, gender, phone, email, birthdate, address } = req.body;
+
+    //2. check if user exist (if user exist then throw error)
+
+    const user = await pool.query(
+      "SELECT * FROM useraccount WHERE phone = $1",
+      [phone]
+    );
+    if (user.rows.length === 0) {
+      return res.status(401).json({ message: "Account isn't exist yet!" });
+    }
+    const activate = await user.rows[0].activate;
+
+    if (!activate) {
+      return res
+        .status(401)
+        .json({ message: "Please activate your account first!" });
+    } else {
+      await pool.query(
+        "UPDATE useraccount SET fullname=$1, gender=$2, birthdate=$3, address=$4, email=$5  WHERE phone=$6 AND activate = true",
+        [fullname, gender, birthdate, address, email, phone]
+      );
+
+      res.status(200).json({ message: "Completed Information." });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 module.exports = router;

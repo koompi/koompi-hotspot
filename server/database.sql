@@ -1,4 +1,4 @@
-CREATE TABLE users_email
+CREATE TABLE useraccount
 (
     id uuid PRIMARY KEY DEFAULT
     uuid_generate_v4(),
@@ -15,4 +15,8 @@ CREATE TABLE users_email
 INSERT INTO users
     (user_name,user_email,user_password)
 VALUES('kalin', 'kalin123@gmail.com', 'kit123');
+
+
+-- some sql command 
+-- UPDATE radgroupcheck SET groupname= REPLACE(groupname,'30','50') WHERE acc_id = '.......'
 

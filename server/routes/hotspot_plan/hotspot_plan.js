@@ -1,181 +1,245 @@
 const router = require("express").Router();
 const pool = require("../../db");
 const moment = require("moment");
+const bcrypt = require("bcrypt");
+
+const authorization = require("../../middleware/authorization");
 const validHotspot = require("../../middleware/valid_hot_planInfo");
+
+// const confirmPass = require("../intergrate_Selendra/payment");
+const Payment = require("../../utils/payment");
 
 // Create Account User
 
-router.post("/set-plan", async (req, res) => {
+router.post("/set-plan", authorization, validHotspot, async (req, res) => {
   try {
     //1. destructure the req.body(username,password)
     // for attributeMD5 & op it is default from database
-    const { username, password, simultaneous, value } = req.body; // value : 30 , 365
-    // console.log(username);
+    const { phone, password, simultaneous, value, asset, memo } = req.body; // value : 30 , 365  // username=phone number example 098939699
     const op = ":=";
     const attributeMD5 = "MD5-Password";
     const priority = "1";
     const attributeSim = "Simultaneous-Use";
     const attributeExp = "Expiration";
 
-    var val = parseInt(value, 10);
-    var sim = parseInt(simultaneous, 10);
-    var optName;
+    let username = phone.slice(4, phone.length);
+    username = "0" + username;
+
+    var val = parseFloat(value, 10);
+    var sim = parseFloat(simultaneous, 10);
 
     //   //  ======---===== For Expiration amount of day =====---======
-    if (val === 30) {
-      optName = "30days";
-    } else if (val === 365) {
-      optName = "1year";
+    if (val !== 30 && val !== 365) {
+      return res.status(400).json({ message: "Please choose!" });
+    }
+
+    const setPlanAlready = await pool.query(
+      "select * from radcheck WHERE acc_id = $1",
+      [req.user]
+    );
+    if (setPlanAlready.rows.length !== 0) {
+      return res.status(400).json({ message: "You had already set plan!" });
+    }
+
+    // ////            check password
+    const confirm = await Payment.confirm_pass(req, password);
+    if (!confirm) {
+      return res.status(401).json({ message: "Incorrect Password!" });
+    }
+
+    ///////////// check balance with payment /////////////////////////
+    const paid = await Payment.payment(req, asset, value, memo);
+
+    if (paid[0] === 200) {
+      // 2. enter the user inside database
+      await pool.query(
+        "insert into radcheck( username, attribute, op, value, acc_id, status, auto) VALUES($1, $2, $3, MD5($4), $5, $6, $7)",
+        [username, attributeMD5, op, password, req.user, 1, 1]
+      );
+
+      //  insert into table RAD_GROUP_CHECK
+
+      //  Example Group Name: Sim_2_Ex_30_098939699
+      const groupname = "Sim_" + simultaneous + "_Ex_" + value + "_" + username;
+
+      await pool.query(
+        "insert into radgroupcheck(groupname, attribute, op, value, acc_id) VALUES($1, $2, $3, $4,$5)",
+        [groupname, attributeSim, op, sim, req.user]
+      );
+      //   Format Date
+      var due = moment()
+        .add(val, "days")
+        .format("YYYY MMM DD");
+      await pool.query(
+        "insert into radgroupcheck(groupname, attribute, op, value, acc_id) VALUES($1, $2, $3, $4, $5)",
+        [groupname, attributeExp, op, due, req.user]
+      );
+
+      //  insert into table RAD_USER_GROUP
+
+      await pool.query(
+        "insert into radusergroup(username, groupname, priority,acc_id) VALUES($1, $2, $3, $4)",
+        [username, groupname, priority, req.user]
+      );
+
+      res.status(200).json({ message: "Set plan successfully." });
     } else {
-      return res.send("Please choose!");
+      res.status(paid[0]).json({ message: paid[1] });
     }
-    // if username already exist
-    const user = await pool.query(
-      "select * from radcheck WHERE username = $1",
-      [username]
-    );
-    if (user.rows.length !== 0) {
-      return res.status(401).send("Account already exist");
-    }
-
-    // 2. enter the user inside database
-    await pool.query(
-      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,MD5($4))",
-      [username, attributeMD5, op, password]
-    );
-
-    //  insert into table RAD_GROUP_CHECK
-    const sim_Name = attributeSim + "_" + username + "_" + sim;
-    await pool.query(
-      "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4)",
-      [sim_Name, attributeSim, op, sim]
-    );
-
-    const exp_Name = attributeExp + "_" + username + "_" + optName;
-    //   Format Date
-    var due = moment().add(val, "days").format("YYYY MMM DD");
-    await pool.query(
-      "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4)",
-      [exp_Name, attributeExp, op, due]
-    );
-
-    //  insert into table RAD_USER_GROUP
-    await pool.query(
-      "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
-      [username, sim_Name, priority]
-    );
-
-    await pool.query(
-      "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
-      [username, exp_Name, priority]
-    );
-
-    res.send("Set plan successfully.");
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error!");
+    console.log("error", err);
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 
-router.put("/reset-plan", validHotspot, async (req, res) => {
+router.put("/change-plan", authorization, async (req, res) => {
   try {
     //1. destructure the req.body(username,password)
     // for attributeMD5 & op it is default from database
-    const { username, simultaneous, value } = req.body;
-    const op = ":=";
-    const attributeMD5 = "MD5-Password";
-    const priority = "1";
-    const attributeSim = "Simultaneous-Use";
-    const attributeExp = "Expiration";
-    var val = parseInt(value, 10);
-    var sim = parseInt(simultaneous, 10);
-    var optName;
+    const { password, value } = req.body; // value : 30 , 365  // username=phone number example 098939699
 
-    //   //  ======---===== For Expiration amount of day =====---======
-    if (val === 30) {
-      optName = "30days";
-    } else if (val === 365) {
-      optName = "1year";
-    } else {
-      res.send("Please choose!");
+    ////            check password
+    const confirm = await Payment.confirm_pass(req, password);
+    if (!confirm) {
+      return res.status(401).json({ message: "Incorrect Password!" });
     }
+
+    var val = parseFloat(value, 10);
+
+    //  ======---===== For Expiration amount of day =====---======
+    if (val !== 30 && val !== 365) {
+      return res.status(400).json({ message: "Please choose!" });
+    }
+
+    const user = await pool.query(
+      "SELECT username FROM  radcheck WHERE  acc_id = $1",
+      [req.user]
+    );
+    const info = await pool.query(
+      "SELECT * FROM  radgroupcheck WHERE attribute = 'Expiration' and acc_id = $1",
+      [req.user]
+    );
+
+    let groupnameOld = info.rows[0].groupname;
+    let gname = groupnameOld.lastIndexOf("Ex_");
+    let groupnameNew = groupnameOld.substr(0, gname + 3);
+    groupnameNew = groupnameNew + value + "_" + user.rows[0].username;
+
+    ///////////////// check balance with payment /////////////////////////
+    const paid = await Payment.payment(req, "SEL", val, "Change new plan");
+
+    if (paid[0] === 200) {
+      const due = moment()
+        .add(val, "days")
+        .format("YYYY MMM DD");
+
+      await pool.query(
+        "UPDATE radgroupcheck SET value = $1,groupname = $2 WHERE attribute = 'Expiration' AND acc_id = $3",
+        [due, groupnameNew, req.user]
+      );
+      await pool.query(
+        "UPDATE radgroupcheck SET groupname = $1 WHERE attribute = 'Simultaneous-Use' AND acc_id = $2",
+        [groupnameNew, req.user]
+      );
+      await pool.query(
+        "UPDATE radusergroup SET groupname = $1 WHERE acc_id = $2",
+        [groupnameNew, req.user]
+      );
+      await pool.query("UPDATE radcheck SET status = true WHERE acc_id = $1", [
+        req.user
+      ]);
+      res.status(200).json({ message: "Change plan done" });
+      console.log(`User ${req.user} change plan to ${value} `);
+    } else {
+      res.status(paid[0]).json({ message: paid[1] });
+    }
+  } catch (err) {
+    console.log("error", err);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
+
+router.put("/delete-plan", authorization, async (req, res) => {
+  try {
+    const { password } = req.body;
 
     // // if username isn't exist
-    const user = await pool.query("select * from radcheck where username=$1", [
-      username,
+    const user = await pool.query("select * from radcheck where acc_id = $1", [
+      req.user
     ]);
+    const username = user.rows[0].username;
+
     if (user.rows.length === 0) {
-      return res.status(401).send("Account isn't exist");
+      return res.status(400).json({ message: "Account isn't exist!" });
     }
-    // delete all histories form radacc, radgroupcheck, radusergroup
-    await pool.query("DELETE FROM radacct WHERE username = $1", [username]);
-    await pool.query("DELETE FROM radusergroup WHERE username = $1", [
-      username,
-    ]);
-    await pool.query(
-      "DELETE FROM radgroupcheck WHERE groupname like '%' || $1 ||'%'",
-      [username]
-    );
 
-    //  insert into table RAD_GROUP_CHECK
-    const sim_Name = attributeSim + "_" + username + "_" + sim;
-    await pool.query(
-      "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4) RETURNING *",
-      [sim_Name, attributeSim, op, sim]
-    );
+    ////            check password
+    const confirm = await Payment.confirm_pass(req, password);
+    if (!confirm) {
+      return res.status(401).json({ message: "Incorrect Password!" });
+    } else {
+      // delete all histories form radacc, radgroupcheck, radusergroup
+      await pool.query("DELETE FROM radcheck where acc_id = $1", [req.user]);
+      await pool.query("DELETE FROM radacct WHERE username = $1", [username]);
+      await pool.query("DELETE FROM radusergroup WHERE acc_id = $1", [
+        req.user
+      ]);
+      await pool.query("DELETE FROM radgroupcheck WHERE acc_id = $2", [
+        req.user
+      ]);
 
-    exp_Name = attributeExp + "_" + username + "_" + optName;
-
-    //   Format Date
-    var due = moment().add(val, "days").format("YYYY MMM DD");
-    await pool.query(
-      "insert into radgroupcheck(groupname, attribute, op, value) VALUES($1, $2, $3, $4) RETURNING *",
-      [exp_Name, attributeExp, op, due]
-    );
-
-    //  insert into table RAD_USER_GROUP
-    await pool.query(
-      "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
-      [username, sim_Name, priority]
-    );
-
-    await pool.query(
-      "insert into radusergroup(username, groupname, priority) VALUES($1, $2, $3) RETURNING *",
-      [username, exp_Name, priority]
-    );
-
-    res.send("Reset plan successfully");
+      res.status(200).json({ message: "Cancel plan done." });
+    }
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 
-router.post("/free-plan", async (req, res) => {
+router.get("/get-plan", authorization, async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const op = ":=";
-    const attributeMD5 = "MD5-Password";
+    const user = await pool.query("select * from radcheck WHERE acc_id = $1", [
+      req.user
+    ]);
 
-    const user = await pool.query(
-      "select * from radcheck WHERE username = $1",
-      [username]
+    if (user.rows.length === 0) {
+      return res.status(401).json({ message: "Username is not exist!" });
+    }
+    const sim = await pool.query(
+      "select * from radgroupcheck WHERE attribute = 'Simultaneous-Use' AND acc_id = $1",
+      [req.user]
     );
-
-    if (user.rows.length !== 0) {
-      return res.status(401).send("Account already exist");
+    const detail = await pool.query(
+      "select * from radgroupcheck WHERE attribute = 'Expiration' AND acc_id = $1",
+      [req.user]
+    );
+    if (detail.rows.length === 0) {
+      return res.status(401).json({ message: "No plan!" });
     }
 
-    // 2. enter the user inside database
-    await pool.query(
-      "insert into radcheck(username, attribute,op,value) VALUES($1,$2,$3,MD5($4))",
-      [username, attributeMD5, op, password]
-    );
+    let str = detail.rows[0].groupname;
+    let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
 
-    res.send("Set plan successfully.");
+    let balance = parseFloat(plan, 10);
+    if (balance === 30) {
+      balance = "50";
+    }
+    if (balance === 365) {
+      balance = "600";
+    }
+
+    res.status(200).json({
+      username: user.rows[0].username,
+      balance: balance,
+      device: sim.rows[0].value,
+      plan: plan,
+      time_left: detail.rows[0].value,
+      status: user.rows[0].status,
+      automatically: user.rows[0].auto
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error!");
+    res.status(500).json({ message: "Server Error!" });
   }
 });
 
