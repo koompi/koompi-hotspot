@@ -1,0 +1,27 @@
+name: DEV CI + CD
+
+on:
+  push:
+    branches: [ dev ]
+  workflow_dispatch:
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Compile
+        run: echo Hello, I am compiling dev branch.
+
+  DeployDev:
+    name: Deploy to Dev 
+    if: github.event.ref == 'refs/heads/dev'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment: 
+      name: Development
+      url: 'http://dev.hongsea.com'
+    steps:
+      - name: Deploy
+        run: echo I am deploying dev branch to development!       
