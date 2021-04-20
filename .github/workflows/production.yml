@@ -1,0 +1,39 @@
+name: PROD CI + CD
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Compile
+        run: echo Hello, I am compiling.
+  
+  DeployStaging:
+    name: Deploy to Staging 
+    if: github.event.ref == 'refs/heads/master'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment: 
+      name: Staging
+      url: 'https://demo.hongsea.com'
+    steps:
+      - name: Deploy
+        run: echo I am deploying to testing product!  
+            
+  DeployProd:
+    name: Deploy to Production 
+    needs: [DeployStaging]
+    runs-on: ubuntu-latest
+    environment: 
+      name: Production
+      url: 'https://www.hongsea.com'
+    steps:
+      - name: Deploy
+        run: echo I am deploying to production! 
+    
