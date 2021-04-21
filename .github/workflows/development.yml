@@ -30,5 +30,6 @@ jobs:
           chmod +x deploy
       - name: Deploying to Dev...
         run: |
-          ls -R            
+          ls -R       
+          pwd     
         working-directory: ${{env.working-directory}}
