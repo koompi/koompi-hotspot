@@ -19,6 +19,7 @@ jobs:
         with:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Set known_hosts
         run: |
           mkdir ~/.ssh &&
           touch ~/.ssh/known_hosts &&
