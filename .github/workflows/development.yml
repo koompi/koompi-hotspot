@@ -18,8 +18,11 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_KEY }}
-          name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+        run: |
+          mkdir ~/.ssh &&
+          touch ~/.ssh/known_hosts &&
+          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts          
       - name: ENV
         env:
           BASH_SECRET: ${{ secrets.BASH_SHELL }}
