@@ -13,8 +13,6 @@ jobs:
     environment: 
       name: Development      
       url: 'https://api-dev.koompi.org'
-    env:
-      working-directory: ../koompi-hotspot
     steps:
       - name: Install ssh key
         uses: shimataro/ssh-key-action@v2
@@ -28,8 +26,6 @@ jobs:
         run: |
           echo "$BASH_SECRET" > deploy
           chmod +x deploy
-      - name: Deploying to Dev...
+      - name: Deploying to Dev...     
         run: |
-          ls -R       
-          pwd     
-        working-directory: ${{env.working-directory}}
+          ./deploy    
