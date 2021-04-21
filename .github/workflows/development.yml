@@ -6,22 +6,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  Build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Compile
-        run: echo Hello, I am compiling dev branch.
-
   DeployDev:
     name: Deploy to Dev 
     if: github.event.ref == 'refs/heads/dev'
-    needs: [Build]
     runs-on: ubuntu-latest
     environment: 
-      name: Development
-      url: 'http://dev.hongsea.com'
+      name: Development      
+      url: 'https://api-dev.koompi.org'
+    env:
+      working-directory: ./koompi-hotspot
     steps:
-      - name: Deploy
-        run: echo I am deploying dev branch to development!       
+      - name: Install ssh key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: ENV
+        env:
+          BASH_SECRET: ${{ secrets.BASH_SHELL }}
+        run: |
+          echo "$BASH_SECRET" > deploy
+          chmod +x deploy
+      - name: Deploying to Dev...
+        run: |
+          ls -R            
+        working-directory: ${{env.working-directory}}
