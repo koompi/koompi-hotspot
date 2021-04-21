@@ -11,8 +11,10 @@ jobs:
     if: github.event.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     environment: 
-      name: Development
+      name: Development      
       url: 'https://api-dev.koompi.org'
+    env:
+      working-directory: ./koompi-hotspot
     steps:
       - name: Install ssh key
         uses: shimataro/ssh-key-action@v2
@@ -27,4 +29,6 @@ jobs:
           echo "$BASH_SECRET" > deploy
           chmod +x deploy
       - name: Deploying to Dev...
-        run: ./run-bash-secret                 
+        run: |
+          ls -R            
+        working-directory: ${{env.working-directory}}
