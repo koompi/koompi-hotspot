@@ -1,6 +1,6 @@
 const Logout = () => {
   localStorage.removeItem("token");
-  window.location.replace("/admin");
+  window.location.replace("/");
 };
 
 export default Logout;
