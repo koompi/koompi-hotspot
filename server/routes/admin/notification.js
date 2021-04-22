@@ -2,9 +2,7 @@ const router = require("express").Router();
 const pool = require("../../db");
 const fileUpload = require("express-fileupload");
 const moment = require("moment");
-// const cors = require("cors");
-// const bodyParser = require("body-parser");
-// const morgan = require("morgan");
+
 const path = require("path");
 const authorization = require("../../middleware/authorization");
 
@@ -14,9 +12,6 @@ router.use(
     createParentPath: true
   })
 );
-
-// const multer = require("multer");
-// const upload = multer({ dest: "uploads/noti/" });
 
 router.post("/notification", authorization, async (req, res) => {
   try {
