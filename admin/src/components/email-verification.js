@@ -11,35 +11,35 @@ const accessToken = localStorage.getItem("token");
 
 const authAxios = axios.create({
   headers: {
-    Authorization: `Bearer ${accessToken}`
-  }
+    Authorization: `Bearer ${accessToken}`,
+  },
 });
 
 const Email_verification = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [size] = useState("large");
-  const onFinish = data => {
+  const onFinish = (data) => {
     const verifyAcc = {
-      vCode: data.code.toString()
+      vCode: data.code.toString(),
     };
 
     authAxios
       .post(
         `http://localhost:5000/api/auth/admin/confirm-admin`,
-        verifyAcc,
-        setLoading(true)
+        verifyAcc
+        // setLoading(true)
       )
-      .then(async res => {
+      .then(async (res) => {
         // setLoading(true);
         message.success("Login successfully.");
         // message.success(res.data.message);
 
         const { token } = res.data;
         await localStorage.setItem("token", token);
-        history.push("/admin/home");
+        window.location.replace("/dashboard");
       })
-      .catch(async err => {
+      .catch(async (err) => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);

@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 
 const PublicRoute = ({ component: Component, restricted, ...rest }) => {
-  let token = localStorage.getItem("token");
+  let token = localStorage.getItem("skadtoken");
   const isLogin = () => {
     if (!token) {
       return false;
@@ -12,9 +12,9 @@ const PublicRoute = ({ component: Component, restricted, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={props =>
+      render={(props) =>
         isLogin() && restricted ? (
-          <Redirect to="/admin/home" />
+          <Redirect to="/dashboard" />
         ) : (
           <Component {...props} />
         )

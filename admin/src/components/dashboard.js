@@ -1,32 +1,29 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useHistory, Redirect, Link } from "react-router-dom";
-import { Layout, Menu, Button } from "antd";
-import "../assets/css/dashboard.css";
+import { useHistory, Link } from "react-router-dom";
+import { Layout, Menu } from "antd";
 import {
   AppstoreOutlined,
   BarChartOutlined,
   CloudOutlined,
-  ShopOutlined,
   TeamOutlined,
   UserOutlined,
   UploadOutlined,
-  VideoCameraOutlined
+  VideoCameraOutlined,
 } from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = Layout;
 const Dashboard = () => {
-  const history = useHistory();
-  const [loading, setLoading] = useState(false);
-  const [size] = useState("large");
+  // const history = useHistory();
+  // const [loading, setLoading] = useState(false);
 
-  const accessToken = localStorage.getItem("token");
+  // const accessToken = localStorage.getItem("token");
 
-  const authAxios = axios.create({
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  });
+  // const authAxios = axios.create({
+  //   headers: {
+  //     Authorization: `Bearer ${accessToken}`,
+  //   },
+  // });
 
   return (
     <Layout>
@@ -35,7 +32,7 @@ const Dashboard = () => {
           overflow: "auto",
           height: "100vh",
           position: "fixed",
-          left: 0
+          left: 0,
         }}
       >
         <div className="logo" />
@@ -164,7 +161,7 @@ const Dashboard = () => {
         </Content>
 
         {/* <Button htmlType={logout}> */}
-        <Link to="/admin/">Logut</Link>
+        <Link to="/">Logut</Link>
         {/* </Button> */}
         <Footer style={{ textAlign: "center" }}>
           Ant Design ©2018 Created by Ant UED

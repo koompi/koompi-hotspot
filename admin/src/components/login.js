@@ -6,18 +6,16 @@ import axios from "axios";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 import logo from "../assets/images/koompi_logo_signal.png";
-// import image_animation from "../../assets/images/digital_nomad.png";
-// import bottom_image from "../../assets/images/image_02.png";
+import image_02 from "../assets/images/image_02.png";
 
 const Login = () => {
   const history = useHistory();
-  const [size] = useState("large");
   const [loading, setLoading] = useState(false);
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     console.log("Success:", data);
     const adminLogin = {
       email: data.email,
-      password: data.password
+      password: data.password,
     };
 
     axios
@@ -26,20 +24,20 @@ const Login = () => {
         adminLogin,
         setLoading(true)
       )
-      .then(async res => {
+      .then(async (res) => {
         const { token } = res.data;
         await localStorage.setItem("token", token);
-        console.log(token);
       })
-      .then(async res => {
+      .then(async (res) => {
         setLoading(true);
         message.success("Please check your email.");
         // message.success(res.data.message);
 
-        history.push("/admin/login/confirm-admin");
+        // history.push("/verify");
+        window.location.replace("/verify");
       })
 
-      .catch(err => {
+      .catch((err) => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);
@@ -53,43 +51,45 @@ const Login = () => {
         <div className="loginContainer-admin">
           <div className="">
             <Form
+              layout="vertical"
               name="basic"
               initialValues={{ remember: true }}
               onFinish={onSubmit}
               className="login-form"
-              // size={size}
             >
               <div className="admin">
                 <img src={logo} alt="logo" className="logo-admin" />
-                <h2>KOOMPI Fi-Fi Admin</h2>
+                {/* <h2>KOOMPI Fi-Fi Admin</h2> */}
               </div>
               {/* =============== Email ============== */}
               <Form.Item
+                label="Email"
                 name="email"
                 rules={[
                   { type: "email", message: "The input is not valid email" },
-                  { required: true, message: "Please input your email!" }
+                  { required: true, message: "Please input your email!" },
                 ]}
               >
                 <Input
                   prefix={<UserOutlined className="site-form-item-icon" />}
-                  placeholder="Admin"
-                  size={size}
+                  placeholder="example@gmail.com"
+                  size="large"
                 />
               </Form.Item>
 
               {/* =============== Password ============== */}
               <Form.Item
+                label="Password"
                 name="password"
                 rules={[
-                  { required: true, message: "Please input your password!" }
+                  { required: true, message: "Please input your password!" },
                 ]}
               >
                 <Input.Password
                   prefix={<LockOutlined className="site-form-item-icon" />}
                   type="password"
                   placeholder="Password"
-                  size={size}
+                  size="large"
                 />
               </Form.Item>
 
@@ -97,7 +97,7 @@ const Login = () => {
 
               <Form.Item>
                 {/* <Link to="forgot-passwd" className="login-form-forgot"> */}
-                Forgot password
+                <p className="forgot-pass">Forgot password</p>
                 {/* </Link> */}
               </Form.Item>
 
@@ -107,7 +107,7 @@ const Login = () => {
                   type="primary"
                   htmlType="submit"
                   className="login-form-button"
-                  size={size}
+                  size="large"
                 >
                   Log in
                 </Button>
@@ -115,6 +115,9 @@ const Login = () => {
               </Form.Item>
             </Form>
           </div>
+        </div>
+        <div className="container-login-image">
+          <img src={image_02} alt="image" className="login-img" />
         </div>
       </div>
     </Fragment>
