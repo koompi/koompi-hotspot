@@ -65,60 +65,17 @@ const NavBar = () => {
           trigger="click"
         >
           <div className="sub-topnavbar">
-            <Avatar className="navbar-avata" src={Avatar1} size={55} />
+            <Avatar className="navbar-avata" src={Avatar1} size={50} />
           </div>
         </Popover>
         <Input
-          size="large"
+          size="small"
           placeholder="Search ..."
           allowClear
           enterButton="Search"
           className="search-navbar"
           suffix={<SearchOutlined />}
         />
-        {/* <div className="notifications">
-          <Popover
-            placement="bottomRight"
-            title={
-              <React.Fragment>
-                <div className="container-notification-title">
-                  <h4>Notifications</h4>
-                </div>
-              </React.Fragment>
-            }
-            trigger="click"
-            content={
-              <React.Fragment>
-                {" "}
-                {search && (
-                  <Input
-                    className="schoolInput"
-                    placeholder="search notifications..."
-                    suffix={
-                      <FiX
-                        onClick={handleCloseSearch}
-                        className="icon-close-notifications"
-                      />
-                    }
-                  />
-                )}
-                {search ? null : (
-                  <div className="container-icon-seacrch-notifications">
-                    <FiSearch
-                      onClick={() => setSearch(!search)}
-                      className="notifications-search"
-                    />
-                  </div>
-                )}
-                <div className="container-notifications">
-                  <Notifications />
-                </div>
-              </React.Fragment>
-            }
-          >
-            <IoMdNotificationsOutline className="notification-icon" />
-          </Popover>
-        </div> */}
       </Header>
     </React.Fragment>
   );
