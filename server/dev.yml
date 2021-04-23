@@ -8,4 +8,4 @@ services:
       - ./:/var/www/app/
     working_dir: /var/www/app/
     command:
-      - "./dev.sh"
+      - "./start.sh"
