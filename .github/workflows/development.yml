@@ -14,7 +14,7 @@ jobs:
       name: Development      
       url: 'https://api-hotspot-dev.koompi.org'
   steps:
-      - name: Checkout Here
+      - name: Checkout
         uses: actions/checkout@v2
       - name: Install ssh key
         uses: shimataro/ssh-key-action@v2
