@@ -12,23 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: Development      
-      url: 'https://api-dev.koompi.org'
+      url: 'https://api-hotspot-dev.koompi.org'
     steps:
       - name: Install ssh key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      - name: Set known_hosts
-        run: |
-          touch ~/.ssh/known_hosts &&
-          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts          
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}        
       - name: ENV
         env:
           BASH_SECRET: ${{ secrets.BASH_SHELL }}
         run: |
-          echo "$BASH_SECRET" > deploy
-          chmod +x deploy
+          echo "$BASH_SECRET" > ./deploy
+          chmod +x ./deploy
       - name: Deploying to Dev...     
+        uses: actions/checkout@v2
         run: |
           ./deploy    
