@@ -5,7 +5,7 @@ services:
     ports:
       - "5002:5000"
     volumes:
-      - ../:/var/www/app/
+      - $(hotspot)/development/server:/var/www/app/
     working_dir: /var/www/app/
     command:
       - "./start.sh"
