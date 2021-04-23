@@ -14,18 +14,19 @@ jobs:
       name: Development      
       url: 'https://api-hotspot-dev.koompi.org'
   steps:
-      - uses: actions/checkout@v2
-      - name: Install ssh key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}        
-      - name: ENV
-        env:
-          BASH_SECRET: ${{ secrets.BASH_SHELL }}
-        run: |
-          echo "$BASH_SECRET" > ./deploy
-          chmod +x ./deploy
-      - name: Deploying to Dev...     
-        run: |
-          ./deploy    
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Install ssh key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_KEY }}
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}        
+    - name: ENV
+      env:
+        BASH_SECRET: ${{ secrets.BASH_SHELL }}
+      run: |
+        echo "$BASH_SECRET" > ./deploy
+        chmod +x ./deploy
+    - name: Deploying to Dev...     
+      run: |
+        ./deploy    
