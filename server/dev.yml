@@ -3,7 +3,7 @@ services:
   quizzapp:
     image: pionux/node-alpine:0.1.0
     ports:
-      - "5000:5000"
+      - "5002:5000"
     volumes:
       - ./:/var/www/app/
     working_dir: /var/www/app/
