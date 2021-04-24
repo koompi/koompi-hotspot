@@ -11,3 +11,4 @@ services:
     working_dir: /var/www/app/
     command:
       - "./start.sh"
+      
