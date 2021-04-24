@@ -6,14 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  Build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Compile
-        run: echo Hello, I am compiling.
-  
   DeployStaging:
     name: Deploy to Staging 
     if: github.event.ref == 'refs/heads/master'
@@ -21,10 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: Staging
-      url: 'https://demo.hongsea.com'
+      url: 'https://api-hotspot-demo.koompi.com'
     steps:
-      - name: Deploy
-        run: echo I am deploying to testing product!  
+      - name: Checkout Here
+        uses: actions/checkout@v2
+      - name: Install ssh key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}        
+      - name: Env
+        env:
+          BASH_SECRET: ${{ secrets.BASH_SHELL }}
+        run: |
+          echo "$BASH_SECRET" > ./deploy
+          chmod +x ./deploy
+      - name: Deploying to Staging...     
+        run: |
+          ./deploy       
             
   DeployProd:
     name: Deploy to Production 
@@ -32,8 +38,21 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: Production
-      url: 'https://www.hongsea.com'
+      url: 'https://api-hotspot.koompi.org'
     steps:
-      - name: Deploy
-        run: echo I am deploying to production! 
-    
+      - name: Checkout Here
+        uses: actions/checkout@v2
+      - name: Install ssh key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}        
+      - name: Env
+        env:
+          BASH_SECRET: ${{ secrets.BASH_SHELL }}
+        run: |
+          echo "$BASH_SECRET" > ./deploy
+          chmod +x ./deploy
+      - name: Deploying to Prod...     
+        run: |
+          ./deploy       

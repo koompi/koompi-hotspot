@@ -7,7 +7,7 @@ services:
     ports:
       - "5002:5000"
     volumes:
-      - "${DEV_PATH}:/var/www/app/"
+      - "${HOTSPOT_PATH}:/var/www/app/"
     working_dir: /var/www/app/
     command:
       - "./start.sh"
