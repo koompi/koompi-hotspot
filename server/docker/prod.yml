@@ -2,10 +2,12 @@ version: "3.0"
 services:
   quizzapp:
     image: pionux/node-alpine:0.1.0
+    container_name: api-hotspot-prod
+    restart: always
     ports:
       - "5000:5000"
     volumes:
-      - ../:/var/www/app/
+      - "${HOTSPOT_PATH}:/var/www/app/"
     working_dir: /var/www/app/
     command:
       - "./start.sh"
