@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: Staging
-      url: 'https://api-hotspot-demo.koompi.com'
+      url: 'https://api-hotspot-demo.koompi.org'
     steps:
       - name: Checkout Here
         uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
           ./deploy       
             
   DeployProd:
-    name: Deploy to Production 
+    name: Deploy to Prod
     needs: [DeployStaging]
     runs-on: ubuntu-latest
     environment: 
