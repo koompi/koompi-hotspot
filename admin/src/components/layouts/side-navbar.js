@@ -5,13 +5,11 @@ import { Link } from "react-router-dom";
 import {
   UserOutlined,
   AppstoreAddOutlined,
-  ShoppingOutlined,
   BellOutlined,
   NotificationOutlined,
 } from "@ant-design/icons";
 
 import Logo from "../../assets/images/koompi_logo_signal.png";
-import Logo1 from "../../assets/images/Koompi-WiFi-Icon.png";
 
 const { Sider } = Layout;
 
