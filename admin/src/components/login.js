@@ -11,11 +11,11 @@ import image_02 from "../assets/images/image_02.png";
 const Login = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(false);
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     console.log("Success:", data);
     const adminLogin = {
       email: data.email,
-      password: data.password,
+      password: data.password
     };
 
     axios
@@ -24,24 +24,25 @@ const Login = () => {
         adminLogin,
         setLoading(true)
       )
-      .then(async (res) => {
+      .then(async res => {
         const { token } = res.data;
         await localStorage.setItem("token", token);
       })
-      .then(async (res) => {
+      .then(async res => {
         setLoading(true);
         message.success("Please check your email.");
         // message.success(res.data.message);
 
         // history.push("/verify");
-        window.location.replace("/verify");
+        // window.location.replace("/verify");
+        window.location.replace("/dashboard");
       })
 
-      .catch((err) => {
+      .catch(err => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);
-        message.error(err.response.data.message);
+        // message.error(err.response.data.message);
       });
   };
 
@@ -67,7 +68,7 @@ const Login = () => {
                 name="email"
                 rules={[
                   { type: "email", message: "The input is not valid email" },
-                  { required: true, message: "Please input your email!" },
+                  { required: true, message: "Please input your email!" }
                 ]}
               >
                 <Input
@@ -82,7 +83,7 @@ const Login = () => {
                 label="Password"
                 name="password"
                 rules={[
-                  { required: true, message: "Please input your password!" },
+                  { required: true, message: "Please input your password!" }
                 ]}
               >
                 <Input.Password

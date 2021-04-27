@@ -55,7 +55,7 @@ router.post("/login", validInfo, async (req, res) => {
          `;
 
     //4. call sesClient to send an email
-    sesClient.sendEmail(email, "Account Verification", html);
+    // sesClient.sendEmail(email, "Account Verification", html);
 
     //5. enter the new user inside our database
     await pool.query("UPDATE useraccount SET code=$2 WHERE email=$1", [
