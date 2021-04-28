@@ -5,6 +5,9 @@ const bcrypt = require("bcrypt");
 
 const payment = async (req, asset, plan, memo) => {
   try {
+    // check if admin allowed and set set discount
+    const discount = await checkDiscount(req);
+
     let amnt = parseFloat(plan, 10);
     var amount = 0;
 
@@ -159,6 +162,30 @@ const confirm_pass = async (req, password) => {
     console.log("bug with confrim password function", error);
     return false;
   }
+};
+
+const checkDiscount = async req => {
+  const a = await pool.query("SELECT role  FROM useraccount where id=$1", [
+    req.user
+  ]);
+  if (a.rows[0].role === "Teacher") {
+    var b = await pool.query(
+      "select d.*,s.* from discount_teachers as d INNER JOIN setdiscount as s ON (d.acc_id=$1 AND d.approved IS TRUE AND s.role = 'Teacher')",
+      [req.user]
+    );
+    if (b.rowCount === 0) {
+      return ["teacher", 0];
+    }
+    return ["teacher", b.rows[0].discount];
+  } else if (a.rows[0].role === "Normal") {
+    const c = await pool.query(
+      "SELECT *  FROM setdiscount where role='Normal'"
+    );
+    if (b.rowCount === 0) {
+      return ["normal", 0];
+    }
+    return ["normal", c.rows[0].discount];
+  } else return ["null", 0];
 };
 
 module.exports = { checking, payment, confirm_pass };
