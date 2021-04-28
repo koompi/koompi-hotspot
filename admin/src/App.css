@@ -284,7 +284,7 @@ body {
   border: 1px solid transparent;
 }
 .logo-hotspot {
-  width: 55px;
+  width: 45px;
 }
 .logos {
   height: 66px;
@@ -298,4 +298,100 @@ body {
   height: 66px;
   line-height: 66px;
   border-bottom: 2px solid #dae0ea;
+}
+.widget-card {
+  padding: 20px;
+  background-color: #cacddc;
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  border: 3px solid #4e558f;
+  border-radius: 8px;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+.widget-card2 {
+  padding: 20px;
+  background-color: #fce8e8;
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  border: 3px solid #5f1717;
+  border-radius: 8px;
+}
+.widget-card3 {
+  padding: 20px;
+  background-color: #fdf3db;
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  border: 3px solid #5c4813;
+  border-radius: 8px;
+}
+.widget-card4 {
+  padding: 20px;
+  background-color: #d4e8fb;
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  border: 3px solid #12283a;
+  border-radius: 8px;
+}
+.background-image-widget,
+.background-image-widget2,
+.background-image-widget3,
+.background-image-widget4 {
+  padding: 20px;
+  border-radius: 8px;
+}
+.background-image-widget {
+  background: #4e558f;
+  color: rgb(241, 241, 241);
+}
+.background-image-widget2 {
+  background: #f15a5a;
+  color: rgb(241, 241, 241);
+}
+.background-image-widget3 {
+  background: #f8d175;
+  color: rgb(241, 241, 241);
+}
+.background-image-widget4 {
+  background: #4ea8f1;
+  color: rgb(241, 241, 241);
+}
+.counter,
+.counter2,
+.counter3,
+.counter4 {
+  font-size: 30px !important;
+  font-weight: 900;
+}
+.counter {
+  color: #2a3071;
+}
+.counter2 {
+  color: #c73636;
+}
+.counter3 {
+  color: #bf972b;
+}
+.counter4 {
+  color: #3a79ac;
+}
+.text-details,
+.text-details2,
+.text-details3,
+.text-details4 {
+  font-size: 18px;
+}
+.text-details {
+  color: #2a3071;
+}
+.text-details2 {
+  color: #5f1717;
+}
+.text-details3 {
+  color: #5c4813;
+}
+.text-details4 {
+  color: #12283a;
+}
+.container-counter {
+  line-height: 1.1;
 }
