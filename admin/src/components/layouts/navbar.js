@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { HiLogout } from "react-icons/hi";
 import { FiSearch, FiX } from "react-icons/fi";
 import { SearchOutlined } from "@ant-design/icons";
-import { IoMdNotificationsOutline } from "react-icons/io";
 
 import Avatar1 from "../../assets/images/images.jpeg";
 // import Notifications from "./notifications";

@@ -395,3 +395,26 @@ body {
 .container-counter {
   line-height: 1.1;
 }
+.contentContainer {
+  width: auto;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 30px;
+  height: 500px;
+}
+.contentContainer-auto {
+  width: auto;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.menu-options {
+  background: #fff;
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px 20px;
+  min-height: 20px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  margin-bottom: 20px;
+}

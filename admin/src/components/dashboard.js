@@ -7,6 +7,8 @@ import {
   ControlOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
+import BarChart from "./analysis/bar-charts";
+import PieChart from "./analysis/pie-charts";
 
 const { Content } = Layout;
 const Dashboard = () => {
@@ -22,7 +24,7 @@ const Dashboard = () => {
           <Col span={14}>
             <div className="container-counter">
               <h1 className="text-details">Current users</h1>
-              <Countup end={1000} className="counter" />
+              <Countup end={500} className="counter" />
             </div>
           </Col>
         </Row>
@@ -38,8 +40,8 @@ const Dashboard = () => {
           </Col>
           <Col span={14}>
             <div className="container-counter">
-              <h1 className="text-details2">Current users</h1>
-              <Countup end={1000} className="counter2" />
+              <h1 className="text-details2">User in plan</h1>
+              <Countup end={300} className="counter2" />
             </div>
           </Col>
         </Row>
@@ -55,8 +57,8 @@ const Dashboard = () => {
           </Col>
           <Col span={14}>
             <div className="container-counter">
-              <h1 className="text-details3">Current users</h1>
-              <Countup end={1000} className="counter3" />
+              <h1 className="text-details3">Actives users</h1>
+              <Countup end={200} className="counter3" />
             </div>
           </Col>
         </Row>
@@ -72,8 +74,8 @@ const Dashboard = () => {
           </Col>
           <Col span={14}>
             <div className="container-counter">
-              <h1 className="text-details4">Current users</h1>
-              <Countup end={1000} className="counter4" />
+              <h1 className="text-details4">Admin</h1>
+              <Countup end={2} className="counter4" />
             </div>
           </Col>
         </Row>
@@ -85,17 +87,27 @@ const Dashboard = () => {
     <React.Fragment>
       <Content>
         <Row gutter={[24, 24]}>
-          <Col xs={24} sm={24} lg={12} xl={6}>
+          <Col span={6}>
             <User />
           </Col>
-          <Col xs={24} sm={24} lg={12} xl={6}>
+          <Col span={6}>
             <Courses />
           </Col>
-          <Col xs={24} sm={24} lg={12} xl={6}>
+          <Col span={6}>
             <CouresePaid />
           </Col>
-          <Col xs={24} sm={24} lg={12} xl={6}>
+          <Col span={6}>
             <Admin />
+          </Col>
+          <Col span={16}>
+            <div className="contentContainer-auto">
+              <BarChart />
+            </div>
+          </Col>
+          <Col span={8}>
+            <div className="contentContainer-auto">
+              <PieChart />
+            </div>
           </Col>
         </Row>
       </Content>

@@ -36,8 +36,8 @@ const SideNavbar = () => {
           <Menu.Item key="/dashboard" icon={<AppstoreAddOutlined />}>
             <Link to="/dashboard">Dashboard</Link>
           </Menu.Item>
-          <Menu.Item key="/users" icon={<UserOutlined />}>
-            <Link to="/dashboard">Users</Link>
+          <Menu.Item key="/users/registred" icon={<UserOutlined />}>
+            <Link to="/users/registered">Users</Link>
           </Menu.Item>
           <Menu.Item key="/notifications" icon={<BellOutlined />}>
             <Link to="/dashboard">Notifications</Link>
