@@ -222,9 +222,10 @@ router.post("/register-phone", async (req, res) => {
 
       //4. call twilio send sms
       try {
-        twilio_sms_Client.sendSMS(phone, message);
+        // twilio_sms_Client.sendSMS(phone, message);
+        // res.status(200).json({ message: `Message send to ${phone}` });
+      res.status(200).json({ message: "This option is deactivated" });
 
-        res.status(200).json({ message: `Message send to ${phone}` });
       } catch (error) {
         res.status(401).json({ message: `This number is incorrect ${phone}` });
       }

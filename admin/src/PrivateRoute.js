@@ -1,9 +1,12 @@
 import React from "react";
-// import * as firebaseui from "firebaseui";
 import { Route, Redirect } from "react-router-dom";
+import { Layout } from "antd";
+import NavBar from "../src/components/layouts/navbar";
+import SideNavbar from "../src/components/layouts/side-navbar";
+
+const { Content } = Layout;
 
 let token = localStorage.getItem("token");
-// let remember = localStorage.getItem("firebaseui::rememberedAccounts");
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const isLogin = () => {
@@ -16,15 +19,22 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={props =>
-        isLogin() ? <Component {...props} /> : <Redirect to="/admin" />
+      render={(props) =>
+        isLogin() ? (
+          <Layout style={{ minHeight: "100vh" }}>
+            <SideNavbar />
+            <Layout>
+              <NavBar />
+              <Content className="content-padding">
+                <Component {...props} />
+              </Content>
+            </Layout>
+          </Layout>
+        ) : (
+          <Redirect to="/login" />
+        )
       }
     />
-    /*{ <Route
-      {...rest}
-      render={(props) =>
-        isLogin() ? <h1>Login success</h1>: <Redirect to="/login" />
-    }/> }*/
   );
 };
 

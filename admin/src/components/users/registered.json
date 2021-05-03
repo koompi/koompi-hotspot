@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "name": "Hong Sea",
+    "phone": "+855971234567",
+    "gender": "M",
+    "birthdate": "01-01-2020",
+    "address": "Phnom Penh",
+    "role": "Staff",
+    "activate": "1"
+  },
+  {
+    "id": "2",
+    "name": "Hong Sea",
+    "phone": "+855971234567",
+    "gender": "M",
+    "birthdate": "01-01-2020",
+    "address": "Phnom Penh",
+    "role": "Staff",
+    "activate": "1"
+  },
+  {
+    "id": "3",
+    "name": "Hong Sea",
+    "phone": "+855971234567",
+    "gender": "M",
+    "birthdate": "01-01-2020",
+    "address": "Phnom Penh",
+    "role": "Staff",
+    "activate": "1"
+  },
+  {
+    "id": "4",
+    "name": "Hong Sea",
+    "phone": "+855971234567",
+    "gender": "M",
+    "birthdate": "01-01-2020",
+    "address": "Phnom Penh",
+    "role": "Staff",
+    "activate": "1"
+  },
+  {
+    "id": "5",
+    "name": "Hong Sea",
+    "phone": "+855971234567",
+    "gender": "M",
+    "birthdate": "01-01-2020",
+    "address": "Phnom Penh",
+    "role": "Staff",
+    "activate": "1"
+  },
+  {
+    "id": "6",
+    "name": "Hong Sea",
+    "phone": "+855971234567",
+    "gender": "M",
+    "birthdate": "01-01-2020",
+    "address": "Phnom Penh",
+    "role": "Staff",
+    "activate": "1"
+  }
+]

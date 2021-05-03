@@ -1,36 +1,39 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
-// import Navbar from "./admin/components/layout/navbar/Navbar";
-// import Main from "./admin/components/pages/main/Main";
-// import Sidebar from "./admin/components/layout/sidebar/Sidebar";
+import { BrowserRouter as Router, Switch } from "react-router-dom";
 import Dashboard from "./components/dashboard";
-import ConfirmAdmin from "./components/email-verification";
+import Email_verification from "./components/email-verification";
 import Login from "./components/login";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import Logout from "./components/logout";
+import Main from "./components/users/main";
+import RegisteredUser from "./components/users/register-user";
+import ActivesUsers from "./components/users/active-user";
+import Admin from "./components/users/admin";
 
 import "./App.css";
-import "./assets/css/App.css";
 
 const AppDashboard = () => {
   return (
     <React.Fragment>
       <Router>
         <Switch>
-          <Route exact path="/admin/" restrict={true} component={Login} />
+          <PublicRoute exact="true" path="/" component={Login} />
+          <PublicRoute exact="true" path="/login" component={Login} />
           <PublicRoute
-            exact
-            path="/admin/login"
-            restrict={true}
-            component={Login}
+            exact="true"
+            path="/verify"
+            component={Email_verification}
           />
+          <PublicRoute exact="true" path="/logout" component={Logout} />
+          <PrivateRoute exact="true" path="/dashboard" component={Dashboard} />
           <PrivateRoute
-            exact
-            path="/admin/login/confirm-Admin"
-            component={ConfirmAdmin}
+            exact="true"
+            path="/users/registered"
+            component={Main}
           />
-          <PrivateRoute exact path="/admin/home" component={Dashboard} />
+          <PrivateRoute exact="true" path="/users/actives" component={Main} />
+          <PrivateRoute exact="true" path="/users/admin" component={Main} />
         </Switch>
       </Router>
     </React.Fragment>
