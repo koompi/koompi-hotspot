@@ -1,22 +1,26 @@
-const pool = require("./db");
 
-const checkDiscount = async () => {
-  const req = "0a1d3284-f2ea-4c84-a6c6-aface91cc6e1";
-  const a = await pool.query("SELECT role  FROM useraccount where id=$1", [
-    req
-  ]);
-  if (a.rows[0].role === "Teacher") {
-    var b = await pool.query(
-      "select d.*,s.* from discount_teachers as d INNER JOIN setdiscount as s ON (d.acc_id=$1 AND d.approved IS TRUE AND s.role = 'Teacher')",
-      [req]
-    );
-    return b.rows[0].discount;
-  } else if (a.rows[0].role === "Normal") {
-    const c = await pool.query(
-      "SELECT *  FROM setdiscount where role='Normal'"
-    );
-    return c.role[0].discount;
+require("dotenv").config();
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const myPhone = process.env.TWILIO_PHONE_NUMBER;
+
+const client = require("twilio")(accountSid, authToken);
+
+const sendSMS = async (to, message) => {
+  try {
+    await client.messages
+      .create({
+        body: message,
+        from: myPhone,
+        to: to
+      })
+      .then(message => {
+        console.log(message.sid);
+      })
+      .done();
+  } catch (error) {
+    console.error(error.message);
   }
 };
-
-console.log(checkDiscount());
+sendSMS("+855314004102", "PULIN");
