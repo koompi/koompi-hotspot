@@ -26,9 +26,7 @@ router.get("/notification", authorization, async (req, res) => {
   try {
     const noti = await pool.query("SELECT * from notification");
 
-    res.status(200).send({
-      notification: noti.rows
-    });
+    res.status(200).send(noti.rows);
   } catch (error) {
     console.log("error on get notification", error);
     res.status(500).json({ message: "Server Error!" });
