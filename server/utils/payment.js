@@ -10,16 +10,22 @@ const payment = async (req, asset, plan, memo) => {
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
-    //============ amnt for push data to selendra as string
     //============ amount for checking condition
 
     if (amnt === 30) {
-      amnt = "50";
       amount = 50;
     }
     if (amnt === 365) {
-      amnt = "600";
       amount = 600;
+    }
+
+    // check if admin allowed and set set discount
+    const discount = await checkDiscount(req);
+    var dis_value = 0;
+    if (discount[1] !== 0) {
+      dis_value = (amount * discount[1]) / 100;
+    } else {
+      dis_value = 0;
     }
 
     const checkWallet = await pool.query(
@@ -39,7 +45,7 @@ const payment = async (req, asset, plan, memo) => {
       apisec: process.env.API_SEC,
       destination: process.env.BANK_wallet,
       asset_code: asset,
-      amount: amnt,
+      amount: `${amount - dis_value}`,
       memo: memo
     };
 
@@ -56,7 +62,7 @@ const payment = async (req, asset, plan, memo) => {
           const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
           //============================= 0.0001 if for fee ==========================
-          if (wallet < amount + 0.0001) {
+          if (wallet < amount - dis_value + 0.0001) {
             return [400, "You don't have enough money!"];
           } else {
             const done = await axios
@@ -92,12 +98,19 @@ const checking = async (req, plan) => {
     var amount = 0;
 
     if (amnt === 30) {
-      amnt = "50";
       amount = 50;
     }
     if (amnt === 365) {
-      amnt = "600";
       amount = 600;
+    }
+
+    // check if admin allowed and set set discount
+    const discount = await checkDiscount(req);
+    var dis_value = 0;
+    if (discount[1] !== 0) {
+      dis_value = (amount * discount[1]) / 100;
+    } else {
+      dis_value = 0;
     }
 
     const checkWallet = await pool.query(
@@ -113,20 +126,18 @@ const checking = async (req, plan) => {
     if (checkWallet.rows[0].ids === null) {
       console.log("get wallet first.");
       return [(status = 200), (message = "Please get a wallet first!")];
-      // res.status(401).json({ message: "Please get a wallet first!" });
     } else {
       const data = await axios
         .post(
           "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
           userPortfolio
         )
-        // .done()
 
         .then(async r => {
           const wallet = await r.data.token;
           //=============================check if the money is enough or not=========
           //============================= 0.001 if for fee ==========================
-          if (wallet < amount + 0.0001) {
+          if (wallet < amount - dis_value + 0.0001) {
             return [401, "You don't have enough money!"];
           }
         })
@@ -139,7 +150,6 @@ const checking = async (req, plan) => {
   } catch (error) {
     console.log("checking", error);
     return [401, "You don't have enough money!"];
-    // return false;
   }
 };
 
@@ -158,6 +168,35 @@ const confirm_pass = async (req, password) => {
   } catch (error) {
     console.log("bug with confrim password function", error);
     return false;
+  }
+};
+
+const checkDiscount = async req => {
+  try {
+    const a = await pool.query("SELECT role  FROM useraccount where id=$1", [
+      req.user
+    ]);
+    if (a.rows[0].role === "Teacher") {
+      var b = await pool.query(
+        "select d.*,s.* from discount_teachers as d INNER JOIN setdiscount as s ON (d.acc_id=$1 AND d.approved IS TRUE AND s.role = 'Teacher')",
+        [req.user]
+      );
+      if (b.rowCount === 0) {
+        return ["teacher", 0];
+      }
+      return ["teacher", b.rows[0].discount];
+    } else if (a.rows[0].role === "Normal") {
+      const c = await pool.query(
+        "SELECT *  FROM setdiscount where role='Normal'"
+      );
+      if (b.rowCount === 0) {
+        return ["normal", 0];
+      }
+      return ["normal", c.rows[0].discount];
+    } else return ["null", 0];
+  } catch (error) {
+    console.log("Error on method checkDiscount on payment.js", error);
+    return ["error function", 0];
   }
 };
 

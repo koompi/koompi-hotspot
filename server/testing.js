@@ -1,21 +1,26 @@
-// const cron = require("node-cron");
 
-// cron.schedule("* * * * *", () => {
-//   console.log("running every 30 second");
-// });
-// var min = 100000;
-// var max = 999999;
-// var code = Math.floor(Math.random() * (max - min + 1) + min);
-// console.log(code);
+require("dotenv").config();
 
-// var a = "0.000011";
-// var b = "1.000011";
-// a = parseInt(a,10);
-// b = parseFloat(b,10);
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const myPhone = process.env.TWILIO_PHONE_NUMBER;
 
-// console.log(a);
-// console.log(b);
+const client = require("twilio")(accountSid, authToken);
 
-// async function validateAddress(address) {
-//   return new Promise(async (resolve, reject) => {
-
+const sendSMS = async (to, message) => {
+  try {
+    await client.messages
+      .create({
+        body: message,
+        from: myPhone,
+        to: to
+      })
+      .then(message => {
+        console.log(message.sid);
+      })
+      .done();
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+sendSMS("+855314004102", "PULIN");
