@@ -1,0 +1,57 @@
+name: PROD CI + CD
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  DeployStaging:
+    name: Deploy to Staging 
+    if: github.event.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment: 
+      name: Staging
+      url: 'https://api-hotspot-demo.koompi.org'
+    steps:
+      - name: Checkout Here
+        uses: actions/checkout@v2
+      - name: Install ssh key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}        
+      - name: Env
+        env:
+          BASH_SECRET: ${{ secrets.BASH_SHELL }}
+        run: |
+          echo "$BASH_SECRET" > ./deploy
+          chmod +x ./deploy
+      - name: Deploying to Staging...     
+        run: |
+          ./deploy       
+            
+  DeployProd:
+    name: Deploy to Prod
+    needs: [DeployStaging]
+    runs-on: ubuntu-latest
+    environment: 
+      name: Production
+      url: 'https://api-hotspot.koompi.org'
+    steps:
+      - name: Checkout Here
+        uses: actions/checkout@v2
+      - name: Install ssh key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}        
+      - name: Env
+        env:
+          BASH_SECRET: ${{ secrets.BASH_SHELL }}
+        run: |
+          echo "$BASH_SECRET" > ./deploy
+          chmod +x ./deploy
+      - name: Deploying to Prod...     
+        run: |
+          ./deploy       

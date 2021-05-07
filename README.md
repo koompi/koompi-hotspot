@@ -1,8 +1,7 @@
 This project was bootstrapped with [Postgresql](https://www.postgresql.org/).  
 
-
-[![CircleCI](https://circleci.com/gh/koompi/koompi-hotspot.svg?style=shield)](https://circleci.com/gh/koompi/koompi-hotspot)
-
+[![DEV CI + CD](https://github.com/koompi/koompi-hotspot/actions/workflows/development.yml/badge.svg)](https://github.com/koompi/koompi-hotspot/actions/workflows/development.yml)
+[![PROD CI + CD](https://github.com/koompi/koompi-hotspot/actions/workflows/production.yml/badge.svg)](https://github.com/koompi/koompi-hotspot/actions/workflows/production.yml)
 
 ## Available Scripts
 

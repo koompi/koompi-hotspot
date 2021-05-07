@@ -1,0 +1,14 @@
+version: "3.0"
+services:
+  koompififi_staging:
+    image: pionux/node-alpine:0.1.0
+    container_name: api-hotspot-staging
+    restart: always
+    ports:
+      - "5001:5000"
+    volumes:
+      - "${HOTSPOT_PATH}:/var/www/app/"
+    working_dir: /var/www/app/
+    command:
+      - "./start.sh"
+      
