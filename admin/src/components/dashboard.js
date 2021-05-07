@@ -17,11 +17,11 @@ const Dashboard = () => {
   const User = () => {
     return (
       <React.Fragment>
-        <Row className="widget-card">
-          <Col span={10}>
+        <Row className="contentContainer-auto">
+          <Col span={6}>
             <TeamOutlined size="45" className="background-image-widget" />
           </Col>
-          <Col span={14}>
+          <Col span={18}>
             <div className="container-counter">
               <h1 className="text-details">Current users</h1>
               <Countup end={500} className="counter" />
@@ -34,11 +34,11 @@ const Dashboard = () => {
   const Courses = () => {
     return (
       <React.Fragment>
-        <Row className="widget-card2">
-          <Col span={10}>
+        <Row className="contentContainer-auto">
+          <Col span={6}>
             <VideoCameraOutlined className="background-image-widget2" />
           </Col>
-          <Col span={14}>
+          <Col span={18}>
             <div className="container-counter">
               <h1 className="text-details2">User in plan</h1>
               <Countup end={300} className="counter2" />
@@ -51,11 +51,11 @@ const Dashboard = () => {
   const CouresePaid = () => {
     return (
       <React.Fragment>
-        <Row className="widget-card3">
-          <Col span={10}>
+        <Row className="contentContainer-auto">
+          <Col span={6}>
             <ShoppingOutlined className="background-image-widget3" />
           </Col>
-          <Col span={14}>
+          <Col span={18}>
             <div className="container-counter">
               <h1 className="text-details3">Actives users</h1>
               <Countup end={200} className="counter3" />
@@ -68,8 +68,8 @@ const Dashboard = () => {
   const Admin = () => {
     return (
       <React.Fragment>
-        <Row className="widget-card4">
-          <Col span={10}>
+        <Row className="contentContainer-auto">
+          <Col span={6}>
             <ControlOutlined className="background-image-widget4" />
           </Col>
           <Col span={14}>

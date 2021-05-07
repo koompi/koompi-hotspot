@@ -39,11 +39,17 @@ const SideNavbar = () => {
           <Menu.Item key="/users/registred" icon={<UserOutlined />}>
             <Link to="/users/registered">Users</Link>
           </Menu.Item>
-          <Menu.Item key="/notifications" icon={<BellOutlined />}>
-            <Link to="/dashboard">Notifications</Link>
+          <Menu.Item
+            key="/notifications/notification-table"
+            icon={<BellOutlined />}
+          >
+            <Link to="/notifications/notification-table">Notifications</Link>
           </Menu.Item>
-          <Menu.Item key="/promostions" icon={<NotificationOutlined />}>
-            <Link to="/dashboard">Promostions</Link>
+          <Menu.Item
+            key="/promotions/promotion-table"
+            icon={<NotificationOutlined />}
+          >
+            <Link to="/promotions/promotion-table">Promostions</Link>
           </Menu.Item>
         </Menu>
       </Sider>
