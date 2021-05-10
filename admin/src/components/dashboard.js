@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Row, Col } from "antd";
 import Countup from "react-countup";
 import {
@@ -9,9 +9,39 @@ import {
 } from "@ant-design/icons";
 import BarChart from "./analysis/bar-charts";
 import PieChart from "./analysis/pie-charts";
+import axios from "axios";
+
+const getToken = localStorage.getItem("token");
 
 const { Content } = Layout;
 const Dashboard = () => {
+  // state mangement
+  const [, setLoading] = useState(false);
+  const [items, setItems] = useState();
+
+  useEffect(() => {
+    setLoading(true);
+    const auth = {
+      Authorization: "Bearer " + getToken,
+    };
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/api/auth/admin/dashboard",
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        ...auth,
+      },
+    })
+      .then((res) => {
+        setItems(res.data);
+        console.log(setItems);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   // components for analysis
 
   const User = () => {
@@ -24,7 +54,9 @@ const Dashboard = () => {
           <Col span={18}>
             <div className="container-counter">
               <h1 className="text-details">Current users</h1>
-              <Countup end={500} className="counter" />
+              {items && (
+                <Countup end={items.users_resgistered} className="counter" />
+              )}
             </div>
           </Col>
         </Row>
@@ -41,7 +73,9 @@ const Dashboard = () => {
           <Col span={18}>
             <div className="container-counter">
               <h1 className="text-details2">User in plan</h1>
-              <Countup end={300} className="counter2" />
+              {items && (
+                <Countup end={items.users_bought_plan} className="counter" />
+              )}
             </div>
           </Col>
         </Row>
@@ -58,7 +92,9 @@ const Dashboard = () => {
           <Col span={18}>
             <div className="container-counter">
               <h1 className="text-details3">Actives users</h1>
-              <Countup end={200} className="counter3" />
+              {items && (
+                <Countup end={items.users_activate_login} className="counter" />
+              )}
             </div>
           </Col>
         </Row>
@@ -75,7 +111,7 @@ const Dashboard = () => {
           <Col span={14}>
             <div className="container-counter">
               <h1 className="text-details4">Admin</h1>
-              <Countup end={2} className="counter4" />
+              {items && <Countup end={items.user_admins} className="counter" />}
             </div>
           </Col>
         </Row>
