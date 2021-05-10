@@ -7,9 +7,8 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import Logout from "./components/logout";
 import Main from "./components/users/main";
-import RegisteredUser from "./components/users/register-user";
-import ActivesUsers from "./components/users/active-user";
-import Admin from "./components/users/admin";
+import Notifications from "./components/notifications/main";
+import Promotions from "./components/promotions/main";
 
 import "./App.css";
 
@@ -34,6 +33,26 @@ const AppDashboard = () => {
           />
           <PrivateRoute exact="true" path="/users/actives" component={Main} />
           <PrivateRoute exact="true" path="/users/admin" component={Main} />
+          <PrivateRoute
+            exact="true"
+            path="/notifications/notification-table"
+            component={Notifications}
+          />
+          <PrivateRoute
+            exact="true"
+            path="/notifications/notification-form"
+            component={Notifications}
+          />
+          <PrivateRoute
+            exact="true"
+            path="/promotions/promotion-table"
+            component={Promotions}
+          />
+          <PrivateRoute
+            exact="true"
+            path="/promotions/promotion-form"
+            component={Promotions}
+          />
         </Switch>
       </Router>
     </React.Fragment>
