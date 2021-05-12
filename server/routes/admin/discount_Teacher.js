@@ -108,14 +108,14 @@ router.get("/set-discount", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
-router.get("/set-discount/:role", authorization, async (req, res) => {
+router.delete("/set-discount/:id", authorization, async (req, res) => {
   try {
-    await pool.query("delete from setdiscount where role = $1", [
-      req.params.role
+    await pool.query("delete from setdiscount where id = $1", [
+      req.params.id
     ]);
 
     res.status(200).send({
-      message: `Deleted discount for role : ${req.params.role}.`
+      message: `Deleted discount for role : ${req.params.id}.`
     });
   } catch (error) {
     console.log("error on post set-discount", error);
