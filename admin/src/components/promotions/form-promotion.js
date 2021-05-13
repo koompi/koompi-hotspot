@@ -75,9 +75,9 @@ const PromotionForm = () => {
                           .indexOf(input.toLowerCase()) >= 0
                       }
                     >
-                      <Option value="jack">Jack</Option>
-                      <Option value="lucy">Lucy</Option>
-                      <Option value="tom">Tom</Option>
+                      <Option value="jack">Teacher</Option>
+                      <Option value="lucy">Student</Option>
+                      <Option value="tom">Others</Option>
                     </Select>
                   </Form.Item>
                 </Col>
