@@ -47,7 +47,7 @@ const NavBar = () => {
             <div style={{ width: "270px" }}>
               <Row className="accountNavbarhover">
                 <Col style={{ paddingTop: "4px" }} span={4}>
-                  <HiLogout style={{ fontSize: "21px" }} />
+                  <HiLogout className="logo-logout" />
                 </Col>
                 <Link to="/logout">
                   <Col

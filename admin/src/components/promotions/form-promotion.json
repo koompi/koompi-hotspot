@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1",
+    "role": "Teacher",
+    "discount": "20%"
+  },
+  {
+    "id": "2",
+    "role": "Student",
+    "discount": "20%"
+  },
+  {
+    "id": "3",
+    "role": "Teacher",
+    "discount": "30%"
+  },
+  {
+    "id": "4",
+    "role": "Student",
+    "discount": "40%"
+  }
+]

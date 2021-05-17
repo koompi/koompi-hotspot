@@ -1,19 +1,19 @@
 import React from "react";
 import { Pie } from "@ant-design/charts";
 
-const PieChart = () => {
+const PieChart = (props) => {
   var data = [
     {
       type: "Users",
-      value: 500,
+      value: 50,
     },
     {
       type: "In plan",
-      value: 300,
+      value: 20,
     },
     {
       type: "Actives",
-      value: 200,
+      value: 30,
     },
   ];
   var config = {
