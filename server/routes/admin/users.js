@@ -72,11 +72,26 @@ router.get("/users-register", authorization, async (req, res) => {
 
   router.get("/users-active", authorization, async (req, res) => {
     try {
-      const users_active_login = await pool.query(
-        "SELECT detail.id,detail.fullname, detail.phone, detail.gender, detail.birthdate, detail.address, detail.role, detail.activate, detail.image, c.acc_id,c.calledstationid,c.acctterminatecause FROM  useraccount AS detail, radacct AS c WHERE detail.id::text=c.acc_id AND  c.calledstationid ='saang-school' AND c.acctterminatecause IS NULL"
-      );  
+      // const users_active_login = await pool.query(
+      //   "SELECT * FROM  radacct WHERE  calledstationid ='sanng-school' AND acctterminatecause is NULL"
+      // );  
+      const users = await pool.query(
+        "SELECT detail.id,detail.fullname, detail.phone, r.*, c.acc_id,c.calledstationid,c.acctterminatecause FROM  useraccount AS detail, radgroupcheck as r, radacct AS c WHERE detail.id::text=c.acc_id AND r.acc_id=c.acc_id AND  c.calledstationid ='sanng-school' AND c.acctterminatecause IS NULL"
+      );
+      let str = users.rows[0].groupname;
+      let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
       res.status(200).json({
-        users_login: users_active_login.rows
+        users_login: {
+          fullname: users.rows[0].fullname,
+          phone: users.rows[0].phone,
+          plan,
+          expire: users.rows[0].value,
+          simultaneous: users.rows[1].value,
+          speed_up: '5',
+          speed_down: '5',
+          device: '1',
+          status: 'Active'
+        }
       });
     } catch (error) {
       console.log("error on users active", error);
