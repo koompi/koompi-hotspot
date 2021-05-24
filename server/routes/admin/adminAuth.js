@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const pool = require("../../db");
 const bcrypt = require("bcrypt");
+const moment = require ("moment")
 const { jwtGeneratorAdmin } = require("../../utils/jwtGenerator");
 const validInfo = require("../../middleware/validInfo");
 const authorization = require("./../../middleware/authorization");
@@ -115,17 +116,16 @@ router.post("/retry", authorization, async (req, res) => {
 router.post("/confirm-admin", authorization, async (req, res) => {
   try {
     const { vCode } = req.body;
-    console.log(req.user);
-    console.log(vCode);
 
     const user = await pool.query("SELECT * FROM useraccount WHERE id =$1", [
       req.user
     ]);
-    console.log(user.rows[0].code);
 
     if (user.rows[0].code === vCode) {
       // 3. give them the jwt token
       const token = jwtGeneratorAdmin(user.rows[0].id);
+      var now = moment();
+      await pool.query("UPDATE admins SET last_login=$1 WHERE acc_id=$2",[now,req.user])
       res.json({
         token
       });

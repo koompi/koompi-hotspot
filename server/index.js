@@ -55,7 +55,7 @@ app.use("/api", require("./routes/Account/uploadProfile"));
 app.use("/api", require("./routes/Account/request_discount"));
 
 // integration with selendra wallet
-app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
+// //app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
 
 // send sms to testing
 app.use("/api/test", require("./routes/Account/twilioSMS/lookup"));
