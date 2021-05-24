@@ -58,11 +58,22 @@ router.get("/users-register", authorization, async (req, res) => {
   router.get("/users-admin", authorization, async (req, res) => {
     try {
       const admins = await pool.query(
-        "SELECT id, fullname, phone, gender, birthdate, address, role, activate, image FROM useraccount WHERE role = 'Admin'"
+        "SELECT u.id, u.fullname, u.email, a.* FROM useraccount AS u, admins AS a  WHERE u.id::text = a.acc_id AND a.role = 'admin'"
       );
 
-       res.status(200).json({
-        user_admins: admins.rows
+        if(admins.rows.length ===0){
+          return res.status(200).json({user_admins:admins.rows})
+        }
+
+      res.status(200).json({
+        user_admins:{
+          id: admins.rows[0].acc_id,
+          fullname: admins.rows[0].fullname,
+          email: admins.rows[0].email,
+          branch: admins.rows[0].branch,
+          last_login: admins.rows[0].last_login,
+          ban : admins.rows[0].ban
+        }
       });
     } catch (error) {
       console.log("error on users admin", error);
@@ -70,13 +81,54 @@ router.get("/users-register", authorization, async (req, res) => {
     }
   });
 
-  router.get("/users-active", authorization, async (req, res) => {
+  router.put("/users-admin/:id", authorization, async (req, res) => {
     try {
-      const users_active_login = await pool.query(
-        "SELECT detail.id,detail.fullname, detail.phone, detail.gender, detail.birthdate, detail.address, detail.role, detail.activate, detail.image, c.acc_id,c.calledstationid,c.acctterminatecause FROM  useraccount AS detail, radacct AS c WHERE detail.id::text=c.acc_id AND  c.calledstationid ='saang-school' AND c.acctterminatecause IS NULL"
-      );  
+      const admins = await pool.query(
+        "SELECT ban FROM admins WHERE acc_id = $1 AND role = 'admin'",[req.params.id]
+      );
+      if(admins.rows[0].ban===false){
+        await pool.query("UPDATE admins SET ban=true")        
+      }else{
+        await pool.query("UPDATE admins SET ban=false")
+      }
+      res.status(200).json({message:"Done"})
+    } catch (error) {
+      console.log("error on users admin", error);
+      res.status(500).json({ message: "Server Error!" });
+    }
+  });
+
+  router.get("/users-active", authorization, async (req, res) => {
+    try {  
+      const users = await pool.query(
+        "SELECT detail.id,detail.fullname, detail.phone, r.*, c.acc_id,c.calledstationid,c.acctterminatecause FROM  useraccount AS detail, radgroupcheck as r, radacct AS c WHERE detail.id::text=c.acc_id AND r.acc_id=c.acc_id AND  c.calledstationid ='sanng-school' OR c.calledstationid ='saang-school' AND c.acctterminatecause IS NULL"
+      );
+      
+      if(users.rows.length === 0){
+        return res.status(200).json({users_login:users.rows})
+      }
+      
+      var device;
+      if(users.rows.length===4){
+        device =2;
+      }else{
+        device = 1
+      }
+
+      let str = users.rows[0].groupname;
+      let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
       res.status(200).json({
-        users_login: users_active_login.rows
+        users_login: {
+          fullname: users.rows[0].fullname,
+          phone: users.rows[0].phone,
+          plan,
+          expire: users.rows[0].value,
+          simultaneous: users.rows[1].value,
+          speed_up: '5',
+          speed_down: '5',
+          device: `${device}`,
+          status: 'Active'
+        }
       });
     } catch (error) {
       console.log("error on users active", error);
