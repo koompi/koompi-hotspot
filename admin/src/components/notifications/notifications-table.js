@@ -1,10 +1,40 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { Table, Tag } from "antd";
-import data_notifications from "./notifications.json";
 
 import thumbnail from "../../assets/images/password.jpg";
+import axios from 'axios'
+
+const getToken = localStorage.getItem("token");
+
 
 const TableNotifications = () => {
+
+  const [ ,setLoading] = useState(false);
+  const [noties, setNoties] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    const auth = {
+      Authorization: "Bearer " + getToken,
+    };
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/api/admin/notification",
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        ...auth,
+      },
+    })
+      .then((res) => {
+        setNoties(res.data);
+        console.log(setNoties);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   const columns = [
     {
       title: "Thumbnail",
@@ -30,8 +60,8 @@ const TableNotifications = () => {
     {
       title: "Descriptions",
       width: "25%",
-      dataIndex: "desc",
-      key: "desc",
+      dataIndex: "description",
+      key: "description",
     },
     {
       title: "Published Date",
@@ -40,8 +70,8 @@ const TableNotifications = () => {
     },
     {
       title: "Published By",
-      dataIndex: "published",
-      key: "published",
+      dataIndex: "fullname",
+      key: "fullname",
     },
     {
       title: "Actions",
@@ -60,7 +90,7 @@ const TableNotifications = () => {
   return (
     <React.Fragment>
       <div className="contentContainer-auto">
-        <Table dataSource={data_notifications} columns={columns} />
+        <Table dataSource={noties.notification} columns={columns} />
       </div>
     </React.Fragment>
   );

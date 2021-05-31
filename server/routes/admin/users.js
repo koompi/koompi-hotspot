@@ -66,14 +66,17 @@ router.get("/users-register", authorization, async (req, res) => {
         }
 
       res.status(200).json({
-        user_admins:{
-          id: admins.rows[0].acc_id,
-          fullname: admins.rows[0].fullname,
-          email: admins.rows[0].email,
-          branch: admins.rows[0].branch,
-          last_login: admins.rows[0].last_login,
-          ban : admins.rows[0].ban
-        }
+        user_admins:[
+          {
+            id: admins.rows[0].acc_id,
+            fullname: admins.rows[0].fullname,
+            email: admins.rows[0].email,
+            branch: admins.rows[0].branch,
+            last_login: admins.rows[0].last_login,
+            ban : admins.rows[0].ban
+          }
+        ]
+        
       });
     } catch (error) {
       console.log("error on users admin", error);
@@ -118,17 +121,19 @@ router.get("/users-register", authorization, async (req, res) => {
       let str = users.rows[0].groupname;
       let plan = str.slice(str.lastIndexOf("Ex_") + 3, str.lastIndexOf("_"));
       res.status(200).json({
-        users_login: {
-          fullname: users.rows[0].fullname,
-          phone: users.rows[0].phone,
-          plan,
-          expire: users.rows[0].value,
-          simultaneous: users.rows[1].value,
-          speed_up: '5',
-          speed_down: '5',
-          device: `${device}`,
-          status: 'Active'
-        }
+        users_login:[
+          {
+            fullname: users.rows[0].fullname,
+            phone: users.rows[0].phone,
+            plan,
+            expire: users.rows[0].value,
+            simultaneous: users.rows[1].value,
+            speed_up: '5',
+            speed_down: '5',
+            device: `${device}`,
+            status: 'Active'
+          }
+        ] 
       });
     } catch (error) {
       console.log("error on users active", error);

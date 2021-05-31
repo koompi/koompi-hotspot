@@ -1,13 +1,13 @@
-import React,{useState,useEffect} from "react";
-import { Table, Tag } from "antd";
-
+import React,{useEffect,useState} from "react";
+import { Table, Tag} from "antd";
 import axios from 'axios';
-const getToken = localStorage.getItem('token')
 
-const TableNotifications = () => {
+const getToken = localStorage.getItem('token');
+
+const GetPromotion = () => {
 
   const [ ,setLoading] = useState(false);
-  const [noties, setNoties] = useState([]);
+  const [promotions, setPromotion] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -16,15 +16,15 @@ const TableNotifications = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/view-discount",
+      url: "http://localhost:5000/api/admin/set-discount",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
       },
     })
       .then((res) => {
-        setNoties(res.data);
-        console.log(setNoties);
+        setPromotion(res.data);
+        console.log(setPromotion);
         setTimeout(() => {
           setLoading(false);
         }, 1000);
@@ -33,18 +33,6 @@ const TableNotifications = () => {
   }, []);
 
   const columns = [
-    {
-      title: "Full Name",
-      width: "15%",
-      dataIndex: "fullname",
-      key: "fullname",
-    },
-
-    {
-      title: "Published Date",
-      dataIndex: "date",
-      key: "date",
-    },
     {
       title: "Role",
       dataIndex: "role",
@@ -57,33 +45,34 @@ const TableNotifications = () => {
         }
       },
     },
+
     {
-      title: "Descriptions",
-      dataIndex: "desc",
-      key: "desc",
+      title: "Discount",
+      dataIndex: "discount",
+      key: "discount",
     },
 
     {
-      title: "APPROVE",
-      dataIndex: "ban",
-      key: "ban",
+      title: "Actions",
+      width: "25%",
+      dataIndex: "",
+      key: "",
       render: () => {
         return (
           <React.Fragment>
-            <Tag color="#108ee9">Approve</Tag>
-            <Tag color="#f50">Ban</Tag>
+            <Tag color="#108ee9">Edit</Tag>
+            <Tag color="#f50">Delete</Tag>
           </React.Fragment>
         );
       },
     },
   ];
+
   return (
     <React.Fragment>
-      <div className="contentContainer-auto">
-        <Table dataSource={noties.teachers} columns={columns} />
-      </div>
+        <Table dataSource={promotions.roles} columns={columns} />
     </React.Fragment>
   );
 };
 
-export default TableNotifications;
+export default GetPromotion;
