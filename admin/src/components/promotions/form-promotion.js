@@ -8,7 +8,6 @@ const PromotionForm = () => {
  
   return (
     <React.Fragment>
-      <Form layout="vertical" size="large">
         <Row gutter={[24, 24]}>
           <Col span={10}>
             <div className="contentContainer-auto">
@@ -21,7 +20,6 @@ const PromotionForm = () => {
             </div>
           </Col>
         </Row>
-      </Form>
     </React.Fragment>
   );
 };
