@@ -20,7 +20,7 @@ router.get("/view-discount", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
-router.post("/view-discount/:id", authorization, async (req, res) => {
+router.put("/view-discount/:id", authorization, async (req, res) => {
   try {
     const teachers = await pool.query(
       "update discount_teachers set approved = TRUE where id = $1",
@@ -51,7 +51,7 @@ router.get("/approved-discount", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
-router.post("/approved-discount/:id", authorization, async (req, res) => {
+router.put("/approved-discount/:id", authorization, async (req, res) => {
   try {
     const teachers = await pool.query(
       "update discount_teachers set approved = FALSE where id = $1",

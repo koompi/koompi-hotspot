@@ -1,13 +1,12 @@
 import React,{useState,useEffect} from "react";
-import { Table, Tag } from "antd";
+import { Table, Tag,Button } from "antd";
 
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
 
-const TableNotifications = () => {
-
+const TablePromotion = () => {
   const [ ,setLoading] = useState(false);
-  const [noties, setNoties] = useState([]);
+  const [views, setView] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -23,8 +22,8 @@ const TableNotifications = () => {
       },
     })
       .then((res) => {
-        setNoties(res.data);
-        console.log(setNoties);
+        setView(res.data);
+        console.log(setView);
         setTimeout(() => {
           setLoading(false);
         }, 1000);
@@ -70,8 +69,7 @@ const TableNotifications = () => {
       render: () => {
         return (
           <React.Fragment>
-            <Tag color="#108ee9">Approve</Tag>
-            <Tag color="#f50">Ban</Tag>
+            <Button type="primary" >Approve</Button>
           </React.Fragment>
         );
       },
@@ -80,10 +78,10 @@ const TableNotifications = () => {
   return (
     <React.Fragment>
       <div className="contentContainer-auto">
-        <Table dataSource={noties.teachers} columns={columns} />
+        <Table dataSource={views.teachers} columns={columns} />
       </div>
     </React.Fragment>
   );
 };
 
-export default TableNotifications;
+export default TablePromotion;
