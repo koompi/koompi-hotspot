@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from "react";
-import { Table, Tag} from "antd";
+import { Table,Skeleton, Tag} from "antd";
 import axios from 'axios';
 
 const getToken = localStorage.getItem('token');
@@ -7,7 +7,7 @@ const getToken = localStorage.getItem('token');
 const GetPromotion = () => {
 
   const [ ,setLoading] = useState(false);
-  const [promotions, setPromotion] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -23,8 +23,8 @@ const GetPromotion = () => {
       },
     })
       .then((res) => {
-        setPromotion(res.data);
-        console.log(setPromotion);
+        setData(res.data.roles);
+        console.log(setData);
         setTimeout(() => {
           setLoading(false);
         }, 1000);
@@ -61,16 +61,19 @@ const GetPromotion = () => {
         return (
           <React.Fragment>
             <Tag color="#108ee9">Edit</Tag>
-            <Tag color="#f50">Delete</Tag>
           </React.Fragment>
         );
       },
     },
   ];
 
+  if(data.length === 0){
+    return <Skeleton active/>
+  }
+
   return (
     <React.Fragment>
-        <Table dataSource={promotions.roles} columns={columns} />
+        <Table dataSource={data} columns={columns} />
     </React.Fragment>
   );
 };

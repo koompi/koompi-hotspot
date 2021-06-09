@@ -69,12 +69,11 @@ router.put("/disapprove-discount/:id", authorization, async (req, res) => {
 router.post("/set-discount", authorization, async (req, res) => {
   try {
     const { role, discount } = req.body;
-
     const type = await pool.query("select * from setdiscount where role = $1", [
       role
     ]);
 
-    if (type.rows.length !== 0) {
+    if (type.rows.length !== 0) {-
       await pool.query("update setdiscount set discount = $1 where role = $2", [
         discount,
         role

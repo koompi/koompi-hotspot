@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Row, Col} from "antd";
+import { Row, Col} from "antd";
 
 import GetPromotion from './form-promotion/get-promotion';
 import PostPromotion from './form-promotion/post-promotion';

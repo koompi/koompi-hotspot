@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import { Table, Tag,Button } from "antd";
+import { Table, Tag,Button,Skeleton } from "antd";
 
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
@@ -39,7 +39,7 @@ const TablePromotion = () => {
       method: "PUT",
       url: `http://localhost:5000/api/admin/approve-discount/${id}`,
       headers: {
-        "content-type": "application/json; charset=utf-8",
+        "Content-Type": "application/json; charset=utf-8",
         ...auth,
       },
     })
@@ -103,6 +103,9 @@ const TablePromotion = () => {
       },
     },
   ];
+  if(data.length === 0){
+    return <Skeleton active/>
+  }
   return (
     <React.Fragment>
       <div className="contentContainer-auto">

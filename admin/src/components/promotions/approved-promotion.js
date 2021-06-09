@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import { Button, Table, Tag } from "antd";
+import { Button, Skeleton, Table, Tag } from "antd";
 
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
@@ -105,7 +105,7 @@ const ApprovedPromotion = () => {
   ];
 
   if(data.length === 0){
-    return "Loading ..."
+    return <Skeleton active/>
   }
 
   return (

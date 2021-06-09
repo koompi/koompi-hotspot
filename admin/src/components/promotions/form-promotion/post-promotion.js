@@ -1,4 +1,4 @@
-import React,{useSelector,useState} from "react";
+import React from "react";
 import { Form, Input, Button, Row, Col, Select } from "antd";
 import axios from 'axios';
 
@@ -6,73 +6,28 @@ const getToken = localStorage.getItem('token')
 const { Option } = Select;
 
 const PostPromotion = () => {
-
-  const [ ,setLoading] = useState(false);
-  const [promotions, setPromotion] = useState([]);
-  // const [value, setValue] = useSelector();
-
-  // useEffect((data) => {
-  //   setLoading(true);
-  //   const auth = {
-  //     Authorization: "Bearer " + getToken,
-  //   };
-  //   const body={
-  //     role: data.role,
-  //     discount: data.discount
-  //   }
-  //   axios({
-  //     method: "POST",
-  //     url: "http://localhost:5000/api/admin/set-discount",body,
-  //     headers: {
-  //       "content-type": "application/json; charset=utf-8",
-  //       ...auth,
-  //     },
-      
-  //   })
-  //     .then((res) => {
-  //       setPromotion(res.data);
-  //       console.log(setPromotion);
-  //       setTimeout(() => {
-  //         setLoading(false);
-  //       }, 1000);
-  //     })
-  //     .catch((err) => console.log(err));
-  // }, []);  
-
-
-  const onSubmit = (data) => {
+  const onSubmit = (value) => {
     const auth = {
       Authorization: "Bearer " + getToken,
     };
-    const body = { 
-      role: data.role,
-      discount : data.discount 
+    const data = { 
+      role: value.role,
+      discount : value.discount 
     };
-
-    console.log(typeof  data.role);
 
      axios({
        method: "POST",
-       url:"http://localhost:5000/api/admin/set-discount",body,
+       url:"http://localhost:5000/api/admin/set-discount",data,
        headers:{
-        "content-type": "application/json; charset=utf-8",
-              ...auth,
+        "Content-Type": "application/json; charset=utf-8",
+          ...auth,
        },
-      
      })
        .then((res) => {
-        setPromotion(res.data);
-        console.log("promostion",res.data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+        console.log("promostion",res.data);        
       })
       .catch((err) => console.log(err));
   };
-
-  function onChange(value) {
-    console.log(`selected ${value}`);
-  }
 
   return (
     <React.Fragment>  
@@ -81,7 +36,7 @@ const PostPromotion = () => {
               <Col span={24}>
                 <Form.Item
                   label="Select role"
-                  name="role"
+                  name="role" 
                   rules={[
                     {
                       required: true,
@@ -91,7 +46,6 @@ const PostPromotion = () => {
                 >
                   <Select                 
                     showSearch
-                    // onChange={ onChange}
                     style={{ width: "100%" }}
                     placeholder="Selecting role"
                     optionFilterProp="children"                                 
@@ -107,7 +61,7 @@ const PostPromotion = () => {
                   </Select>
                 </Form.Item>                
               </Col>
-              <Col span={24}>
+           <Col span={24}>
                 <Form.Item
                   label="Discount"
                   name="discount"
@@ -123,13 +77,18 @@ const PostPromotion = () => {
               </Col>
             </Row>
             <Form.Item>
-              <Button type="primary" className="publish-button2" type="primary" htmlType="submit">
+              <Button 
+              type="primary"
+                  htmlType="submit"
+                  className="publish-button2"
+                  size="large"
+              >
                   Publish
               </Button>
             </Form.Item>
         </Form>
-  </React.Fragment>
-);
+     </React.Fragment>
+  );
 };
 
 export default PostPromotion;
