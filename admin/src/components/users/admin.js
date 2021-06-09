@@ -59,12 +59,11 @@ const Admin = () => {
       dataIndex: "ban",
       key: "ban",
       render: (ban) => {
-        if (ban==true) {
+        if (ban) {
           return <Tag color="#87d068">BAN</Tag>;
         } else {
           return <Tag color="#f50">UNBAN</Tag>;
         }
-        // return <Tag color="#f50">BAN</Tag>;
       },
     },
   ];

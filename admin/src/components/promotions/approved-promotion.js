@@ -37,7 +37,7 @@ const ApprovedPromotion = () => {
     };
     axios({
       method: "PUT",
-      url: `http://localhost:5000/api/admin/approved-discount/${id}`,
+      url: `http://localhost:5000/api/admin/disapprove-discount/${id}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -45,11 +45,6 @@ const ApprovedPromotion = () => {
     })
       .then((res) => {
         console.log("res", res);
-        // setData(res.data);
-        // console.log(setData);
-        // setTimeout(() => {
-        //   setLoading(false);
-        // }, 1000);
       })
       .catch((err) => console.log(err));
   }

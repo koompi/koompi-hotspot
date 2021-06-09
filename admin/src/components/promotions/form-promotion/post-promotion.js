@@ -1,5 +1,5 @@
 import React,{useSelector,useState} from "react";
-import { Form, Input, Button, Row, Col, Table, Tag, Select } from "antd";
+import { Form, Input, Button, Row, Col, Select } from "antd";
 import axios from 'axios';
 
 const getToken = localStorage.getItem('token')
@@ -79,7 +79,7 @@ const PostPromotion = () => {
       <Form layout="vertical" size="large" onFinish={onSubmit}>
         <Row gutter={[32, 0]}>
               <Col span={24}>
-                {/* <Form.Item
+                <Form.Item
                   label="Select role"
                   name="role"
                   rules={[
@@ -105,19 +105,7 @@ const PostPromotion = () => {
                     <Option value="student">Student</Option>
                     <Option value="others">Others</Option>
                   </Select>
-                </Form.Item> */}
-                <Form.Item
-                  label="Discount"
-                  name="role"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input the role!",
-                    },
-                  ]}
-                >
-                  <Input className="schoolInput" />
-                </Form.Item>
+                </Form.Item>                
               </Col>
               <Col span={24}>
                 <Form.Item

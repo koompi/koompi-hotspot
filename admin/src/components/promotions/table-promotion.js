@@ -6,7 +6,7 @@ const getToken = localStorage.getItem('token')
 
 const TablePromotion = () => {
   const [ ,setLoading] = useState(false);
-  const [views, setView] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -22,14 +22,32 @@ const TablePromotion = () => {
       },
     })
       .then((res) => {
-        setView(res.data);
-        console.log(setView);
+        setData(res.data.teachers);
+        console.log(setData);
         setTimeout(() => {
           setLoading(false);
         }, 1000);
       })
       .catch((err) => console.log(err));
   }, []);
+
+  const handleApproveUser = (id) =>{
+    const auth = {
+      Authorization: "Bearer " + getToken,
+    };
+    axios({
+      method: "PUT",
+      url: `http://localhost:5000/api/admin/approve-discount/${id}`,
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        ...auth,
+      },
+    })
+      .then((res) => {
+        console.log("res", res);
+      })
+      .catch((err) => console.log(err));
+  }
 
   const columns = [
     {
@@ -64,21 +82,31 @@ const TablePromotion = () => {
 
     {
       title: "APPROVE",
-      dataIndex: "ban",
-      key: "ban",
-      render: () => {
-        return (
-          <React.Fragment>
-            <Button type="primary" >Approve</Button>
-          </React.Fragment>
-        );
+      dataIndex: "approved",
+      key: "approved",
+      render: (approved, data) => {
+        const {id} = data
+        if(!approved){
+          return (
+            <React.Fragment>
+              <Button  type="primary" onClick={() => handleApproveUser(id)}>Approve</Button>
+            </React.Fragment>
+          );
+        }else{
+          return (
+            <React.Fragment>
+              <Button  type="primary" danger onClick={handleApproveUser}>Approve</Button>
+            </React.Fragment>
+          );
+        }
+        
       },
     },
   ];
   return (
     <React.Fragment>
       <div className="contentContainer-auto">
-        <Table dataSource={views.teachers} columns={columns} />
+        <Table dataSource={data} columns={columns} />
       </div>
     </React.Fragment>
   );
