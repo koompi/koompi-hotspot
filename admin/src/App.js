@@ -53,6 +53,11 @@ const AppDashboard = () => {
             path="/promotions/promotion-form"
             component={Promotions}
           />
+          <PrivateRoute
+            exact="true"
+            path="/promotions/promotion-approved"
+            component={Promotions}
+          />
         </Switch>
       </Router>
     </React.Fragment>

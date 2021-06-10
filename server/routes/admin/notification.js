@@ -68,7 +68,7 @@ router.post("/notification", authorization, async (req, res) => {
 });
 router.get("/notification", authorization, async (req, res) => {
   try {
-    const noti = await pool.query("SELECT * from notification");
+    const noti = await pool.query("SELECT n.*,a.id,a.fullname from notification as n, useraccount as a WHERE a.id::text = n.acc_id");
 
     res.status(200).send({
       notification: noti.rows

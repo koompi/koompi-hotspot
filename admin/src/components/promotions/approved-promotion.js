@@ -1,10 +1,11 @@
 import React,{useState,useEffect} from "react";
-import { Table, Tag,Button,Skeleton } from "antd";
+import { Button, Skeleton, Table, Tag } from "antd";
 
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
 
-const TablePromotion = () => {
+const ApprovedPromotion = () => {
+
   const [ ,setLoading] = useState(false);
   const [data, setData] = useState([]);
 
@@ -15,15 +16,14 @@ const TablePromotion = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/view-discount",
+      url: "http://localhost:5000/api/admin/approved-discount",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
       },
     })
       .then((res) => {
-        setData(res.data.teachers);
-        console.log(setData);
+        setData(res.data.approved);
         setTimeout(() => {
           setLoading(false);
         }, 1000);
@@ -31,15 +31,15 @@ const TablePromotion = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  const handleApproveUser = (id) =>{
+  const handleBanUser = (id) =>{
     const auth = {
       Authorization: "Bearer " + getToken,
     };
     axios({
       method: "PUT",
-      url: `http://localhost:5000/api/admin/approve-discount/${id}`,
+      url: `http://localhost:5000/api/admin/disapprove-discount/${id}`,
       headers: {
-        "Content-Type": "application/json; charset=utf-8",
+        "content-type": "application/json; charset=utf-8",
         ...auth,
       },
     })
@@ -86,16 +86,16 @@ const TablePromotion = () => {
       key: "approved",
       render: (approved, data) => {
         const {id} = data
-        if(!approved){
+        if(approved){
           return (
             <React.Fragment>
-              <Button  type="primary" onClick={() => handleApproveUser(id)}>Approve</Button>
+              <Button  type="primary" danger onClick={() => handleBanUser(id)}>Ban</Button>
             </React.Fragment>
           );
         }else{
           return (
             <React.Fragment>
-              <Button  type="primary" danger onClick={handleApproveUser}>Approve</Button>
+              <Button  type="primary" onClick={handleBanUser}>Approve</Button>
             </React.Fragment>
           );
         }
@@ -103,9 +103,11 @@ const TablePromotion = () => {
       },
     },
   ];
+
   if(data.length === 0){
     return <Skeleton active/>
   }
+
   return (
     <React.Fragment>
       <div className="contentContainer-auto">
@@ -115,4 +117,4 @@ const TablePromotion = () => {
   );
 };
 
-export default TablePromotion;
+export default ApprovedPromotion;

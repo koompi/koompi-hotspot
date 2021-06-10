@@ -1,13 +1,41 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { Table, Tag } from "antd";
-import data_actives from "./actives.json";
+import axios from "axios";
+
+const getToken = localStorage.getItem("token");
 
 const ActivesUsers = () => {
+  const [ ,setLoading] = useState(false);
+  const [usersActive, setUserActive] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    const auth = {
+      Authorization: "Bearer " + getToken,
+    };
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/api/admin/users-active",
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        ...auth,
+      },
+    })
+      .then((res) => {
+        setUserActive(res.data);
+        console.log(res.data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   const columns = [
     {
       title: "Full Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "fullname",
+      key: "fullname",
     },
     {
       title: "Phone",
@@ -21,34 +49,34 @@ const ActivesUsers = () => {
     },
     {
       title: "EXPIRED",
-      dataIndex: "expired",
-      key: "expired",
+      dataIndex: "expire",
+      key: "expire",
     },
     {
       title: "SIM",
-      dataIndex: "sim",
-      key: "sim",
+      dataIndex: "simultaneous",
+      key: "simultaneous",
     },
     {
       title: "SPEED/UP",
-      dataIndex: "spdup",
-      key: "spdup",
-      render: (spdup) => {
+      dataIndex: "speed_up",
+      key: "speed_up",
+      render: (speed_up) => {
         return (
           <React.Fragment>
-            <Tag color="processing">{spdup}</Tag>
+            <Tag color="processing">{speed_up}</Tag>
           </React.Fragment>
         );
       },
     },
     {
       title: "SPEED/DW",
-      dataIndex: "spddw",
-      key: "spddw",
-      render: (spddw) => {
+      dataIndex: "speed_down",
+      key: "speed_down",
+      render: (speed_down) => {
         return (
           <React.Fragment>
-            <Tag color="warning">{spddw}</Tag>
+            <Tag color="warning">{speed_down}</Tag>
           </React.Fragment>
         );
       },
@@ -63,7 +91,7 @@ const ActivesUsers = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        if (status === "active") {
+        if (status === "Active") {
           return <Tag color="#87d068">Active</Tag>;
         } else {
           return <Tag color="#f50">Inactive</Tag>;
@@ -74,7 +102,7 @@ const ActivesUsers = () => {
   return (
     <React.Fragment>
       <div className="contentContainer-auto">
-        <Table dataSource={data_actives} columns={columns} />
+        <Table dataSource={usersActive.users_login} columns={columns} />
       </div>
     </React.Fragment>
   );

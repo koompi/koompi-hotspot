@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag } from "antd";
-import data_registered from "./registered.json";
+import { Table, Tag } from "antd"; 
 import axios from "axios";
 
 const getToken = localStorage.getItem("token");
 
 const RegisteredUser = () => {
-  const [, setLoading] = useState(false);
+  const [ ,setLoading] = useState(false);
   const [usersRegister, setUserRegister] = useState([]);
 
   useEffect(() => {
@@ -16,7 +15,7 @@ const RegisteredUser = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/auth/admin/users",
+      url: "http://localhost:5000/api/admin/users-register",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -75,6 +74,13 @@ const RegisteredUser = () => {
       title: "Activate",
       dataIndex: "activate",
       key: "activate",
+      render: (activate) => {
+        if (activate === true) {
+          return <Tag color="#87d068">Activated</Tag>;
+        } else {
+          return <Tag color="#f50">Deactivated</Tag>;
+        }
+      },
     },
     {
       title: "Actions",

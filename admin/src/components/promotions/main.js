@@ -3,6 +3,7 @@ import { Layout, Menu } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import PromotionForm from "./form-promotion";
 import PromotionTable from "./table-promotion";
+import PromotionApprove from "./approved-promotion";
 
 const { Header } = Layout;
 
@@ -21,6 +22,9 @@ const Promotions = () => {
             <Menu.Item key="promotion-table">
               <Link to={`/promotions/promotion-table`}>TABLE</Link>
             </Menu.Item>
+            <Menu.Item key="promotion-approved">
+              <Link to={`/promotions/promotion-approved`}>APPROVED</Link>
+            </Menu.Item>
             <Menu.Item key="promotion-form">
               <Link to={`/promotions/promotion-form`}>FORM</Link>
             </Menu.Item>
@@ -29,6 +33,9 @@ const Promotions = () => {
       </div>
       {location.pathname.split("/")[2] === "promotion-table" && (
         <PromotionTable />
+      )}
+      {location.pathname.split("/")[2] === "promotion-approved" && (
+        <PromotionApprove />
       )}
       {location.pathname.split("/")[2] === "promotion-form" && (
         <PromotionForm />

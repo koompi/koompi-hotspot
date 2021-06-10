@@ -6,7 +6,7 @@ import axios from "axios";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 import logo from "../assets/images/koompi_logo_signal.png";
-import image_02 from "../assets/images/image_02.png";
+import pic_02 from "../assets/images/image_02.png";
 
 const Login = () => {
   const history = useHistory();
@@ -118,7 +118,7 @@ const Login = () => {
           </div>
         </div>
         <div className="container-login-image">
-          <img src={image_02} alt="image" className="login-img" />
+          <img src={pic_02} alt="login" className="login-img" />
         </div>
       </div>
     </Fragment>

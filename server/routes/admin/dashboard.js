@@ -7,10 +7,10 @@ router.get("/dashboard", authorization, async (req, res) => {
     const allregister = await pool.query("SELECT count(*) FROM useraccount");
     const allbuyplan = await pool.query("SELECT count(*) FROM radcheck");
     const activelogin = await pool.query(
-      "SELECT count(*) FROM radacct WHERE calledstationid ='saang-school' AND acctterminatecause IS NULL"
+      "SELECT count(*) FROM radacct WHERE calledstationid ='saang-school' OR calledstationid ='sanng-school' AND acctterminatecause IS NULL"
     );
     const alladmins = await pool.query(
-      "SELECT count(*) FROM useraccount WHERE role='Admin'"
+      "SELECT count(*) FROM admins"
     );
 
     res.status(200).json({
