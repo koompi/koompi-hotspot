@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from "react";
-import { Table, Tag } from "antd";
+import { Table,Skeleton, Tag } from "antd";
 
 import thumbnail from "../../assets/images/password.jpg";
 import axios from 'axios'
@@ -10,7 +10,7 @@ const getToken = localStorage.getItem("token");
 const TableNotifications = () => {
 
   const [ ,setLoading] = useState(false);
-  const [noties, setNoties] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -26,8 +26,8 @@ const TableNotifications = () => {
       },
     })
       .then((res) => {
-        setNoties(res.data);
-        console.log(setNoties);
+        setData(res.data.notification);
+        console.log(setData);
         setTimeout(() => {
           setLoading(false);
         }, 1000);
@@ -39,16 +39,26 @@ const TableNotifications = () => {
     {
       title: "Thumbnail",
       width: "5%",
-      dataIndex: "img",
-      key: "img",
-      render: () => {
+      dataIndex: "image",
+      key: "image",
+      render: (image) => {
+        if(image!==null)
+        return (
+          <img
+            src="http://localhost:5000/uploads/noti/notification_1623254707278.jpg"
+            className="thumbnail-notification"
+            alt="thumbnail"
+          />
+        )
+        else
         return (
           <img
             src={thumbnail}
             className="thumbnail-notification"
             alt="thumbnail"
           />
-        );
+        )
+        ;
       },
     },
     {
@@ -87,10 +97,13 @@ const TableNotifications = () => {
       },
     },
   ];
+  if(data.length === 0){
+    return <Skeleton active/>
+  }
   return (
     <React.Fragment>
       <div className="contentContainer-auto">
-        <Table dataSource={noties.notification} columns={columns} />
+        <Table dataSource={data} columns={columns} />
       </div>
     </React.Fragment>
   );

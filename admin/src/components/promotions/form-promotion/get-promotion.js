@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from "react";
-import { Table,Skeleton, Tag} from "antd";
+import { Table,Skeleton, Tag, Button} from "antd";
 import axios from 'axios';
 
 const getToken = localStorage.getItem('token');
@@ -60,7 +60,7 @@ const GetPromotion = () => {
       render: () => {
         return (
           <React.Fragment>
-            <Tag color="#108ee9">Edit</Tag>
+            <Button type="primary">Edit</Button>
           </React.Fragment>
         );
       },
