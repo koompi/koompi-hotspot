@@ -50,9 +50,9 @@ app.use("/api/admin", require("./routes/admin/dashboard"));
 //  forgot and reset password
 app.use("/api", require("./routes/Account/forgot_reset_pass"));
 
-// upload avata
-app.use("/api", require("./routes/Account/uploadProfile"));
-app.use("/api", require("./routes/Account/request_discount"));
+// upload photo
+// app.use("/api", require("./routes/Account/uploadProfile"));
+app.use("/api", require("./routes/uploadPhoto"));
 
 // integration with selendra wallet
 app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
