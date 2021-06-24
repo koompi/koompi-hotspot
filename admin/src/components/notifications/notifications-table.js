@@ -1,19 +1,30 @@
 import React,{useEffect,useState} from "react";
-import { Table,Skeleton, Button } from "antd";
+import { Table,Skeleton, Button,Popconfirm, Empty } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import ViewNotification from "./notification-edit";
 
 import thumbnail from "../../assets/images/password.jpg";
 import axios from 'axios'
 
 const getToken = localStorage.getItem("token");
 
-
 const TableNotifications = () => {
 
-  const [ ,setLoading] = useState(false);
+  const [ loading ,setLoading] = useState(false);
+  const [show,setShow] = useState(false);
   const [data, setData] = useState([]);
+  const [info, setInfo] = useState("");
 
   const auth = {
     Authorization: "Bearer " + getToken,
+  };
+
+  const showViewNotification = () => {
+    setShow(true);
+  };
+  const hideViewNotification = () => {
+    setShow(false);
+    setInfo("");
   };
 
   useEffect(() => {
@@ -34,10 +45,10 @@ const TableNotifications = () => {
         }, 1000);
       })
       .catch((err) => console.log(err));
-  }, []);
-  
-  const handleDeleteNotifi = (id) =>{
-    axios({
+    }, []);
+      
+    const handleDeleteNotification = (id) =>{
+      axios({
       method: "DELETE",
       url: `http://localhost:5000/api/admin/notification/${id}`,
       headers: {
@@ -45,25 +56,15 @@ const TableNotifications = () => {
         ...auth,
       },
     })
-      .then((res) => {
-        console.log("res", res);
-      })
+    .then((res) => {
+      console.log("res", res);
+    })
       .catch((err) => console.log(err));
   }
 
-  const handleEditNotifi = (id) =>{
-    axios({
-      method: "PUT",
-      url: `http://localhost:5000/api/admin/approve-discount/${id}`,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        ...auth,
-      },
-    })
-      .then((res) => {
-        console.log("res", res);
-      })
-      .catch((err) => console.log(err));
+  const handleEditNotifi = (data) =>{
+    
+
   }
 
   const columns = [
@@ -111,7 +112,7 @@ const TableNotifications = () => {
     },
     {
       title: "Published Date",
-      // width: "1%",
+      width: "10%",
       dataIndex: "date",
       key: "date",
     },
@@ -126,25 +127,57 @@ const TableNotifications = () => {
       width: "",
       dataIndex: "",
       key: "",
+
       render: (data) => {
-        const {id} = data;
+        const { _id } = data;
         return (
-          <React.Fragment>
-            <Button type="primary" onClick={() => handleEditNotifi(id)}>Edit</Button>{" "}
-            <Button type="primary" danger onClick={() => handleDeleteNotifi(id)}>Delete</Button>
-          </React.Fragment>
+          <div>
+            <Button
+             type="primary"
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setInfo(data);
+                showViewNotification();
+              }}
+            >
+              <EditOutlined />
+               View
+            </Button> {" "}
+            <Popconfirm
+              placement="topRight"
+              title="Are you sure to delete?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() =>handleDeleteNotification(_id)}
+            >
+              <Button type="primary" danger style={{ cursor: "pointer" }}>
+                <DeleteOutlined />
+                 Delete
+              </Button>
+            </Popconfirm>
+          </div>
         );
       },
     },
   ];
-  if(data.length === 0){
+  
+  if(loading){
     return <Skeleton active/>
   }
+
   return (
     <React.Fragment>
-      <div className="contentContainer-auto">
+      <div className="contentContainer-auto">      
         <Table dataSource={data} columns={columns} />
       </div>
+      
+      {info !== "" && (
+        <ViewNotification
+          cancel={hideViewNotification}
+          show={show}
+          info={info} 
+        />
+      )}
     </React.Fragment>
   );
 };

@@ -5,7 +5,7 @@ import axios from 'axios';
 const getToken = localStorage.getItem('token')
 
 const TablePromotion = () => {
-  const [ ,setLoading] = useState(false);
+  const [ loading ,setLoading] = useState(false);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -103,9 +103,11 @@ const TablePromotion = () => {
       },
     },
   ];
-  if(data.length === 0){
+
+  if(loading){
     return <Skeleton active/>
   }
+
   return (
     <React.Fragment>
       <div className="contentContainer-auto">

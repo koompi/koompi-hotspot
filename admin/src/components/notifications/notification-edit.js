@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from 'axios'
 import { Form, Input, Button, Row, Col, Upload, message,Select } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import Modal from "antd/lib/modal/Modal";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -25,8 +26,8 @@ function beforeUpload(file) {
   return isJpgOrPng && isLt2M;
 }
 
-const FormNotification = (props) => {
-  console.log(props._id);
+const EditNotification = ({ show, cancel, info }) => {
+  console.log(info);
   const [state, setState] = useState(false);
   const { loading, imageUrl } = state;
   const [image, setImage] = useState("");
@@ -46,8 +47,8 @@ const FormNotification = (props) => {
      };
 
       axios({
-        method: "POST",
-        url:"http://localhost:5000/api/admin/notification",
+        method: "PUT",
+        url:`http://localhost:5000/api/admin/notification/${info._id}`,
         headers:{
          "Content-Type": "application/json; charset=utf-8",
            ...auth,
@@ -95,9 +96,16 @@ const FormNotification = (props) => {
   );
 
   return (
-    <React.Fragment>
-      <div className="contentContainer-auto">
-        <Form layout="vertical" size="large" onFinish={onSubmit} form={form}>
+    <Modal
+      visible={show}
+      onCancel={cancel}
+      footer={null}
+      width={780}
+      title="Edit Notification"
+    >
+    
+    
+    <Form layout="vertical" size="large" onFinish={onSubmit} form={form}>
           <Row gutter={[32, 32]}>
             <Col span={16}>
               <Row gutter={[32, 0]}>
@@ -112,7 +120,7 @@ const FormNotification = (props) => {
                       },
                     ]}
                   >
-                    <Input className="schoolInput" />
+                    <Input className="schoolInput" defaultValue={info.title}/>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -127,7 +135,7 @@ const FormNotification = (props) => {
                       },
                     ]}
                   >
-                    <TextArea rows={10} className="schoolInput" defaultValue={props.description}/>
+                    <TextArea rows={10} className="schoolInput" defaultValue={info.description}/>
                   </Form.Item>
                 </Col>
               </Row>
@@ -145,6 +153,7 @@ const FormNotification = (props) => {
                   >
                     <Select                 
                       showSearch
+                      defaultValue={info.category}
                       style={{ width: "100%" }}
                       placeholder="Selecting Category"
                       optionFilterProp="children"                                 
@@ -184,19 +193,26 @@ const FormNotification = (props) => {
                       style={{maxWidth:"100%",maxHeight:"100%"}}
                     />
                   ) : (
-                    uploadButton
+                    // uploadButton
+                    <img
+                      src={"http://localhost:5000/uploads/" + info.image}
+                      alt="avatar"
+                      style={{maxWidth:"100%",maxHeight:"100%"}}
+                    />
                   )}
+                  
                 </Upload>
               </Form.Item>
             </Col>
           </Row>
           <Button type="primary" className="publish-button" htmlType="submit">
-            Publish
+            Edit
           </Button>
         </Form>
-      </div>
-    </React.Fragment>
+      
+    
+    </Modal>
   );
 };
 
-export default FormNotification;
+export default EditNotification;
