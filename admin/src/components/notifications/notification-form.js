@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from 'axios'
-import { Form, Input, Button, Row, Col, Upload, message,Select } from "antd";
+import { Form, Input, Button, Row, Col, Upload, message, Select } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -25,8 +25,8 @@ function beforeUpload(file) {
   return isJpgOrPng && isLt2M;
 }
 
-const FormNotification = (props) => {
-  console.log(props._id);
+const FormNotification = () => {
+
   const [state, setState] = useState(false);
   const { loading, imageUrl } = state;
   const [image, setImage] = useState("");
@@ -55,7 +55,8 @@ const FormNotification = (props) => {
         data,
       })
         .then((res) => {
-         console.log("notification",res.data);        
+         console.log("notification",res.data);
+         message.success(res.data.message);
        })
        .catch((err) => console.log(err));
        
@@ -127,7 +128,7 @@ const FormNotification = (props) => {
                       },
                     ]}
                   >
-                    <TextArea rows={10} className="schoolInput" defaultValue={props.description}/>
+                    <TextArea rows={10} className="schoolInput"/>
                   </Form.Item>
                 </Col>
               </Row>

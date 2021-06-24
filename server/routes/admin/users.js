@@ -90,11 +90,16 @@ router.get("/users-register", authorization, async (req, res) => {
         "SELECT ban FROM admins WHERE acc_id = $1 AND role = 'admin'",[req.params.id]
       );
       if(admins.rows[0].ban===false){
-        await pool.query("UPDATE admins SET ban=true")        
+        await pool.query("UPDATE admins SET ban=true");
+        res.status(200).json({
+          message:  "Disable successfully."        
+        });     
       }else{
-        await pool.query("UPDATE admins SET ban=false")
+        await pool.query("UPDATE admins SET ban=false");
+        res.status(200).json({
+          message:  "Enable successfully."        
+        });
       }
-      res.status(200).json({message:"Done"})
     } catch (error) {
       console.log("error on users admin", error);
       res.status(500).json({ message: "Server Error!" });

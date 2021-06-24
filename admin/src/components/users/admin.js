@@ -1,19 +1,20 @@
 import React,{useEffect,useState} from "react";
-import { Table, Tag } from "antd";
+import { Table, Button, Popconfirm, message } from "antd";
 import axios from "axios";
 
 const getToken = localStorage.getItem('token');
 
 const Admin = () => {
 
+  const auth = {
+    Authorization: "Bearer " + getToken,
+  };
+
   const [, setLoading] = useState(false);
   const [admins,setAdmin] = useState([]);
 
   useEffect(()=>{
     setLoading(true);
-    const auth = {
-      Authorization: "Bearer " + getToken,
-    };
     axios({
       method: "GET",
       url: "http://localhost:5000/api/admin/users-admin",
@@ -31,8 +32,20 @@ const Admin = () => {
     })
     .catch((err) => console.log(err));
 }, []);
-
-
+const handleDis_or_EnableAdmins = (id) =>{
+  axios({
+  method: "PUT",
+  url: `http://localhost:5000/api/admin/users-admin/${id}`,
+  headers: {
+    "Content-Type": "application/json; charset=utf-8",
+    ...auth,
+  },
+})
+.then((res) => {
+  message.success(res.data.message)
+})
+  .catch((err) => console.log(err));
+}
   const columns = [
     {
       title: "FULL NAME",
@@ -56,13 +69,37 @@ const Admin = () => {
     },
     {
       title: "Actions",
-      dataIndex: "ban",
-      key: "ban",
-      render: (ban) => {
-        if (ban) {
-          return <Tag color="#87d068">BAN</Tag>;
+      dataIndex: "",
+      key: "",
+      render: (data) => {
+        const {id,ban} = data;
+        if (!ban) {
+            return (
+            <Popconfirm
+              placement="topRight"
+              title="Are you sure to Disable?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() =>handleDis_or_EnableAdmins(id)}
+            >
+              <Button type="primary" danger style={{ cursor: "pointer" }}>
+                 Disable
+              </Button>
+            </Popconfirm>);
         } else {
-          return <Tag color="#f50">UNBAN</Tag>;
+          return (
+            <Popconfirm
+              placement="topRight"
+              title="Are you sure to Enable?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() =>handleDis_or_EnableAdmins(id)}
+            >
+              <Button type="primary" style={{ cursor: "pointer" }}>
+                 Enable
+              </Button>
+            </Popconfirm>
+          );
         }
       },
     },

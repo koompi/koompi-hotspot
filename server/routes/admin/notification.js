@@ -51,16 +51,5 @@ router.put("/notification/:id", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 })
-router.delete("/notification/:id", authorization, async (req, res) => {
-  try {
-    await pool.query("DELETE from notification WHERE _id=$1",[req.params.id]);
-    res.status(200).send({
-      message:"Deleted"
-    });
-  } catch (error) {
-    console.log("error on delete notification", error);
-    res.status(500).json({ message: "Server Error!" });
-  }
-});
 
 module.exports = router;

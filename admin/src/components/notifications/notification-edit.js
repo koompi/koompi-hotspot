@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import axios from 'axios'
 import { Form, Input, Button, Row, Col, Upload, message,Select } from "antd";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import Modal from "antd/lib/modal/Modal";
 
 const { TextArea } = Input;
 const { Option } = Select;
-const getToken = localStorage.getItem('token')
+const getToken = localStorage.getItem('token');
 
 function getBase64(img, callback) {
   const reader = new FileReader();
@@ -27,11 +26,10 @@ function beforeUpload(file) {
 }
 
 const EditNotification = ({ show, cancel, info }) => {
-  console.log(info);
-  const [state, setState] = useState(false);
-  const { loading, imageUrl } = state;
-  const [image, setImage] = useState("");
-  const [form] = Form.useForm();
+  const [ state, setState] = useState(false);
+  const { imageUrl } = state;
+  const [ image, setImage] = useState("");
+  const [ form ] = Form.useForm();
 
   const onSubmit = (value) => {
     const auth = {
@@ -56,12 +54,16 @@ const EditNotification = ({ show, cancel, info }) => {
         data,
       })
         .then((res) => {
-         console.log("notification",res.data);        
+         message.success(res.data.message);  
        })
-       .catch((err) => console.log(err));
+       .catch((err) => {
+         console.log(err);
+         message.error(err);
+       });
        
     form.resetFields(); // to clear form
     setState(false);    // to clear image
+    
   };
 
   /*
@@ -88,12 +90,14 @@ const EditNotification = ({ show, cancel, info }) => {
   };
   
 
-  const uploadButton = (
-    <div className="uploading-notifications">
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
+  // const uploadButton = (
+  //   <div className="uploading-notifications">
+  //     {loading ? <LoadingOutlined /> : <PlusOutlined />}
+  //     <div style={{ marginTop: 8 }}>Upload</div>
+  //   </div>
+  // );
+
+  const {title,category,description} = info;
 
   return (
     <Modal
@@ -102,10 +106,17 @@ const EditNotification = ({ show, cancel, info }) => {
       footer={null}
       width={780}
       title="Edit Notification"
+      // okText={form.submit}
     >
     
     
-    <Form layout="vertical" size="large" onFinish={onSubmit} form={form}>
+      <Form 
+        layout="vertical" 
+        size="large" 
+        onFinish={onSubmit} 
+        form={form}
+        initialValues={{title,category,}}
+      >
           <Row gutter={[32, 32]}>
             <Col span={16}>
               <Row gutter={[32, 0]}>
@@ -120,7 +131,7 @@ const EditNotification = ({ show, cancel, info }) => {
                       },
                     ]}
                   >
-                    <Input className="schoolInput" defaultValue={info.title}/>
+                    <Input className="schoolInput"/>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -135,7 +146,7 @@ const EditNotification = ({ show, cancel, info }) => {
                       },
                     ]}
                   >
-                    <TextArea rows={10} className="schoolInput" defaultValue={info.description}/>
+                    <TextArea rows={10} className="schoolInput" defaultValue={description}/>
                   </Form.Item>
                 </Col>
               </Row>

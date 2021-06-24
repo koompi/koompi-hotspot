@@ -1,7 +1,8 @@
 import React,{useEffect,useState} from "react";
-import { Table,Skeleton, Button,Popconfirm, Empty } from "antd";
+import { Table,Skeleton, Button,Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import ViewNotification from "./notification-edit";
+// import data from "./notification.json"
 
 import thumbnail from "../../assets/images/password.jpg";
 import axios from 'axios'
@@ -46,26 +47,6 @@ const TableNotifications = () => {
       })
       .catch((err) => console.log(err));
     }, []);
-      
-    const handleDeleteNotification = (id) =>{
-      axios({
-      method: "DELETE",
-      url: `http://localhost:5000/api/admin/notification/${id}`,
-      headers: {
-        // "Content-Type": "application/json; charset=utf-8",
-        ...auth,
-      },
-    })
-    .then((res) => {
-      console.log("res", res);
-    })
-      .catch((err) => console.log(err));
-  }
-
-  const handleEditNotifi = (data) =>{
-    
-
-  }
 
   const columns = [
     {
@@ -141,20 +122,8 @@ const TableNotifications = () => {
               }}
             >
               <EditOutlined />
-               View
-            </Button> {" "}
-            <Popconfirm
-              placement="topRight"
-              title="Are you sure to delete?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={() =>handleDeleteNotification(_id)}
-            >
-              <Button type="primary" danger style={{ cursor: "pointer" }}>
-                <DeleteOutlined />
-                 Delete
-              </Button>
-            </Popconfirm>
+               Edit
+            </Button>
           </div>
         );
       },
