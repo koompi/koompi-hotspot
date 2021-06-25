@@ -6,7 +6,7 @@ const getToken = localStorage.getItem('token');
 
 const GetPromotion = () => {
 
-  const [ ,setLoading] = useState(false);
+  const [ loading,setLoading] = useState(false);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const GetPromotion = () => {
     },
   ];
 
-  if(data.length === 0){
+  if(loading){
     return <Skeleton active/>
   }
 

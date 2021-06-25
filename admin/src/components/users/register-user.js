@@ -11,9 +11,7 @@ const RegisteredUser = () => {
     Authorization: "Bearer " + getToken,
   };
 
-  useEffect(() => {
-    setLoading(true);
-    
+  const myData = ()=>{
     axios({
       method: "GET",
       url: "http://localhost:5000/api/admin/users-register",
@@ -30,6 +28,11 @@ const RegisteredUser = () => {
         }, 1000);
       })
       .catch((err) => console.log(err));
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    myData();    
   }, []);
 
   const handleDis_or_EnableUsers = (id) =>{
@@ -42,7 +45,8 @@ const RegisteredUser = () => {
     },
   })
   .then((res) => {
-    message.success(res.data.message)
+    message.success(res.data.message);
+    myData();
   })
     .catch((err) => console.log(err));
   }

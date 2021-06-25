@@ -29,7 +29,6 @@ router.get("/users-register", authorization, async (req, res) => {
       const ban = await pool.query(
         "SELECT ban FROM useraccount WHERE id = $1",[req.params.id]
         );      
-        console.log(ban.rows[0].ban);
       
       if(ban.rows[0].ban === false){
         await pool.query(

@@ -1,19 +1,19 @@
 import React,{useState,useEffect} from "react";
-import { Button, Skeleton, Table, Tag } from "antd";
+import { Button, Skeleton, Table, Tag,message } from "antd";
 
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
 
 const ApprovedPromotion = () => {
 
-  const [ ,setLoading] = useState(false);
+  const [loading ,setLoading] = useState(false);
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    setLoading(true);
-    const auth = {
-      Authorization: "Bearer " + getToken,
-    };
+  const auth = {
+    Authorization: "Bearer " + getToken,
+  };
+
+  const myData = () =>{
     axios({
       method: "GET",
       url: "http://localhost:5000/api/admin/approved-discount",
@@ -29,6 +29,12 @@ const ApprovedPromotion = () => {
         }, 1000);
       })
       .catch((err) => console.log(err));
+  }
+
+
+  useEffect(() => {
+    setLoading(true);
+    myData();
   }, []);
 
   const handleBanUser = (id) =>{
@@ -44,7 +50,8 @@ const ApprovedPromotion = () => {
       },
     })
       .then((res) => {
-        console.log("res", res);
+        message.success(res.data.message);
+        myData();
       })
       .catch((err) => console.log(err));
   }
@@ -104,7 +111,7 @@ const ApprovedPromotion = () => {
     },
   ];
 
-  if(data.length === 0){
+  if(loading){
     return <Skeleton active/>
   }
 

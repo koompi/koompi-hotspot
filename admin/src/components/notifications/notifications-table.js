@@ -1,11 +1,12 @@
 import React,{useEffect,useState} from "react";
-import { Table,Skeleton, Button,Popconfirm, message } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table,Skeleton, Button } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import ViewNotification from "./notification-edit";
-// import data from "./notification.json"
 
 import thumbnail from "../../assets/images/password.jpg";
 import axios from 'axios'
+
+import moment from "moment"
 
 const getToken = localStorage.getItem("token");
 
@@ -28,8 +29,7 @@ const TableNotifications = () => {
     setInfo("");
   };
 
-  useEffect(() => {
-    setLoading(true);    
+  const myData = ()=>{
     axios({
       method: "GET",
       url: "http://localhost:5000/api/admin/notification",
@@ -46,7 +46,14 @@ const TableNotifications = () => {
         }, 1000);
       })
       .catch((err) => console.log(err));
+  }
+
+  useEffect(() => {
+    setLoading(true);    
+    myData()
     }, []);
+
+    
 
   const columns = [
     {
@@ -96,6 +103,9 @@ const TableNotifications = () => {
       width: "10%",
       dataIndex: "date",
       key: "date",
+      // render: (data) => {
+      //   return moment(parseInt(data))
+      // }
     },
     {
       title: "Published By",
@@ -110,7 +120,6 @@ const TableNotifications = () => {
       key: "",
 
       render: (data) => {
-        const { _id } = data;
         return (
           <div>
             <Button
@@ -145,6 +154,7 @@ const TableNotifications = () => {
           cancel={hideViewNotification}
           show={show}
           info={info} 
+          myData={myData}
         />
       )}
     </React.Fragment>

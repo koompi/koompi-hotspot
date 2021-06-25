@@ -26,7 +26,8 @@ router.put("/approve-discount/:id", authorization, async (req, res) => {
     );
 
     res.status(200).send({
-      status: true
+      status: true,
+      message: "Approved successfully."
     });
   } catch (error) {
     console.log("error on post discount id", error);
@@ -57,7 +58,8 @@ router.put("/disapprove-discount/:id", authorization, async (req, res) => {
     );
 
     res.status(200).send({
-      status: true
+      status: true,
+      message: "Disapproved successfully."
     });
   } catch (error) {
     console.log("error on post approved discount id", error);

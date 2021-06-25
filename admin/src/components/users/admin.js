@@ -13,8 +13,7 @@ const Admin = () => {
   const [, setLoading] = useState(false);
   const [admins,setAdmin] = useState([]);
 
-  useEffect(()=>{
-    setLoading(true);
+  const myData = ()=>{
     axios({
       method: "GET",
       url: "http://localhost:5000/api/admin/users-admin",
@@ -31,7 +30,13 @@ const Admin = () => {
       }, 1000);
     })
     .catch((err) => console.log(err));
+  }
+
+  useEffect(()=>{
+    setLoading(true);
+    myData();
 }, []);
+
 const handleDis_or_EnableAdmins = (id) =>{
   axios({
   method: "PUT",
@@ -42,7 +47,8 @@ const handleDis_or_EnableAdmins = (id) =>{
   },
 })
 .then((res) => {
-  message.success(res.data.message)
+  message.success(res.data.message);
+  myData();
 })
   .catch((err) => console.log(err));
 }

@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import { Table, Tag,Button,Skeleton } from "antd";
+import { Table, Tag,Button,Skeleton, message } from "antd";
 
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
@@ -8,11 +8,11 @@ const TablePromotion = () => {
   const [ loading ,setLoading] = useState(false);
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    setLoading(true);
-    const auth = {
-      Authorization: "Bearer " + getToken,
-    };
+  const auth = {
+    Authorization: "Bearer " + getToken,
+  };
+
+  const myData=()=>{
     axios({
       method: "GET",
       url: "http://localhost:5000/api/admin/view-discount",
@@ -29,6 +29,12 @@ const TablePromotion = () => {
         }, 1000);
       })
       .catch((err) => console.log(err));
+  }
+
+
+  useEffect(() => {
+    setLoading(true);
+    myData();
   }, []);
 
   const handleApproveUser = (id) =>{
@@ -44,7 +50,8 @@ const TablePromotion = () => {
       },
     })
       .then((res) => {
-        console.log("res", res);
+        message.success(res.data.message);
+        myData();
       })
       .catch((err) => console.log(err));
   }

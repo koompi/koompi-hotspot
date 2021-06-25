@@ -55,9 +55,9 @@ const PostPromotion = () => {
                         .indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    <Option value="teacher">Teacher</Option>
-                    <Option value="student">Student</Option>
-                    <Option value="others">Others</Option>
+                    <Option value="Teacher">Teacher</Option>
+                    <Option value="Student">Student</Option>
+                    <Option value="Others">Others</Option>
                   </Select>
                 </Form.Item>                
               </Col>

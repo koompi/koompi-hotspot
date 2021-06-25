@@ -25,26 +25,30 @@ function beforeUpload(file) {
   return isJpgOrPng && isLt2M;
 }
 
-const EditNotification = ({ show, cancel, info }) => {
+const EditNotification = ({ show, cancel, info, myData }) => {
   const [ state, setState] = useState(false);
   const { imageUrl } = state;
   const [ image, setImage] = useState("");
   const [ form ] = Form.useForm();
+  const {title,category,description} = info;
 
-  const onSubmit = (value) => {
+  console.log("info", info);
+
+
+  const onSubmit = async (value) => {
     const auth = {
       Authorization: "Bearer " + getToken,
     };
 
     const data={
-       image: image,
+       image: image === "" ? info.image : image,
        title : value.title,
        category : value.category,
        description : value.desc, 
 
      };
 
-      axios({
+    await  axios({
         method: "PUT",
         url:`http://localhost:5000/api/admin/notification/${info._id}`,
         headers:{
@@ -54,7 +58,8 @@ const EditNotification = ({ show, cancel, info }) => {
         data,
       })
         .then((res) => {
-         message.success(res.data.message);  
+         message.success(res.data.message); 
+         cancel()
        })
        .catch((err) => {
          console.log(err);
@@ -63,6 +68,7 @@ const EditNotification = ({ show, cancel, info }) => {
        
     form.resetFields(); // to clear form
     setState(false);    // to clear image
+    myData();
     
   };
 
@@ -97,7 +103,7 @@ const EditNotification = ({ show, cancel, info }) => {
   //   </div>
   // );
 
-  const {title,category,description} = info;
+  
 
   return (
     <Modal
@@ -106,7 +112,6 @@ const EditNotification = ({ show, cancel, info }) => {
       footer={null}
       width={780}
       title="Edit Notification"
-      // okText={form.submit}
     >
     
     
@@ -115,7 +120,7 @@ const EditNotification = ({ show, cancel, info }) => {
         size="large" 
         onFinish={onSubmit} 
         form={form}
-        initialValues={{title,category,}}
+        initialValues={{title,category, desc: description}}
       >
           <Row gutter={[32, 32]}>
             <Col span={16}>
@@ -138,7 +143,6 @@ const EditNotification = ({ show, cancel, info }) => {
                   <Form.Item
                     label="Descriptions"
                     name="desc"
-                    
                     rules={[
                       {
                         required: true,
@@ -182,12 +186,6 @@ const EditNotification = ({ show, cancel, info }) => {
               <Form.Item
                 label="Uplaod image here"
                 name="file"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please uplaod the image!",
-                  },
-                ]}
               >
                 <Upload
                   action="http://localhost:5000/api/upload-photo"
