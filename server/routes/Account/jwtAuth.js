@@ -135,10 +135,14 @@ router.post("/login", validInfo, async (req, res) => {
     const activate = await user.rows[0].activate;
     if (!activate) {
       return res
-        .status(401)
-        .json({ message: "Please active your acount first!" });
+      .status(401)
+      .json({ message: "Please active your account first!" });
     }
-
+    
+    const ban = await user.rows[0].ban;
+    if(ban){
+      return res.status(401).json({message:"Your account has been banned!\n Please contact to admin."});
+    }
     //3. check if incomming password is the same database password
 
     const validPassword = await bcrypt.compare(password, user.rows[0].password);

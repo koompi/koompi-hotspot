@@ -39,7 +39,7 @@ router.put("/approve-discount/:id", authorization, async (req, res) => {
 router.get("/approved-discount", authorization, async (req, res) => {
   try {
     const teachers = await pool.query(
-      "SELECT  detail.id, detail.fullname, detail.role, d.* FROM  useraccount AS detail, discount_teachers AS d WHERE detail.id::text = d.acc_id AND approved = TRUE"
+      "SELECT  detail.id, detail.fullname, detail.image, detail.role, d.* FROM  useraccount AS detail, discount_teachers AS d WHERE detail.id::text = d.acc_id AND approved = TRUE"
     );
 
     res.status(200).send({

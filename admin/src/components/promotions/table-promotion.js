@@ -1,12 +1,24 @@
 import React,{useState,useEffect} from "react";
 import { Table, Tag,Button,Skeleton, message } from "antd";
-
 import axios from 'axios';
+
+import ViewPromotion from "./view-promotion";
+
 const getToken = localStorage.getItem('token')
 
 const TablePromotion = () => {
   const [ loading ,setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [info, setInfo] = useState("");
+  const [show,setShow] = useState(false);
+
+  const showViewDetail = () => {
+    setShow(true);
+  };
+  const hideViewDetail = () => {
+    setShow(false);
+    setInfo("");
+  };
 
   const auth = {
     Authorization: "Bearer " + getToken,
@@ -89,24 +101,22 @@ const TablePromotion = () => {
 
     {
       title: "APPROVE",
-      dataIndex: "approved",
-      key: "approved",
-      render: (approved, data) => {
+      dataIndex: "",
+      key: "",
+      render: (data) => {
         const {id} = data
-        if(!approved){
           return (
-            <React.Fragment>
-              <Button  type="primary" onClick={() => handleApproveUser(id)}>Approve</Button>
-            </React.Fragment>
-          );
-        }else{
-          return (
-            <React.Fragment>
-              <Button  type="primary" danger onClick={handleApproveUser}>Approve</Button>
-            </React.Fragment>
-          );
-        }
-        
+            <div>
+              <Button  type="primary" onClick={() => handleApproveUser(id)}>Approve</Button>{" "}           
+              <Button  
+              type="default" 
+              onClick={()=>{
+                setInfo(data);
+                showViewDetail();
+              }
+              }>View</Button>
+            </div>
+          );        
       },
     },
   ];
@@ -120,6 +130,14 @@ const TablePromotion = () => {
       <div className="contentContainer-auto">
         <Table dataSource={data} columns={columns} />
       </div>
+      {info !== "" && (
+        <ViewPromotion
+          cancel={hideViewDetail}
+          show={show}
+          info={info} 
+          myData={myData}
+        />
+      )}
     </React.Fragment>
   );
 };

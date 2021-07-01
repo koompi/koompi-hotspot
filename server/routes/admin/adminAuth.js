@@ -20,6 +20,7 @@ router.post("/login", validInfo, async (req, res) => {
     const user = await pool.query("SELECT * FROM useraccount WHERE email =$1", [
       email
     ]);
+    const admin = await pool.query("SELECT * FROM admins")
     if (user.rows.length === 0) {
       return res.status(401).json({ message: "Incorrect E-mail!" });
     }
@@ -29,6 +30,12 @@ router.post("/login", validInfo, async (req, res) => {
       return res
         .status(401)
         .json({ message: "Please active your acount first!" });
+    }
+
+    const ban = await user.rows[0].ban;
+    const banAdmin = await admin.rows[0].ban;
+    if(ban|| banAdmin){
+      return res.status(401).json({message:"Your account has been banned!\n Please contact to root admin."});
     }
 
     //3. check if incomming password is the same database password
