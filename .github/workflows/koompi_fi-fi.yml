@@ -29,31 +29,7 @@ jobs:
   #         chmod +x ./deploy
   #     - name: Deploying to Staging...     
   #       run: |
-  #         ./deploy       
-  Dev_Fi-Fi:
-    name: Deploy to Dev 
-    if: github.event.ref == 'refs/heads/dev'
-    runs-on: ubuntu-latest
-    environment: 
-      name: Development      
-      url: 'https://api-hotspot-dev.koompi.org'
-    steps:
-      - name: Checkout Here
-        uses: actions/checkout@v2
-      - name: Install ssh key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}        
-      - name: Env
-        env:
-          BASH_SECRET: ${{ secrets.BASH_SHELL }}
-        run: |
-          echo "$BASH_SECRET" > ./deploy
-          chmod +x ./deploy
-      - name: Deploying to Dev...     
-        run: |
-          ./deploy    
+  #         ./deploy         
 
   KOOMPI_Fi-Fi:
     name: Deploy to Prod
