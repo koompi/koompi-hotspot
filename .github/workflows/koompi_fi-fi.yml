@@ -33,7 +33,6 @@ jobs:
 
   KOOMPI_Fi-Fi:
     name: Deploy to Prod
-    needs: [DeployStaging]
     runs-on: ubuntu-latest
     environment: 
       name: Production
