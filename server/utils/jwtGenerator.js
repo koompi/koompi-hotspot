@@ -16,7 +16,7 @@ function jwtGeneratorAdmin(id) {
   };
 
   return jwt.sign(payload, process.env.jwtSecret, {
-    expiresIn: "30min"
+    expiresIn: "12h"
   });
 }
 

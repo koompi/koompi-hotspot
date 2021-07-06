@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const pool = require("../../db");
 const bcrypt = require("bcrypt");
+const moment = require ("moment")
 const { jwtGeneratorAdmin } = require("../../utils/jwtGenerator");
 const validInfo = require("../../middleware/validInfo");
 const authorization = require("./../../middleware/authorization");
@@ -115,17 +116,16 @@ router.post("/retry", authorization, async (req, res) => {
 router.post("/confirm-admin", authorization, async (req, res) => {
   try {
     const { vCode } = req.body;
-    console.log(req.user);
-    console.log(vCode);
 
     const user = await pool.query("SELECT * FROM useraccount WHERE id =$1", [
       req.user
     ]);
-    console.log(user.rows[0].code);
 
     if (user.rows[0].code === vCode) {
       // 3. give them the jwt token
       const token = jwtGeneratorAdmin(user.rows[0].id);
+      var now = moment();
+      await pool.query("UPDATE admins SET last_login=$1 WHERE acc_id=$2",[now,req.user])
       res.json({
         token
       });
@@ -136,50 +136,4 @@ router.post("/confirm-admin", authorization, async (req, res) => {
   }
 });
 
-router.get("/dashboard", authorization, async (req, res) => {
-  try {
-    const allregister = await pool.query("SELECT count(*) FROM useraccount");
-    const allbuyplan = await pool.query("SELECT count(*) FROM radcheck");
-    const activelogin = await pool.query(
-      "SELECT count(*) FROM radacct WHERE calledstationid ='saang-school' AND acctterminatecause IS NULL"
-    );
-    const alladmins = await pool.query(
-      "SELECT count(*) FROM useraccount WHERE role='Admin'"
-    );
-
-    res.status(200).json({
-      users_resgistered: allregister.rows[0].count,
-      users_bought_plan: allbuyplan.rows[0].count,
-      users_activate_login: activelogin.rows[0].count,
-      user_admins: alladmins.rows[0].count
-    });
-    // console.log(activelogin.rowCount);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Server Error!" });
-  }
-});
-
-router.get("/users", authorization, async (req, res) => {
-  try {
-    const registers = await pool.query(
-      "SELECT id, fullname, phone, gender, birthdate, address, role, activate, image FROM useraccount"
-    );
-    const admins = await pool.query(
-      "SELECT id, fullname, phone, gender, birthdate, address, role, activate, image FROM useraccount WHERE role = 'Admin'"
-    );
-    const users_login = await pool.query(
-      "SELECT detail.id,detail.fullname, detail.phone, detail.gender, detail.birthdate, detail.address, detail.role, detail.activate, detail.image, c.acc_id,c.calledstationid,c.acctterminatecause FROM  useraccount AS detail, radacct AS c WHERE detail.id::text=c.acc_id AND  c.calledstationid ='saang-school' AND c.acctterminatecause IS NULL"
-    );
-
-    res.status(200).json({
-      users_resgistered: registers.rows,
-      user_admins: admins.rows,
-      users_login: users_login.rows
-    });
-  } catch (error) {
-    console.log("error on users adminAuth", error);
-    res.status(500).json({ message: "Server Error!" });
-  }
-});
 module.exports = router;

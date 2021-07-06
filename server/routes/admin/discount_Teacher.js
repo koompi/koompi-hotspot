@@ -1,8 +1,6 @@
 const router = require("express").Router();
 const pool = require("../../db");
-const moment = require("moment");
 
-const path = require("path");
 const authorization = require("../../middleware/authorization");
 
 // view discount part
@@ -20,7 +18,7 @@ router.get("/view-discount", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
-router.post("/view-discount/:id", authorization, async (req, res) => {
+router.put("/approve-discount/:id", authorization, async (req, res) => {
   try {
     const teachers = await pool.query(
       "update discount_teachers set approved = TRUE where id = $1",
@@ -51,7 +49,7 @@ router.get("/approved-discount", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
-router.post("/approved-discount/:id", authorization, async (req, res) => {
+router.put("/disapprove-discount/:id", authorization, async (req, res) => {
   try {
     const teachers = await pool.query(
       "update discount_teachers set approved = FALSE where id = $1",
@@ -71,12 +69,11 @@ router.post("/approved-discount/:id", authorization, async (req, res) => {
 router.post("/set-discount", authorization, async (req, res) => {
   try {
     const { role, discount } = req.body;
-
     const type = await pool.query("select * from setdiscount where role = $1", [
       role
     ]);
 
-    if (type.rows.length !== 0) {
+    if (type.rows.length !== 0) {-
       await pool.query("update setdiscount set discount = $1 where role = $2", [
         discount,
         role
@@ -108,14 +105,14 @@ router.get("/set-discount", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
-router.get("/set-discount/:role", authorization, async (req, res) => {
+router.delete("/set-discount/:id", authorization, async (req, res) => {
   try {
-    await pool.query("delete from setdiscount where role = $1", [
-      req.params.role
+    await pool.query("delete from setdiscount where id = $1", [
+      req.params.id
     ]);
 
     res.status(200).send({
-      message: `Deleted discount for role : ${req.params.role}.`
+      message: `Deleted discount for role : ${req.params.id}.`
     });
   } catch (error) {
     console.log("error on post set-discount", error);

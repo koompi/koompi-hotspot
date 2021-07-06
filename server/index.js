@@ -44,6 +44,8 @@ app.use(
 app.use("/api/auth/admin", require("./routes/admin/adminAuth"));
 app.use("/api/admin", require("./routes/admin/notification"));
 app.use("/api/admin", require("./routes/admin/discount_Teacher"));
+app.use("/api/admin", require("./routes/admin/users"));
+app.use("/api/admin", require("./routes/admin/dashboard"));
 
 //  forgot and reset password
 app.use("/api", require("./routes/Account/forgot_reset_pass"));
@@ -68,8 +70,8 @@ app.listen(5000, () => {
   });
 
   // Check  every minute for automatically to up.
-  cron.schedule("* * * * *", () => {
-    autoTopUp.autoRenew();
-    console.log("automatically topup every minute");
-  });
+  // cron.schedule("* * * * *", () => {
+  //   autoTopUp.autoRenew();
+  //   console.log("automatically topup every minute");
+  // });
 });

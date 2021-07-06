@@ -1,14 +1,43 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { Table, Tag } from "antd";
+import axios from "axios";
 
-import data_admin from "./admin.json";
+const getToken = localStorage.getItem('token');
 
 const Admin = () => {
+
+  const [, setLoading] = useState(false);
+  const [admins,setAdmin] = useState([]);
+
+  useEffect(()=>{
+    setLoading(true);
+    const auth = {
+      Authorization: "Bearer " + getToken,
+    };
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/api/admin/users-admin",
+      headers:{
+        "content-type": "application/json; charset=utf-8",
+        ...auth,
+      },
+    })
+    .then((res) => {
+      setAdmin(res.data);
+      console.log(setAdmin);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    })
+    .catch((err) => console.log(err));
+}, []);
+
+
   const columns = [
     {
-      title: "Full Name",
-      dataIndex: "name",
-      key: "name",
+      title: "FULL NAME",
+      dataIndex: "fullname",
+      key: "fullname",
     },
     {
       title: "EMAIL",
@@ -21,18 +50,27 @@ const Admin = () => {
       key: "branch",
     },
     {
+      title: "LAST LOGIN",
+      dataIndex: "last_login",
+      key: "last_login",
+    },
+    {
       title: "Actions",
-      dataIndex: "",
-      key: "",
-      render: () => {
-        return <Tag color="#f50">BAN</Tag>;
+      dataIndex: "ban",
+      key: "ban",
+      render: (ban) => {
+        if (ban) {
+          return <Tag color="#87d068">BAN</Tag>;
+        } else {
+          return <Tag color="#f50">UNBAN</Tag>;
+        }
       },
     },
   ];
   return (
     <React.Fragment>
       <div className="contentContainer-auto">
-        <Table dataSource={data_admin} columns={columns} />
+        <Table dataSource={admins.user_admins} columns={columns} />
       </div>
     </React.Fragment>
   );
