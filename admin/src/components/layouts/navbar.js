@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Layout, Avatar, Popover, Row, Col, Input } from "antd";
 import { Link } from "react-router-dom";
 import { HiLogout } from "react-icons/hi";
+import axios from 'axios';
 import { FiSearch, FiX } from "react-icons/fi";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -10,8 +11,38 @@ import Avatar1 from "../../assets/images/images.jpeg";
 
 const { Header } = Layout;
 
+const getToken = localStorage.getItem('token')
+
 const NavBar = () => {
   const [search, setSearch] = useState(false);
+  const [, setLoading] = useState(false);
+  const [data, setData] = useState("");
+  const auth = {
+    Authorization: "Bearer " + getToken,
+  };
+  const myData = () =>{
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/api/admin",
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        ...auth,
+      },
+    })
+      .then((res) => {
+        setData(res.data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      })
+      .catch((err) => console.log(err));
+  }
+
+
+  useEffect(() => {
+    setLoading(true);
+    myData();
+  }, []);
 
   // -----------function search notification ------------
 
@@ -36,8 +67,8 @@ const NavBar = () => {
                 </Col>
                 <Col span={20}>
                   <div>
-                    <div className="popover-text">Thith THIN</div>
-                    <span>helloworld@gmail.com</span>
+                    <div className="popover-text">{data.fullname}</div>
+                    <span>{data.email}</span>
                   </div>
                 </Col>
               </Row>

@@ -108,12 +108,13 @@ router.get("/users-register", authorization, async (req, res) => {
   router.get("/users-active", authorization, async (req, res) => {
     try {  
       const users = await pool.query(
-        "SELECT detail.id,detail.fullname, detail.phone, r.*, c.acc_id,c.calledstationid,c.acctterminatecause FROM  useraccount AS detail, radgroupcheck as r, radacct AS c WHERE detail.id::text=c.acc_id AND r.acc_id=c.acc_id AND  c.calledstationid ='sanng-school' OR c.calledstationid ='saang-school' AND c.acctterminatecause IS NULL"
+        "SELECT detail.id,detail.fullname, detail.phone, r.*, c.acc_id,c.calledstationid,c.acctterminatecause FROM  useraccount AS detail, radgroupcheck as r, radacct AS c WHERE detail.id::text=c.acc_id AND r.acc_id=c.acc_id AND  c.calledstationid ='sanng-school' AND c.acctterminatecause IS NULL"
       );
       
       if(users.rows.length === 0){
         return res.status(200).json({users_login:users.rows})
       }
+      console.log(users.rows);
       
       var device;
       if(users.rows.length===4){

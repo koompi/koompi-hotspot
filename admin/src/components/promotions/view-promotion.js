@@ -1,21 +1,11 @@
-import React, { useState } from "react";
-import axios from 'axios'
-import { Form, Input, Button, Row, Col, Upload, message,Select,Card,Avatar } from "antd";
+import React from "react";
+import { Row, Col, Card, Avatar } from "antd";
 import Modal from "antd/lib/modal/Modal";
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
 
 const { Meta } = Card;
 
 
 const ViewPromotion = ({ show, cancel, info }) => {
-  const [ state, setState] = useState(false);
-  const { imageUrl } = state;
-  const [ image, setImage] = useState("");
-  const [ form ] = Form.useForm();
-  // const {title,category,description} = info;
-
-  console.log("info", info);
-
 
   return (
     <Modal
