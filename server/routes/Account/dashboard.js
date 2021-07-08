@@ -33,4 +33,26 @@ router.get("/notification", authorization, async (req, res) => {
   }
 });
 
+// User seen notication
+router.put("/notification", authorization, async(req, res) => {
+  try {
+    const { seen, _id } = req.body;
+
+    await pool.query(
+      "UPDATE notification SET seen = $1 WHERE _id = $2", [
+        seen,
+        _id,
+      ]
+    );
+
+    res.status(200).json({
+      message: "Notification seen changed"
+    });
+
+  } catch (error) {
+    console.log("error notification seen: ", error);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
+
 module.exports = router;
