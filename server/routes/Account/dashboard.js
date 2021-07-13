@@ -22,6 +22,7 @@ router.get("/", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
 router.get("/notification", authorization, async (req, res) => {
   try {
     const noti = await pool.query("SELECT * from notification");
@@ -29,28 +30,6 @@ router.get("/notification", authorization, async (req, res) => {
     res.status(200).send(noti.rows);
   } catch (error) {
     console.log("error on get notification", error);
-    res.status(500).json({ message: "Server Error!" });
-  }
-});
-
-// User seen notication
-router.put("/notification", authorization, async(req, res) => {
-  try {
-    const { seen, _id } = req.body;
-
-    await pool.query(
-      "UPDATE notification SET seen = $1 WHERE _id = $2", [
-        seen,
-        _id,
-      ]
-    );
-
-    res.status(200).json({
-      message: "Notification seen changed"
-    });
-
-  } catch (error) {
-    console.log("error notification seen: ", error);
     res.status(500).json({ message: "Server Error!" });
   }
 });
