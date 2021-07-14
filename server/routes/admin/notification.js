@@ -46,7 +46,7 @@ var sendNotification = function(data) {
 router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-router.use(morgan("dev"));
+// router.use(morgan("dev"));
 
 // enable files upload
 router.use(
@@ -164,7 +164,8 @@ router.post("/notification", authorization, async (req, res) => {
 });
 router.get("/notification", authorization, async (req, res) => {
   try {
-    const noti = await pool.query("SELECT n.*,a.id,a.fullname from notification as n, useraccount as a WHERE a.id::text = n.acc_id");
+    // const noti = await pool.query("SELECT n.*,a.id,a.fullname from notification as n, useraccount as a WHERE a.id::text = n.acc_id");
+    const noti = await pool.query("SELECT * FROM notification");
 
     res.status(200).send({
       notification: noti.rows
