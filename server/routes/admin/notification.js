@@ -13,7 +13,7 @@ const authorization = require("../../middleware/authorization");
 var sendNotification = function(data) {
   var headers = {
     "Content-Type": "application/json; charset=utf-8",
-    "Authorization": 'Basic ' + process.env.API_KEY_ONESIGNAL
+    "Authorization": `Basic ${process.env.API_KEY_ONESIGNAL}`
   };
   
   var options = {
@@ -46,7 +46,7 @@ var sendNotification = function(data) {
 router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-// router.use(morgan("dev"));
+router.use(morgan("dev"));
 
 // enable files upload
 router.use(
