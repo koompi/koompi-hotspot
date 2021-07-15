@@ -22,9 +22,10 @@ router.get("/", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
 router.get("/notification", authorization, async (req, res) => {
   try {
-    const noti = await pool.query("SELECT * from notification");
+    const noti = await pool.query("SELECT * FROM notification ORDER BY _id DESC");
 
     res.status(200).send(noti.rows);
   } catch (error) {
