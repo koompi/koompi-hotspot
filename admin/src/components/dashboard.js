@@ -13,6 +13,8 @@ import axios from "axios";
 
 const getToken = localStorage.getItem("token");
 
+import url from "./utils"
+
 const { Content } = Layout;
 const Dashboard = () => {
   // state mangement
@@ -26,7 +28,7 @@ const Dashboard = () => {
     };
     axios({
       method: "GET",
-      url: `${url + api/admin/dashboard}`,
+      url: `${url.serverDev + api/admin/dashboard}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

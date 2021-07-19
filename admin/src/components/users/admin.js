@@ -4,6 +4,7 @@ import axios from "axios";
 
 const getToken = localStorage.getItem('token');
 
+import url from "../utils"
 const Admin = () => {
 
   const [, setLoading] = useState(false);
@@ -16,7 +17,7 @@ const Admin = () => {
     };
     axios({
       method: "GET",
-      url: `${url + api/admin/users-admin}`,
+      url: `${url.serverDev + api/admin/users-admin}`,
       headers:{
         "content-type": "application/json; charset=utf-8",
         ...auth,

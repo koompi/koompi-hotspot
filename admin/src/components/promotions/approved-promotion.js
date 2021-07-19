@@ -1,8 +1,12 @@
 import React,{useState,useEffect} from "react";
 import { Button, Skeleton, Table, Tag } from "antd";
 
+import url from "../utils"
+
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
+
+
 
 const ApprovedPromotion = () => {
 
@@ -16,7 +20,7 @@ const ApprovedPromotion = () => {
     };
     axios({
       method: "GET",
-      url: `${url + api/admin/approved-discount}`,
+      url: `${url.serverDev + api/admin/approved-discount}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -37,7 +41,7 @@ const ApprovedPromotion = () => {
     };
     axios({
       method: "PUT",
-      url: `${url + api/admin/disapprove-discount/id}`,
+      url: `${url.serverDev + api/admin/disapprove-discount/id}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

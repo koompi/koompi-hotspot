@@ -3,6 +3,8 @@ import { Form, Input, Button, message } from "antd";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 
+import url from "./utils"
+
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 import logo from "../assets/images/koompi_logo_signal.png";
@@ -20,7 +22,7 @@ const Login = () => {
 
     axios
       .post(
-        `http://localhost:5000/api/auth/admin/login`,
+        `${url.serverDev + api/auth/admin/login}`,
         adminLogin,
         setLoading(true)
       )

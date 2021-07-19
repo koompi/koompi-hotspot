@@ -1,5 +1,5 @@
-const url = 'https://dashboard-dev.koompi.org/'
+const serverDev = 'https://dashboard-dev.koompi.org/'
 
 module.exports ={
-    url
+    serverDev
 }
