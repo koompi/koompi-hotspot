@@ -19,7 +19,7 @@ const TableNotifications = () => {
     };
     axios({
       method: "GET",
-      url: "https://dashboard-dev.koompi.org/api/admin/notification",
+      url: "https://api-hotspot-dev.koompi.org/api/admin/notification",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

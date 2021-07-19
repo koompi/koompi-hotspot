@@ -1,4 +1,4 @@
-const serverDev = 'https://dashboard-dev.koompi.org/'
+const serverDev = 'https://api-hotspot-dev.koompi.org/'
 
 module.exports ={
     serverDev

@@ -15,7 +15,7 @@ const RegisteredUser = () => {
     };
     axios({
       method: "GET",
-      url: "https://dashboard-dev.koompi.org/api/admin/users-register",
+      url: "https://api-hotspot-dev.koompi.org/api/admin/users-register",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

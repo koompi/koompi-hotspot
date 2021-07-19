@@ -26,7 +26,7 @@ const Email_verification = () => {
 
     authAxios
       .post(
-        "https://dashboard-dev.koompi.org/api/auth/admin/confirm-admin",
+        "https://api-hotspot-dev.koompi.org/api/auth/admin/confirm-admin",
         verifyAcc
         // setLoading(true)
       )

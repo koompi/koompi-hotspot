@@ -17,7 +17,7 @@ const PostPromotion = () => {
 
      axios({
        method: "POST",
-       url:"https://dashboard-dev.koompi.org/api/admin/set-discount",data,
+       url:"https://api-hotspot-dev.koompi.org/api/admin/set-discount",data,
        headers:{
         "Content-Type": "application/json; charset=utf-8",
           ...auth,

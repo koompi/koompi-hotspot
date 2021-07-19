@@ -26,7 +26,7 @@ const Dashboard = () => {
     };
     axios({
       method: "GET",
-      url: "https://dashboard-dev.koompi.org/api/admin/dashboard",
+      url: "https://api-hotspot-dev.koompi.org/api/admin/dashboard",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
