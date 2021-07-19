@@ -15,7 +15,7 @@ const RegisteredUser = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/users-register",
+      url: `${url + api/admin/users-register}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

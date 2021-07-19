@@ -16,7 +16,7 @@ const ApprovedPromotion = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/approved-discount",
+      url: `${url + api/admin/approved-discount}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -37,7 +37,7 @@ const ApprovedPromotion = () => {
     };
     axios({
       method: "PUT",
-      url: `http://localhost:5000/api/admin/disapprove-discount/${id}`,
+      url: `${url + api/admin/disapprove-discount/id}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
