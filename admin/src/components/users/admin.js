@@ -16,7 +16,7 @@ const Admin = () => {
     };
     axios({
       method: "GET",
-      url: "https://dashboard-dev.koompi.org/api/admin/users-admin",
+      url: "https://api-hotspot-dev.koompi.org/api/admin/users-admin",
       headers:{
         "content-type": "application/json; charset=utf-8",
         ...auth,

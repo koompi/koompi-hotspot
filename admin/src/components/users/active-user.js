@@ -15,7 +15,7 @@ const ActivesUsers = () => {
     };
     axios({
       method: "GET",
-      url: "https://dashboard-dev.koompi.org/api/admin/users-active",
+      url: "https://api-hotspot-dev.koompi.org/api/admin/users-active",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

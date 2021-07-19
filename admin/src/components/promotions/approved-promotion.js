@@ -16,7 +16,7 @@ const ApprovedPromotion = () => {
     };
     axios({
       method: "GET",
-      url: "https://dashboard-dev.koompi.org/api/admin/approved-discount",
+      url: "https://api-hotspot-dev.koompi.org/api/admin/approved-discount",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -37,7 +37,7 @@ const ApprovedPromotion = () => {
     };
     axios({
       method: "PUT",
-      url: `https://dashboard-dev.koompi.org/api/admin/disapprove-discount/${id}`,
+      url: `https://api-hotspot-dev.koompi.org/api/admin/disapprove-discount/${id}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
