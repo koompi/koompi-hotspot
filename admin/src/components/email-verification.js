@@ -5,6 +5,7 @@ import axios from "axios";
 
 import image_animation from "../assets/images/email-verification.png";
 import bottom_image from "../assets/images/image_02.png";
+import url from "./utils"
 
 // const apiUrl = "http://localhost:5000/api/auth/admin/";
 const accessToken = localStorage.getItem("token");
@@ -26,7 +27,7 @@ const Email_verification = () => {
 
     authAxios
       .post(
-        `${url + api/auth/admin/confirm-admin}`,
+        `${url.serverDev + api/auth/admin/confirm-admin}`,
         verifyAcc
         // setLoading(true)
       )
