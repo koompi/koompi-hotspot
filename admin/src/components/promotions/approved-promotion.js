@@ -4,8 +4,6 @@ import { Button, Skeleton, Table, Tag } from "antd";
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
 
-
-
 const ApprovedPromotion = () => {
 
   const [ ,setLoading] = useState(false);
@@ -39,7 +37,7 @@ const ApprovedPromotion = () => {
     };
     axios({
       method: "PUT",
-      url: "https://dashboard-dev.koompi.org/api/admin/disapprove-discount/id",
+      url: `https://dashboard-dev.koompi.org/api/admin/disapprove-discount/${id}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
