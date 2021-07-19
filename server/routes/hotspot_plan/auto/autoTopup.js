@@ -75,7 +75,7 @@ const payment = async (req, asset, plan, memo) => {
           }
         })
         .catch(err => {
-          console.log("selendra's bug with payment portfolio", err);
+          console.log("selendra's bug with payment portfolio\n",err.message,'\n',err.response.status,err.response.statusText);
           return [501, "Selendra server is in maintenance."];
         });
       return check;

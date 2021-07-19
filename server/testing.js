@@ -1,21 +1,41 @@
-// const cron = require("node-cron");
+require("dotenv").config();
 
-// cron.schedule("* * * * *", () => {
-//   console.log("running every 30 second");
-// });
-// var min = 100000;
-// var max = 999999;
-// var code = Math.floor(Math.random() * (max - min + 1) + min);
-// console.log(code);
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_Authorization;
 
-// var a = "0.000011";
-// var b = "1.000011";
-// a = parseInt(a,10);
-// b = parseFloat(b,10);
+const qs = require("querystring");
+const http = require("https");
 
-// console.log(a);
-// console.log(b);
+const data = qs.stringify({
+  Body: "This is the ship that made the Kessel",
+  To: "+85598939699",
+  From: `hot-fifi`
+});
 
-// async function validateAddress(address) {
-//   return new Promise(async (resolve, reject) => {
+const options = {
+  method: "POST",
+  hostname: "api.twilio.com",
+  port: null,
+  path: `/2010-04-01/Accounts/${accountSid}/Messages.json`,
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Content-Length": data.length,
+    Authorization: authToken
+  }
+};
 
+const req = http.request(options, function(res) {
+  const chunks = [];
+
+  res.on("data", function(chunk) {
+    chunks.push(chunk);
+  });
+
+  res.on("end", function() {
+    const body = Buffer.concat(chunks);
+    console.log(body.toString());
+  });
+});
+
+req.write(data);
+req.end();

@@ -12,17 +12,17 @@ const Buy_plan = () => {
   if (token === null) {
     setLoading(false);
   }
-  const onFinish = (values) => {
+  const onFinish = values => {
     if (setLoading(false)) {
       return <Redirect to="/" />;
     }
     const userWiFi = {
       username: values.username,
-      password: values.password,
+      password: values.password
     };
     axios
       .post("https://api-hotspot.koompi.org/api/hotspot/free-plan", userWiFi)
-      .then((res) => {
+      .then(res => {
         console.log(res);
         if (res.data === "Account already exist") {
           message.error(res.data);
@@ -34,7 +34,7 @@ const Buy_plan = () => {
           history.push("/home");
         }
       })
-      .catch(async (err) => {
+      .catch(async err => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);

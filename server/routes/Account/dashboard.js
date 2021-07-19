@@ -23,4 +23,15 @@ router.get("/", authorization, async (req, res) => {
   }
 });
 
+router.get("/notification", authorization, async (req, res) => {
+  try {
+    const noti = await pool.query("SELECT * FROM notification ORDER BY _id DESC");
+
+    res.status(200).send(noti.rows);
+  } catch (error) {
+    console.log("error on get notification", error);
+    res.status(500).json({ message: "Server Error!" });
+  }
+});
+
 module.exports = router;
