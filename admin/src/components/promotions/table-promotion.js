@@ -3,7 +3,6 @@ import { Table, Tag,Button,Skeleton } from "antd";
 
 import axios from 'axios';
 const getToken = localStorage.getItem('token')
-import url from "../utils"
 
 const TablePromotion = () => {
   const [ ,setLoading] = useState(false);
@@ -16,7 +15,7 @@ const TablePromotion = () => {
     };
     axios({
       method: "GET",
-      url: `${url.serverDev + api/admin/view-discount}`,
+      url: "https://dashboard-dev.koompi.org/api/admin/view-discount",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -38,7 +37,7 @@ const TablePromotion = () => {
     };
     axios({
       method: "PUT",
-      url: `${url.serverDev + api/admin/approve-discount/id}`,
+      url: "https://dashboard-dev.koompi.org/api/admin/approve-discount/id",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
         ...auth,

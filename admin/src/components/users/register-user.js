@@ -4,8 +4,6 @@ import axios from "axios";
 
 const getToken = localStorage.getItem("token");
 
-import url from "../utils"
-
 const RegisteredUser = () => {
   const [ ,setLoading] = useState(false);
   const [usersRegister, setUserRegister] = useState([]);
@@ -17,7 +15,7 @@ const RegisteredUser = () => {
     };
     axios({
       method: "GET",
-      url: `${url.serverDev + api/admin/users-register}`,
+      url: "https://dashboard-dev.koompi.org/api/admin/users-register",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
