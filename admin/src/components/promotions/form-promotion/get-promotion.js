@@ -16,7 +16,7 @@ const GetPromotion = () => {
     };
     axios({
       method: "GET",
-      url: `${url + api/admin/set-discount}`,
+      url: "https://dashboard-dev.koompi.org/api/admin/set-discount",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

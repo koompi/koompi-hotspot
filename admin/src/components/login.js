@@ -3,8 +3,6 @@ import { Form, Input, Button, message } from "antd";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 
-import url from "./utils"
-
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 import logo from "../assets/images/koompi_logo_signal.png";
@@ -22,7 +20,7 @@ const Login = () => {
 
     axios
       .post(
-        `${url.serverDev + api/auth/admin/login}`,
+        "https://dashboard-dev.koompi.org/api/auth/admin/login}",
         adminLogin,
         setLoading(true)
       )

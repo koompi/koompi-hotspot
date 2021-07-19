@@ -5,8 +5,6 @@ import axios from 'axios';
 const getToken = localStorage.getItem('token')
 const { Option } = Select;
 
-import url from "../../utils"
-
 const PostPromotion = () => {
   const onSubmit = (value) => {
     const auth = {
@@ -19,7 +17,7 @@ const PostPromotion = () => {
 
      axios({
        method: "POST",
-       url: `${url.serverDev + api/admin/set-discount}`,data,
+       url:"https://dashboard-dev.koompi.org/api/admin/set-discount",data,
        headers:{
         "Content-Type": "application/json; charset=utf-8",
           ...auth,

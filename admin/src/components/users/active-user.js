@@ -4,8 +4,6 @@ import axios from "axios";
 
 const getToken = localStorage.getItem("token");
 
-import url from "../utils"
-
 const ActivesUsers = () => {
   const [ ,setLoading] = useState(false);
   const [usersActive, setUserActive] = useState([]);
@@ -17,7 +15,7 @@ const ActivesUsers = () => {
     };
     axios({
       method: "GET",
-      url: `${url.serverDev + api/admin/users-active}`,
+      url: "https://dashboard-dev.koompi.org/api/admin/users-active",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
