@@ -1,0 +1,13 @@
+version: "3.0"
+services:
+  koompififi_dash_dev:
+    image: pionux/node-alpine:0.1.0
+    container_name: dashboard_fifi_dev
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - "${DASHBOARD_PATH}:/var/www/app/"
+    working_dir: /var/www/app/
+    command:
+      - "./start.sh"
