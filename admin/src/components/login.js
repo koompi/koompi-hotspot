@@ -20,7 +20,7 @@ const Login = () => {
 
     axios
       .post(
-        `${url + api/auth/admin/login}`,
+        `http://localhost:5000/api/auth/admin/login`,
         adminLogin,
         setLoading(true)
       )

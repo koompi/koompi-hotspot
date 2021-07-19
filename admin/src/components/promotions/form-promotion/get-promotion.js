@@ -16,7 +16,7 @@ const GetPromotion = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/set-discount",
+      url: `${url + api/admin/set-discount}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

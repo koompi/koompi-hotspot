@@ -15,7 +15,7 @@ const ActivesUsers = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/users-active",
+      url: `${url + api/admin/users-active}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,

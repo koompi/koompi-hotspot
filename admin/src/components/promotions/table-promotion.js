@@ -15,7 +15,7 @@ const TablePromotion = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/view-discount",
+      url: `${url + api/admin/view-discount}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -37,7 +37,7 @@ const TablePromotion = () => {
     };
     axios({
       method: "PUT",
-      url: `http://localhost:5000/api/admin/approve-discount/${id}`,
+      url: `${url + api/admin/approve-discount/id}`,
       headers: {
         "Content-Type": "application/json; charset=utf-8",
         ...auth,
