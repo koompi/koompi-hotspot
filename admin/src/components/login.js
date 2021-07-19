@@ -20,7 +20,7 @@ const Login = () => {
 
     axios
       .post(
-        "https://dashboard-dev.koompi.org/api/auth/admin/login}",
+        "https://dashboard-dev.koompi.org/api/auth/admin/login",
         adminLogin,
         setLoading(true)
       )
