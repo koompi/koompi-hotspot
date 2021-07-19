@@ -19,7 +19,7 @@ const TableNotifications = () => {
     };
     axios({
       method: "GET",
-      url: `${url + api/admin/notification}`,
+      url: "https://dashboard-dev.koompi.org/api/admin/notification",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -45,7 +45,7 @@ const TableNotifications = () => {
         if(image!==null)
         return (
           <img
-            src="https://dashboard-dev.koompi.org/uploads/noti/notification_1623254707278.jpg"
+            src="https://www.netfort.com/assets/Internet-url-search.jpg"
             className="thumbnail-notification"
             alt="thumbnail"
           />
