@@ -26,7 +26,7 @@ const Email_verification = () => {
 
     authAxios
       .post(
-        `http://localhost:5000/api/auth/admin/confirm-admin`,
+        `${url + api/auth/admin/confirm-admin}`,
         verifyAcc
         // setLoading(true)
       )
