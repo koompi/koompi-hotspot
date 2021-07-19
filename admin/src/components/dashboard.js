@@ -26,7 +26,7 @@ const Dashboard = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/dashboard",
+      url: `${url + api/admin/dashboard}`,
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
