@@ -34,8 +34,8 @@ const Login = () => {
         // message.success(res.data.message);
 
         // history.push("/verify");
-        // window.location.replace("/verify");
-        window.location.replace("/dashboard");
+        window.location.replace("/verify");
+        // window.location.replace("/dashboard");
       })
 
       .catch(err => {

@@ -107,7 +107,7 @@ const Email_verification = () => {
                 </Button>
                 <br />
                 <br />
-                Back to <Link to="/admin/login">Login!</Link>
+                Back to <Link to="/login">Login!</Link>
                 <br />
                 try again <Link to="">Try again!</Link>
               </Form.Item>
