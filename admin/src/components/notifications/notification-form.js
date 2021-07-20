@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Row, Col, Upload, message } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 const { TextArea } = Input;
 
@@ -48,6 +49,39 @@ const FormNotification = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+
+  const onSubmit = data => {
+    console.log("Success:", data);
+    const contentData = {
+      title: data.title,
+      description: data.description,
+      image: 'notification_1626256683554.jpg'
+    };
+
+    axios
+      .post(
+        "https://api-hotspot-dev.koompi.org/api/admin/notification/",
+        contentData,
+        // setLoading(true)
+      )
+      .then(async (res) => {
+        // setLoading(true);
+        message.success("Added Successfully.");
+        // message.success(res.data.message);
+
+        const { token } = res.data;
+        await localStorage.setItem("token", token);
+        window.location.replace("/dashboard");
+      })
+      .catch(async (err) => {
+        setTimeout(() => {
+          // setLoading(false);
+        }, 1000);
+        console.log(err);
+        await message.error(err.message);
+        // await message.error("Code invalid.");
+      });
+  };
 
   return (
     <React.Fragment>

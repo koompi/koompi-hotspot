@@ -45,7 +45,7 @@ const TableNotifications = () => {
         if(image!==null)
         return (
           <img
-            src="https://www.netfort.com/assets/Internet-url-search.jpg"
+            src={("https://api-hotspot-dev.koompi.org/uploads/noti/notification_1626256683554.jpg")}
             className="thumbnail-notification"
             alt="thumbnail"
           />
