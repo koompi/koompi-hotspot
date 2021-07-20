@@ -5,7 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const moment = require("moment");
-require("dotenv").config();
+require("dotenv").config({ path: `../../.env` });
 
 const path = require("path");
 const authorization = require("../../middleware/authorization");
@@ -132,7 +132,7 @@ router.post("/notification", authorization, async (req, res) => {
     });
 
     sendNotification(message);
-    
+
   } catch (error) {
     console.log("error on POST notification", error);
     res.status(500).json({ message: "Server Error!" });
