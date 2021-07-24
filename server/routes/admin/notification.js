@@ -114,6 +114,7 @@ router.post("/notification", authorization, async (req, res) => {
       headings: {"en": title},
       contents: {"en": description},
       included_segments: ["Subscribed Users"]
+      // include_player_ids: ["3bf9e780-96a9-4232-9d24-4460c57c1f3f"]
     };
 
     var now = moment();
