@@ -42,7 +42,7 @@ const Login = () => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);
-        // message.error(err);
+        message.error(err.message);
       });
   };
 
