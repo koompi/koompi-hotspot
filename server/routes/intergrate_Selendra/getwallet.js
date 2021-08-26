@@ -5,6 +5,8 @@ require("dotenv").config();
 const authorization = require("../../middleware/authorization");
 const confirmPass = require("../../utils/payment");
 const AddressIsValid = require("../../utils/check_validwallet");
+var ethers = require('ethers');
+const abi = require( "../../abi" );
 
 //  Generate Wallet or Get wallet for userAcc
 router.get("/get-wallet", authorization, async (req, res) => {
@@ -255,6 +257,22 @@ router.get("/portfolio", authorization, async (req, res) => {
       "SELECT ids FROM useraccount WHERE id = $1",
       [req.user]
     );
+    let privateKey = "0x9b26bba569eda989723404c80edf0e909c1543fe490d294de81ab2e5a457232b";
+    let usdtContract = "0x337610d27c682e347c9cd60bd4b3b107c9d34ddd";
+    let bscProvider = new ethers.providers.JsonRpcProvider(
+      'https://data-seed-prebsc-1-s1.binance.org:8545/', 
+      {   
+          name: 'binance', 
+          chainId: 97 
+      }
+    );
+    const receiverWallet = new ethers.Wallet(privateKey, bscProvider);
+    const getBalance = async (wallet) => {
+      const contract = new ethers.Contract(usdtContract, abi, wallet);
+      const balance = await contract.balanceOf(wallet.address)
+      return balance
+      
+    }
 
     const userPortfolio = {
       id: checkWallet.rows[0].ids,
@@ -264,18 +282,30 @@ router.get("/portfolio", authorization, async (req, res) => {
     if (checkWallet.rows[0].ids === null) {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
-      axios
-        .post(
-          "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
-          userPortfolio
-        )
-        .then(async r => {
-          await res.status(200).json(r.data);
-        })
-        .catch(err => {
-          console.error(err);
-          res.status(500).json({ message: "Internal server error!" });
-        });
+      const receiverBalance = await getBalance(receiverWallet)
+      await getBalance(receiverWallet).then(async r => {
+        await res.status(200).json({
+          token: ethers.utils.formatUnits(receiverBalance, 18),
+          symbol: "USDT"
+        }
+        );
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error!" });
+      });
+      // axios
+      //   .post(
+      //     "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
+      //     userPortfolio
+      //   )
+      //   .then(async r => {
+      //     await res.status(200).json(r.data);
+      //   })
+      //   .catch(err => {
+      //     console.error(err);
+      //     res.status(500).json({ message: "Internal server error!" });
+      //   });
     }
   } catch (err) {
     console.error(err);
