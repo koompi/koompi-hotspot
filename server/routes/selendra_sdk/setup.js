@@ -20,13 +20,13 @@ let bscProvider = new ethers.providers.JsonRpcProvider(
 let senderWallet = new ethers.Wallet(privateKey, bscProvider);
 
 // Send Token 
-const contract = new ethers.Contract(usdtContract, abi, senderWallet);
-const howMuchTokens = ethers.utils.parseUnits('1', 18)
-async function init() {
-    await contract.transfer(recieverAddress, howMuchTokens) 
-    console.log(`Sent ${ethers.utils.formatUnits(howMuchTokens, 18)} USDT to address ${recieverAddress}`)
-}
-init()
+// const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+// const howMuchTokens = ethers.utils.parseUnits('1', 18)
+// async function init() {
+//     await contract.transfer(recieverAddress, howMuchTokens) 
+//     console.log(`Sent ${ethers.utils.formatUnits(howMuchTokens, 18)} USDT to address ${recieverAddress}`)
+// }
+// init()
 
 
 // // Get Balance Token
