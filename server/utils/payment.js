@@ -2,22 +2,14 @@ const axios = require("axios");
 const pool = require("../db");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
+var ethers = require('ethers');
+const abi = require("../abi.json");
+const CryptoJS = require('crypto-js');
 
 const payment = async (req, asset, plan, memo) => {
   try {
     let amnt = parseFloat(plan, 10);
     var amount = 0;
-
-    //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
-    //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
-    //============ amount for checking condition
-
-    if (amnt === 30) {
-      amount = 50;
-    }
-    if (amnt === 365) {
-      amount = 600;
-    }
 
     // check if admin allowed and set set discount
     const discount = await checkDiscount(req);
@@ -29,47 +21,47 @@ const payment = async (req, asset, plan, memo) => {
     }
 
     const checkWallet = await pool.query(
-      "SELECT ids FROM useraccount WHERE id = $1",
+      "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
     );
 
-    const userPortfolio = {
-      id: checkWallet.rows[0].ids,
-      apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC
-    };
+    let usdtContract = "0x337610d27c682e347c9cd60bd4b3b107c9d34ddd";
+    let recieverAddress = "0xd9327341Ba48faB04d62c9Dc5128C01EB80927ab";
+    let bscProvider = new ethers.providers.JsonRpcProvider(
+      'https://data-seed-prebsc-1-s1.binance.org:8545/', 
+      {   
+          name: 'binance', 
+          chainId: 97 
+      }
+    );
+    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
-    const userPayment = {
-      id: checkWallet.rows[0].ids,
-      apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC,
-      destination: process.env.BANK_wallet,
-      asset_code: asset,
-      amount: `${amount - dis_value}`,
-      memo: memo
-    };
+    const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+    const getBalance = async (wallet) => {
+      const contract = new ethers.Contract(usdtContract, abi, wallet);
+      const balance = await contract.balanceOf(wallet.address)
+      return balance
+    }
 
-    // =====================================check if user doesn't have a wallet=================
-    if (checkWallet.rows[0].ids === null) {
-      return [400, "Please get a wallet first!"];
-    } else {
-      const check = await axios
-        .post(
-          "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
-          userPortfolio
-        )
-        .then(async r => {
-          const wallet = await r.data.token;
-          //=============================check if the money is enough or not=========
-          //============================= 0.0001 if for fee ==========================
-          if (wallet < amount - dis_value + 0.0001) {
+    
+
+    //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
+    //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
+    //============ amount for checking condition
+
+    if (amnt === 30) {
+      amount = 0.5;
+      if (checkWallet.rows[0].seed === null) {
+        return [400, "Please get a wallet first!"];
+      } else {
+        const check = await getBalance(userWallet).then(async r => {
+          const wallet = ethers.utils.formatUnits(r, 18);
+          if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
-            const done = await axios
-              .post(
-                "https://testnet-api.selendra.com/apis/v1/payment",
-                userPayment
-              )
+            let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+            const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
               .then(() => {
                 return [200, "Paid successfull"];
               })
@@ -81,11 +73,45 @@ const payment = async (req, asset, plan, memo) => {
           }
         })
         .catch(err => {
-          console.log("selendra's bug with payment portfolio\n",err.message,'\n',err.response.status,err.response.statusText);
-          return [501, "Selendra server is in maintenance."];
+          console.error(err);
+          res.status(501).json({ message: "Selendra server is in maintenance." });
         });
-      return check;
+        return check;
+      }
     }
+    if (amnt === 365) {
+      amount = 1;
+      if (checkWallet.rows[0].seed === null) {
+        return [400, "Please get a wallet first!"];
+      } else {
+        const check = await getBalance(userWallet).then(async r => {
+          const wallet = ethers.utils.formatUnits(r, 18);
+          if (wallet < amount.toString() - dis_value.toString()) {
+            return [400, "You don't have enough money!"];
+          } else {
+            let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+            const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
+              .then(() => {
+                return [200, "Paid successfull"];
+              })
+              .catch(err => {
+                console.log("selendra's bug with payment", err);
+                return [501, "Selendra server is in maintenance."];
+              });
+            return done;
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          res.status(501).json({ message: "Selendra server is in maintenance." });
+        });
+        return check;
+      }
+    }
+
+    // =====================================check if user doesn't have a wallet=================
+
   } catch (err) {
     console.log("Payment error", err);
     return [500, "Server error!"];
@@ -97,13 +123,6 @@ const checking = async (req, plan) => {
     let amnt = parseFloat(plan, 10);
     var amount = 0;
 
-    if (amnt === 30) {
-      amount = 50;
-    }
-    if (amnt === 365) {
-      amount = 600;
-    }
-
     // check if admin allowed and set set discount
     const discount = await checkDiscount(req);
     var dis_value = 0;
@@ -114,39 +133,80 @@ const checking = async (req, plan) => {
     }
 
     const checkWallet = await pool.query(
-      "SELECT ids FROM useraccount WHERE id = $1",
+      "SELECT seed FROM useraccount WHERE id = $1",
       [req.user]
     );
+    
+    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+   
+    const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+    const getBalance = async (wallet) => {
+      const contract = new ethers.Contract(usdtContract, abi, wallet);
+      const balance = await contract.balanceOf(wallet.address)
+      return balance
+    }
 
-    const userPortfolio = {
-      id: checkWallet.rows[0].ids,
-      apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC
-    };
-    if (checkWallet.rows[0].ids === null) {
-      console.log("get wallet first.");
-      return [(status = 200), (message = "Please get a wallet first!")];
-    } else {
-      const data = await axios
-        .post(
-          "https://testnet-api.selendra.com/apis/v1/portforlio-by-api",
-          userPortfolio
-        )
-
-        .then(async r => {
-          const wallet = await r.data.token;
-          //=============================check if the money is enough or not=========
-          //============================= 0.001 if for fee ==========================
-          if (wallet < amount - dis_value + 0.0001) {
-            return [401, "You don't have enough money!"];
+    if (amnt === 30) {
+      amount = 50;
+      if (checkWallet.rows[0].seed === null) {
+        return [400, "Please get a wallet first!"];
+      } else {
+        const check = await getBalance(userWallet).then(async r => {
+          const wallet = ethers.utils.formatUnits(r, 18);
+          if (wallet < amount.toString() - dis_value.toString()) {
+            return [400, "You don't have enough money!"];
+          } else {
+            let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+            const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
+              .then(() => {
+                return [200, "Paid successfull"];
+              })
+              .catch(err => {
+                console.log("selendra's bug with payment", err);
+                return [501, "Selendra server is in maintenance."];
+              });
+            return done;
           }
         })
         .catch(err => {
-          console.log("internal! with portfolio", err);
-          return [501, "Selendra server error."];
+          console.error(err);
+          res.status(501).json({ message: "Selendra server is in maintenance." });
         });
-      return data;
+        return check;
+      }
     }
+    if (amnt === 365) {
+      amount = 600;
+      if (checkWallet.rows[0].seed === null) {
+        return [400, "Please get a wallet first!"];
+      } else {
+        const check = await getBalance(userWallet).then(async r => {
+          const wallet = ethers.utils.formatUnits(r, 18);
+          if (wallet < amount.toString() - dis_value.toString()) {
+            return [400, "You don't have enough money!"];
+          } else {
+            let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+            const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
+              .then(() => {
+                return [200, "Paid successfull"];
+              })
+              .catch(err => {
+                console.log("selendra's bug with payment", err);
+                return [501, "Selendra server is in maintenance."];
+              });
+            return done;
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          res.status(501).json({ message: "Selendra server is in maintenance." });
+        });
+        return check;
+      }
+    }
+
   } catch (error) {
     console.log("checking", error);
     return [401, "You don't have enough money!"];
