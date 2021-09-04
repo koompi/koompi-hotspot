@@ -213,7 +213,9 @@ router.post("/transfer", authorization, async (req, res) => {
           chainId: 97 
       }
     )
-    let senderWallet = new ethers.Wallet(checkWallet.rows[0].seed, bscProvider);
+    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+
+    let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
     const contract = new ethers.Contract(usdtContract, abi, senderWallet);
 
     //=====================================check if user doesn't have a wallet=================
