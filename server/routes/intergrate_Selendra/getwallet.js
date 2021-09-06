@@ -239,7 +239,7 @@ router.post("/transfer", authorization, async (req, res) => {
           })
           .catch(err => {
             console.log("Error on transfer", err);
-            res.status(500).json({ message: "Interal server error!" });
+            res.status(500).json({ message: err.reason });
           });
     }
   } catch (err) {
