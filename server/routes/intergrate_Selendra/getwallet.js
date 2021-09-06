@@ -20,23 +20,26 @@ router.get("/get-wallet", authorization, async (req, res) => {
           chainId: 97 
       }
     )
+    const checkWallet = await pool.query(
+      "SELECT * FROM useraccount WHERE id = $1",
+      [req.user]
+    );
+
     // generate wallet address and seed
     const wallet = ethers.Wallet.createRandom(32).connect(bscProvider);
     const seedEncrypted = CryptoJS.AES.encrypt(wallet.privateKey, "seed");
-
-    await pool.query(
-      "UPDATE useraccount SET wallet = $2, seed = $3 WHERE id = $1",
-      [req.user, wallet.address, seedEncrypted.toString()]
-    );
-    if(checkWallet.rows[0].seed === null) {
-      res.status(200).json({
-        message: "You've got a selendra wallet."
+    if (checkWallet.rows[0].seed === null) {
+      await pool.query(
+        "UPDATE useraccount SET wallet = $2, seed = $3 WHERE id = $1",
+        [req.user, wallet.address, seedEncrypted.toString()]
+      )
+      .catch(err => {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error!" });
       });
-    }
-    else {
-      res.status(401).json({
-        message: "You already have a selendra wallet!"
-      });
+      res.status(200).json({ message: "You've got a selendra wallet." });
+    } else {
+      res.status(401).json({ message: "You already have a selendra wallet!" });
     }
   }
   catch (err) {
@@ -64,10 +67,10 @@ router.get("/get-wallet", authorization, async (req, res) => {
 //       apisec: process.env.API_SEC
 //     };
 
-//     const checkWallet = await pool.query(
-//       "SELECT ids FROM useraccount WHERE id = $1",
-//       [req.user]
-//     );
+    // const checkWallet = await pool.query(
+    //   "SELECT ids FROM useraccount WHERE id = $1",
+    //   [req.user]
+    // );
 //     const checkFreeToken = await pool.query(
 //       "SELECT ids FROM useraccount WHERE ids != 'null'"
 //     );
@@ -109,19 +112,19 @@ router.get("/get-wallet", authorization, async (req, res) => {
 //         });
 
 //       ///============================= by default get the wallet ========================
-//     } else if (checkWallet.rows[0].ids === null) {
-//       await pool.query(
-//         "UPDATE useraccount SET wallet = $2, seed = $3 WHERE id = $1",
-//         [req.user, wallet.address, bcryptSeed]
-//       )
-//         .catch(err => {
-//           console.error(err);
-//           res.status(500).json({ message: "Internal server error!" });
-//         });
-//       res.status(200).json({ message: "You've got a selendra wallet." });
-//     } else {
-//       res.status(401).json({ message: "You already have a selendra wallet!" });
-//     }
+    // } else if (checkWallet.rows[0].ids === null) {
+    //   await pool.query(
+    //     "UPDATE useraccount SET wallet = $2, seed = $3 WHERE id = $1",
+    //     [req.user, wallet.address, bcryptSeed]
+    //   )
+    //     .catch(err => {
+    //       console.error(err);
+    //       res.status(500).json({ message: "Internal server error!" });
+    //     });
+    //   res.status(200).json({ message: "You've got a selendra wallet." });
+    // } else {
+    //   res.status(401).json({ message: "You already have a selendra wallet!" });
+    // }
 //   } catch (err) {
 //     console.error(err);
 //     res.status(500).json({ message: "Server Error" });
