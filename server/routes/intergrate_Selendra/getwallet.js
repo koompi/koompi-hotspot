@@ -28,10 +28,21 @@ router.get("/get-wallet", authorization, async (req, res) => {
       "UPDATE useraccount SET wallet = $2, seed = $3 WHERE id = $1",
       [req.user, wallet.address, seedEncrypted.toString()]
     );
-
-    res.status(200).json({
-      message: "Wallet craeted"
-    });
+    if(seedEncrypted === null) {
+      res.status(200).json({
+        message: "You've got a selendra wallet."
+      });
+    }
+    else if(seedEncrypted !== null) {
+      res.status(401).json({
+        message: "You already have a selendra wallet!"
+      });
+    }
+    else{
+      res.status(500).json({
+        message: "Something went wrong"
+      });
+    }
   }
   catch (err) {
     console.error(err);
