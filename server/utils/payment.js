@@ -67,7 +67,7 @@ const payment = async (req, asset, plan, memo) => {
               })
               .catch(err => {
                 console.log("selendra's bug with payment", err);
-                return [501, "Selendra server is in maintenance."];
+                return [501, err.reason];
               });
             return done;
           }
@@ -97,7 +97,7 @@ const payment = async (req, asset, plan, memo) => {
               })
               .catch(err => {
                 console.log("selendra's bug with payment", err);
-                return [501, "Selendra server is in maintenance."];
+                return [501, err.reason];
               });
             return done;
           }
