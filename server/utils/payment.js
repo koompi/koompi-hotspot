@@ -80,7 +80,7 @@ const payment = async (req, asset, plan, memo) => {
       }
     }
     if (amnt === 365) {
-      amount = 1;
+      amount = 1.0;
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {

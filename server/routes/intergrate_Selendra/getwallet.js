@@ -195,7 +195,6 @@ router.post("/payment", authorization, async (req, res) => {
 router.post("/transfer", authorization, async (req, res) => {
   try {
     const { password, dest_wallet, asset, amount, memo } = req.body;
-
     // const isValidAddress = AddressIsValid.isValidAddressPolkadotAddress(
     //   dest_wallet
     // );
@@ -224,8 +223,12 @@ router.post("/transfer", authorization, async (req, res) => {
     )
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
-    let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
-    const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+    const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+    const getBalance = async (wallet) => {
+      const contract = new ethers.Contract(usdtContract, abi, wallet);
+      const balance = await contract.balanceOf(wallet.address)
+      return balance
+    }
 
     //=====================================check if user doesn't have a wallet=================
     if (!confirm) {
@@ -233,14 +236,29 @@ router.post("/transfer", authorization, async (req, res) => {
     } else if (checkWallet.rows[0].seed === null) {
       res.status(400).json({ message: "Please get a wallet first!" });
     } else {
-        await contract.transfer(dest_wallet, ethers.utils.parseUnits(amount, 18))
-          .then(async () => {
-            res.status(200).json({ message: "Transfer successful." });
-          })
-          .catch(err => {
-            console.log("Error on transfer", err);
-            res.status(500).json({ message: err.reason });
-          });
+      await getBalance(userWallet).then(async r => {
+        const wallet = ethers.utils.formatUnits(r, 18);
+        const balance = parseFloat(wallet);
+        if (balance < amount) {
+          res.status(400).json({ message: "You don't have enough token!" });
+        } else {
+          let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+          const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+          
+          await contract.transfer(dest_wallet, ethers.utils.parseUnits(amount.toString(), 18))
+            .then(() => {
+              res.status(200).json({ message: "Transfer successful" });
+            })
+            .catch(err => {
+              console.log("selendra's bug with payment", err);
+              res.status(501).json({ message: err.reason });
+            });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(501).json({ message: "Selendra server is in maintenance." });
+      });
     }
   } catch (err) {
     console.log("bug on get wallet function", err);
