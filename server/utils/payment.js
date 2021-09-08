@@ -27,11 +27,13 @@ const payment = async (req, asset, plan, memo) => {
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let recieverAddress = "0x8B055a926201c5fe4990A6D612314C2Bd4D78785";
-    let bscProvider = new ethers.providers.JsonRpcProvider(
+    let selendraProvider = new ethers.providers.JsonRpcProvider(
+      'https://rpc.testnet.selendra.org/', 
     );
+
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
-    const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+    const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
     const getBalance = async (wallet) => {
       const contract = new ethers.Contract(riseContract, abi, wallet);
       const balance = await contract.balanceOf(wallet.address)
@@ -54,7 +56,7 @@ const payment = async (req, asset, plan, memo) => {
           if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
-            let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+            let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
               .then(() => {
@@ -84,7 +86,7 @@ const payment = async (req, asset, plan, memo) => {
           if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
-            let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+            let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
               .then(() => {
@@ -134,7 +136,7 @@ const checking = async (req, plan) => {
     
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
    
-    const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+    const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
     const getBalance = async (wallet) => {
       const contract = new ethers.Contract(riseContract, abi, wallet);
       const balance = await contract.balanceOf(wallet.address)
@@ -151,7 +153,7 @@ const checking = async (req, plan) => {
           if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
-            let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+            let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
               .then(() => {
@@ -181,7 +183,7 @@ const checking = async (req, plan) => {
           if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
-            let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+            let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
               .then(() => {

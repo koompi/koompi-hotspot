@@ -13,7 +13,7 @@ const CryptoJS = require('crypto-js');
 // new
 router.get("/get-wallet", authorization, async (req, res) => {
   try{
-    let bscProvider = new ethers.providers.JsonRpcProvider(
+    let selendraProvider = new ethers.providers.JsonRpcProvider(
       'https://rpc.testnet.selendra.org/', 
     )
     const checkWallet = await pool.query(
@@ -22,7 +22,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
     );
 
     // generate wallet address and seed
-    const wallet = ethers.Wallet.createRandom(32).connect(bscProvider);
+    const wallet = ethers.Wallet.createRandom(32).connect(selendraProvider);
     const seedEncrypted = CryptoJS.AES.encrypt(wallet.privateKey, "seed");
     if (checkWallet.rows[0].seed === null) {
       await pool.query(
@@ -158,10 +158,10 @@ router.post("/payment", authorization, async (req, res) => {
     );
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
-    let bscProvider = new ethers.providers.JsonRpcProvider(
+    let selendraProvider = new ethers.providers.JsonRpcProvider(
       'https://rpc.testnet.selendra.org/', 
     )
-    let senderWallet = new ethers.Wallet(checkWallet.rows[0].seed, bscProvider);
+    let senderWallet = new ethers.Wallet(checkWallet.rows[0].seed, selendraProvider);
     const contract = new ethers.Contract(riseContract, abi, senderWallet);
 
     //=====================================check if user doesn't have a wallet=================
@@ -206,12 +206,12 @@ router.post("/transfer", authorization, async (req, res) => {
 
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
-    let bscProvider = new ethers.providers.JsonRpcProvider(
+    let selendraProvider = new ethers.providers.JsonRpcProvider(
       'https://rpc.testnet.selendra.org/', 
     )
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
-    const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+    const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
     const getBalance = async (wallet) => {
       const contract = new ethers.Contract(riseContract, abi, wallet);
       const balance = await contract.balanceOf(wallet.address)
@@ -231,7 +231,7 @@ router.post("/transfer", authorization, async (req, res) => {
         if (balance < amount) {
           res.status(400).json({ message: "You don't have enough token!" });
         } else {
-          let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+          let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
           const contract = new ethers.Contract(riseContract, abi, senderWallet);
           
           await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18))
@@ -264,13 +264,13 @@ router.get("/portfolio", authorization, async (req, res) => {
     );
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
-    let bscProvider = new ethers.providers.JsonRpcProvider(
+    let selendraProvider = new ethers.providers.JsonRpcProvider(
       'https://rpc.testnet.selendra.org/', 
     );
 
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
-    const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
+    const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
     const getBalance = async (wallet) => {
       const contract = new ethers.Contract(riseContract, abi, wallet);
       const balance = await contract.balanceOf(wallet.address)
