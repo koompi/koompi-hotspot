@@ -78,7 +78,7 @@ const getBalance = async (wallet) => {
     //     payable: false,
     //   },
     // ];
-    const contract = new ethers.Contract(usdtContract, abi, wallet);
+    const contract = new ethers.Contract(riseContract, abi, wallet);
     const balance = await contract.balanceOf(wallet.address)
     return balance
 }

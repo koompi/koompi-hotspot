@@ -14,11 +14,7 @@ const CryptoJS = require('crypto-js');
 router.get("/get-wallet", authorization, async (req, res) => {
   try{
     let bscProvider = new ethers.providers.JsonRpcProvider(
-      'https://data-seed-prebsc-1-s1.binance.org:8545/', 
-      {   
-          name: 'binance', 
-          chainId: 97 
-      }
+      'https://rpc.testnet.selendra.org/', 
     )
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
@@ -161,16 +157,12 @@ router.post("/payment", authorization, async (req, res) => {
       [req.user]
     );
 
-    let usdtContract = "0x337610d27c682e347c9cd60bd4b3b107c9d34ddd";
+    let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let bscProvider = new ethers.providers.JsonRpcProvider(
-      'https://data-seed-prebsc-1-s1.binance.org:8545/', 
-      {   
-          name: 'binance', 
-          chainId: 97 
-      }
+      'https://rpc.testnet.selendra.org/', 
     )
     let senderWallet = new ethers.Wallet(checkWallet.rows[0].seed, bscProvider);
-    const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+    const contract = new ethers.Contract(riseContract, abi, senderWallet);
 
     //=====================================check if user doesn't have a wallet=================
     if (checkWallet.rows[0].seed === null) {
@@ -213,22 +205,19 @@ router.post("/transfer", authorization, async (req, res) => {
     );
 
 
-    let usdtContract = "0x337610d27c682e347c9cd60bd4b3b107c9d34ddd";
+    let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let bscProvider = new ethers.providers.JsonRpcProvider(
-      'https://data-seed-prebsc-1-s1.binance.org:8545/', 
-      {   
-          name: 'binance', 
-          chainId: 97 
-      }
+      'https://rpc.testnet.selendra.org/', 
     )
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
     const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
     const getBalance = async (wallet) => {
-      const contract = new ethers.Contract(usdtContract, abi, wallet);
+      const contract = new ethers.Contract(riseContract, abi, wallet);
       const balance = await contract.balanceOf(wallet.address)
       return balance
     }
+    const isValidAddress = ethers.utils.getAddress(dest_wallet);
 
     //=====================================check if user doesn't have a wallet=================
     if (!confirm) {
@@ -243,9 +232,9 @@ router.post("/transfer", authorization, async (req, res) => {
           res.status(400).json({ message: "You don't have enough token!" });
         } else {
           let senderWallet = new ethers.Wallet(seedDecrypted, bscProvider);
-          const contract = new ethers.Contract(usdtContract, abi, senderWallet);
+          const contract = new ethers.Contract(riseContract, abi, senderWallet);
           
-          await contract.transfer(dest_wallet, ethers.utils.parseUnits(amount.toString(), 18))
+          await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18))
             .then(() => {
               res.status(200).json({ message: "Transfer successful" });
             })
@@ -257,12 +246,12 @@ router.post("/transfer", authorization, async (req, res) => {
       })
       .catch(err => {
         console.error(err);
-        res.status(501).json({ message: "Selendra server is in maintenance." });
+        res.status(501).json({ message: "Sorry, Something went wrong!" });
       });
     }
   } catch (err) {
     console.log("bug on get wallet function", err);
-    res.status(500).json({ message: "Server error!" });
+    res.status(500).json({ message: err.reason });
   }
 });
 
@@ -274,20 +263,16 @@ router.get("/portfolio", authorization, async (req, res) => {
       [req.user]
     );
 
-    let usdtContract = "0x337610d27c682e347c9cd60bd4b3b107c9d34ddd";
+    let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let bscProvider = new ethers.providers.JsonRpcProvider(
-      'https://data-seed-prebsc-1-s1.binance.org:8545/', 
-      {   
-          name: 'binance', 
-          chainId: 97 
-      }
+      'https://rpc.testnet.selendra.org/', 
     );
 
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
     const userWallet = new ethers.Wallet(seedDecrypted, bscProvider);
     const getBalance = async (wallet) => {
-      const contract = new ethers.Contract(usdtContract, abi, wallet);
+      const contract = new ethers.Contract(riseContract, abi, wallet);
       const balance = await contract.balanceOf(wallet.address)
       return balance
     }
@@ -299,7 +284,7 @@ router.get("/portfolio", authorization, async (req, res) => {
       await getBalance(userWallet).then(async r => {
         await res.status(200).json({
           token: ethers.utils.formatUnits(userBalance, 18),
-          symbol: "USDT"
+          symbol: "RISE"
         });
       })
       .catch(err => {
