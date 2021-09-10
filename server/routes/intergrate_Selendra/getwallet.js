@@ -128,75 +128,67 @@ router.get("/get-wallet", authorization, async (req, res) => {
 // });
 
 // Transaction of SEL or payment
-router.post("/payment", authorization, async (req, res) => {
-  try {
-    const { asset, plan, memo } = req.body;
-    let amnt = parseFloat(plan, 10);
-    var amount = 0;
+// router.post("/payment", authorization, async (req, res) => {
+//   try {
+//     const { asset, plan, memo } = req.body;
+//     let amnt = parseFloat(plan, 10);
+//     var amount = 0;
     
 
-    //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
-    //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
-    //============ amnt for push data to selendra as string
-    //============ amount for checking condition
+//     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
+//     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
+//     //============ amnt for push data to selendra as string
+//     //============ amount for checking condition
 
-    // if (amnt !== 30 || amnt !== 365) {
-    //   res.send("Please select plan!");
-    // }
-    if (amnt === 30) {
-      amnt = "0.1";
-      amount = 0.1;
-    }
-    if (amnt === 365) {
-      amnt = "0.2";
-      amount = 0.2;
-    }
+//     // if (amnt !== 30 || amnt !== 365) {
+//     //   res.send("Please select plan!");
+//     // }
+//     if (amnt === 30) {
+//       amnt = "0.1";
+//       amount = 0.1;
+//     }
+//     if (amnt === 365) {
+//       amnt = "0.2";
+//       amount = 0.2;
+//     }
 
-    const checkWallet = await pool.query(
-      "SELECT * FROM useraccount WHERE id = $1",
-      [req.user]
-    );
+//     const checkWallet = await pool.query(
+//       "SELECT * FROM useraccount WHERE id = $1",
+//       [req.user]
+//     );
 
-    let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
-    let selendraProvider = new ethers.providers.JsonRpcProvider(
-      'https://rpc.testnet.selendra.org/', 
-    )
-    let senderWallet = new ethers.Wallet(checkWallet.rows[0].seed, selendraProvider);
-    const contract = new ethers.Contract(riseContract, abi, senderWallet);
+//     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
+//     let selendraProvider = new ethers.providers.JsonRpcProvider(
+//       'https://rpc.testnet.selendra.org/', 
+//     )
+//     let senderWallet = new ethers.Wallet(checkWallet.rows[0].seed, selendraProvider);
+//     const contract = new ethers.Contract(riseContract, abi, senderWallet);
 
-    //=====================================check if user doesn't have a wallet=================
-    if (checkWallet.rows[0].seed === null) {
-      res.status(401).json({ message: "Please get a wallet first!" });
-    } else {
+//     //=====================================check if user doesn't have a wallet=================
+//     if (checkWallet.rows[0].seed === null) {
+//       res.status(401).json({ message: "Please get a wallet first!" });
+//     } else {
 
-      await contract.transfer("0xd9327341Ba48faB04d62c9Dc5128C01EB80927ab", ethers.utils.parseUnits(amnt.toString(), 18))
-        .then(async re => {
-          res.status(200).json({ message: "Paid successful." });
-        })
-        .catch(err => {
-          res.status(500).json({ message: "Internal server error" });
-          console.error(err);
-        });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error!" });
-  }
-});
+//       await contract.transfer("0xd9327341Ba48faB04d62c9Dc5128C01EB80927ab", ethers.utils.parseUnits(amnt.toString(), 18))
+//         .then(async re => {
+//           res.status(200).json({ message: "Paid successful." });
+//         })
+//         .catch(err => {
+//           res.status(500).json({ message: "Internal server error" });
+//           console.error(err);
+//         });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error!" });
+//   }
+// });
 
 router.post("/transfer", authorization, async (req, res) => {
   try {
     const { password, dest_wallet, asset, amount, memo } = req.body;
-    // const isValidAddress = AddressIsValid.isValidAddressPolkadotAddress(
-    //   dest_wallet
-    // );
-    // if (!isValidAddress) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Please fill in a valid address!" });
-    // }
+    let typeAsset = asset;
 
-    //////////////// check password ////////////////////////
     const confirm = await confirmPass.confirm_pass(req, password);
 
     const checkWallet = await pool.query(
@@ -224,7 +216,7 @@ router.post("/transfer", authorization, async (req, res) => {
       res.status(401).json({ message: "Incorrect password!" });
     } else if (checkWallet.rows[0].seed === null) {
       res.status(400).json({ message: "Please get a wallet first!" });
-    } else {
+    } else if(typeAsset === "RISE") {
       await getBalance(userWallet).then(async r => {
         const wallet = ethers.utils.formatUnits(r, 18);
         const balance = parseFloat(wallet);
@@ -249,11 +241,112 @@ router.post("/transfer", authorization, async (req, res) => {
         res.status(501).json({ message: "Sorry, Something went wrong!" });
       });
     }
+    else if(typeAsset === "SEL"){
+      await selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async r => {
+        const wallet = ethers.utils.formatUnits(r, 18);
+        const balance = parseFloat(wallet);
+        if (balance < amount) {
+          res.status(400).json({ message: "You don't have enough token!" });
+        } else {
+          // Create a transaction object
+          let tx = {
+            to: isValidAddress,
+            value: ethers.utils.parseUnits(amount.toString(), 18),
+          }
+          
+          // Send a transaction
+          userWallet.sendTransaction(tx)
+          .then((txObj) => {
+            res.status(200).json({ message: "Transfer successful" });
+          })
+          .catch(err => {
+            console.log("selendra's bug with payment", err);
+            res.status(501).json({ message: err.reason });
+          });
+
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(501).json({ message: "Sorry, Something went wrong!" });
+      });
+    }
   } catch (err) {
     console.log("bug on get wallet function", err);
     res.status(500).json({ message: err.reason });
   }
 });
+
+// router.post("/transfer", authorization, async (req, res) => {
+//   try {
+//     const { password, dest_wallet, asset, amount, memo } = req.body;
+//     // const isValidAddress = AddressIsValid.isValidAddressPolkadotAddress(
+//     //   dest_wallet
+//     // );
+//     // if (!isValidAddress) {
+//     //   return res
+//     //     .status(400)
+//     //     .json({ message: "Please fill in a valid address!" });
+//     // }
+
+//     //////////////// check password ////////////////////////
+//     const confirm = await confirmPass.confirm_pass(req, password);
+
+//     const checkWallet = await pool.query(
+//       "SELECT * FROM useraccount WHERE id = $1",
+//       [req.user]
+//     );
+
+
+//     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
+//     let selendraProvider = new ethers.providers.JsonRpcProvider(
+//       'https://rpc.testnet.selendra.org/', 
+//     )
+//     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+
+//     const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+//     const getBalance = async (wallet) => {
+//       const contract = new ethers.Contract(riseContract, abi, wallet);
+//       const balance = await contract.balanceOf(wallet.address)
+//       return balance
+//     }
+//     const isValidAddress = ethers.utils.getAddress(dest_wallet);
+
+//     //=====================================check if user doesn't have a wallet=================
+//     if (!confirm) {
+//       res.status(401).json({ message: "Incorrect password!" });
+//     } else if (checkWallet.rows[0].seed === null) {
+//       res.status(400).json({ message: "Please get a wallet first!" });
+//     } else {
+//       await getBalance(userWallet).then(async r => {
+//         const wallet = ethers.utils.formatUnits(r, 18);
+//         const balance = parseFloat(wallet);
+//         if (balance < amount) {
+//           res.status(400).json({ message: "You don't have enough token!" });
+//         } else {
+//           let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+//           const contract = new ethers.Contract(riseContract, abi, senderWallet);
+          
+//           await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18))
+//             .then(() => {
+//               res.status(200).json({ message: "Transfer successful" });
+//             })
+//             .catch(err => {
+//               console.log("selendra's bug with payment", err);
+//               res.status(501).json({ message: err.reason });
+//             });
+//         }
+//       })
+//       .catch(err => {
+//         console.error(err);
+//         res.status(501).json({ message: "Sorry, Something went wrong!" });
+//       });
+//     }
+//   } catch (err) {
+//     console.log("bug on get wallet function", err);
+//     res.status(500).json({ message: err.reason });
+//   }
+// });
 
 // Porfilio user balance
 router.get("/portfolio", authorization, async (req, res) => {
@@ -270,22 +363,41 @@ router.get("/portfolio", authorization, async (req, res) => {
 
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
+    
     const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+
+    // Get RISE Balance
     const getBalance = async (wallet) => {
       const contract = new ethers.Contract(riseContract, abi, wallet);
       const balance = await contract.balanceOf(wallet.address)
       return balance
     }
-    const userBalance = await getBalance(userWallet);
+    const userBalanceRise = await getBalance(userWallet);
+    
+    // Get SEL Balance
+    const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
     
     if (checkWallet.rows[0].seed === null) {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
       await getBalance(userWallet).then(async r => {
-        await res.status(200).json({
-          token: ethers.utils.formatUnits(userBalance, 18),
-          symbol: "RISE"
-        });
+        await res.status(200).json(
+          {
+            coins:[
+              {
+                id: "rise",
+                token: ethers.utils.formatUnits(userBalanceRise, 18),
+                symbol: "RISE"
+              },
+              {
+                id: "sel",
+                token: ethers.utils.formatUnits(userBalanceSel, 18),
+                symbol: "SEL"
+              }
+            ],
+           
+          },
+        );
       })
       .catch(err => {
         console.error(err);
