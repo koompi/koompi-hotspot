@@ -381,23 +381,19 @@ router.get("/portfolio", authorization, async (req, res) => {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
       await getBalance(userWallet).then(async r => {
-        await res.status(200).json(
+        await res.status(200).json([
           {
-            coins:[
-              {
-                id: "rise",
-                token: ethers.utils.formatUnits(userBalanceRise, 18),
-                symbol: "RISE"
-              },
-              {
-                id: "sel",
-                token: ethers.utils.formatUnits(userBalanceSel, 18),
-                symbol: "SEL"
-              }
-            ],
-           
+            id: "rise",
+            token: ethers.utils.formatUnits(userBalanceRise, 18),
+            symbol: "RISE"
           },
-        );
+          {
+            id: "sel",
+            token: ethers.utils.formatUnits(userBalanceSel, 18),
+            symbol: "SEL"
+          }
+          
+        ]);
       })
       .catch(err => {
         console.error(err);
