@@ -47,7 +47,7 @@ const payment = async (req, asset, plan, memo) => {
     //============ amount for checking condition
 
     if (amnt === 30) {
-      amount = 0.5;
+      amount = 50;
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
@@ -77,7 +77,7 @@ const payment = async (req, asset, plan, memo) => {
       }
     }
     if (amnt === 365) {
-      amount = 1.0;
+      amount = 600;
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
