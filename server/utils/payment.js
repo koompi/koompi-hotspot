@@ -40,7 +40,10 @@ const payment = async (req, asset, plan, memo) => {
       return balance
     }
 
-    
+    let gas = {
+      gasLimit: 100000,
+      gasPrice: ethers.utils.parseUnits("100", "gwei"),
+    }
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
@@ -58,7 +61,7 @@ const payment = async (req, asset, plan, memo) => {
           } else {
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
+            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
               .then(() => {
                 return [200, "Paid successfull"];
               })
@@ -88,7 +91,7 @@ const payment = async (req, asset, plan, memo) => {
           } else {
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
+            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
               .then(() => {
                 return [200, "Paid successfull"];
               })
