@@ -226,7 +226,12 @@ router.post("/transfer", authorization, async (req, res) => {
           let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
           const contract = new ethers.Contract(riseContract, abi, senderWallet);
           
-          await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18))
+          let gas = {
+            gasLimit: 100000,
+            gasPrice: ethers.utils.parseUnits("100", "gwei"),
+          }
+          
+          await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
             .then(() => {
               res.status(200).json({ message: "Transfer successful" });
             })
@@ -252,6 +257,8 @@ router.post("/transfer", authorization, async (req, res) => {
           let tx = {
             to: isValidAddress,
             value: ethers.utils.parseUnits(amount.toString(), 18),
+            gasLimit: 100000,
+            gasPrice: ethers.utils.parseUnits("100", "gwei"),
           }
           
           // Send a transaction
@@ -270,6 +277,9 @@ router.post("/transfer", authorization, async (req, res) => {
         console.error(err);
         res.status(501).json({ message: "Sorry, Something went wrong!" });
       });
+    }
+    else{
+      res.status(404).json({ message: "Sorry, Something went wrong!" });
     }
   } catch (err) {
     console.log("bug on get wallet function", err);
