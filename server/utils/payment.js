@@ -143,6 +143,11 @@ const checking = async (req, plan) => {
       return balance
     }
 
+    let gas = {
+      gasLimit: 100000,
+      gasPrice: ethers.utils.parseUnits("100", "gwei"),
+    }
+
     if (amnt === 30) {
       amount = 50;
       if (checkWallet.rows[0].seed === null) {
@@ -155,7 +160,8 @@ const checking = async (req, plan) => {
           } else {
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
+
+            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
               .then(() => {
                 return [200, "Paid successfull"];
               })
@@ -185,7 +191,7 @@ const checking = async (req, plan) => {
           } else {
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18))
+            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
               .then(() => {
                 return [200, "Paid successfull"];
               })
