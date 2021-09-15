@@ -361,26 +361,28 @@ router.get("/portfolio", authorization, async (req, res) => {
       'https://rpc.testnet.selendra.org/', 
     );
 
-    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
-    
-    const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-
-    // Get RISE Balance
-    const getBalance = async (wallet) => {
-      const contract = new ethers.Contract(riseContract, abi, wallet);
-      const balance = await contract.balanceOf(wallet.address)
-      return balance
-    }
-    const userBalanceRise = await getBalance(userWallet);
-    
-    // Get SEL Balance
-    const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
     
     if (checkWallet.rows[0].seed === null) {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
       await getBalance(userWallet).then(async r => {
+        const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+
+    
+        const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+    
+        // Get RISE Balance
+        const getBalance = async (wallet) => {
+          const contract = new ethers.Contract(riseContract, abi, wallet);
+          const balance = await contract.balanceOf(wallet.address)
+          return balance
+        }
+        const userBalanceRise = await getBalance(userWallet);
+        
+        // Get SEL Balance
+        const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
+        
         await res.status(200).json([
           {
             id: "rise",
