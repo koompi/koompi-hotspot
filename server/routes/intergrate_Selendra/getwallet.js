@@ -242,13 +242,19 @@ router.post("/transfer", authorization, async (req, res) => {
               // res.status(200).json({ 
               //   message: txObj
               //  });
+              pool.query(
+                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+                [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), isValidAddress, amount, "", "RISE", memo, dateTime]
+              );
               res.status(200).json(JSON.parse(JSON.stringify({
-                from: txObj.from,
-                to: isValidAddress,
+                hash: txObj.hash,
+                sender: txObj.from,
+                destination: isValidAddress,
                 amount: amount,
+                fee: "",
                 symbol: "RISE",
                 memo: memo,
-                date: dateTime
+                datetime: dateTime
               })));
             })
             .catch(err => {
@@ -281,13 +287,19 @@ router.post("/transfer", authorization, async (req, res) => {
           userWallet.sendTransaction(tx)
           .then((txObj) => {
             // res.status(200).json({ message: txObj });
+            pool.query(
+              "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+              [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), isValidAddress, amount, "", "RISE", memo, dateTime]
+            );
             res.status(200).json(JSON.parse(JSON.stringify({
-              from: txObj.from,
-              to: isValidAddress,
+              hash: txObj.hash,
+              sender: txObj.from,
+              destination: isValidAddress,
               amount: amount,
+              fee: "",
               symbol: "SEL",
               memo: memo,
-              date: dateTime
+              datetime: dateTime
             })));
           })
           .catch(err => {
@@ -446,25 +458,21 @@ router.get("/portfolio", authorization, async (req, res) => {
 router.get("/history", authorization, async (req, res) => {
   try {
     const checkWallet = await pool.query(
-      "SELECT ids FROM useraccount WHERE id = $1",
+      "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
     );
 
-    const userPortfolio = {
-      id: checkWallet.rows[0].ids,
-      apikey: process.env.API_KEYs,
-      apisec: process.env.API_SEC
-    };
-    if (checkWallet.rows[0].ids === null) {
+
+
+    if (checkWallet.rows[0].seed === null) {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
-      axios
-        .post(
-          "https://testnet-api.selendra.com/apis/v1/history-by-api",
-          userPortfolio
+        await pool.query(
+          "SELECT * FROM txhistory WHERE sender || destination = $1",
+          [checkWallet.rows[0].wallet]
         )
         .then(async r => {
-          await res.status(200).json(JSON.parse(JSON.stringify(r.data)));
+          await res.status(200).json(JSON.parse(JSON.stringify(r.rows)));
         })
         .catch(err => {
           res.status(500).json({ message: "Internal server error" });
