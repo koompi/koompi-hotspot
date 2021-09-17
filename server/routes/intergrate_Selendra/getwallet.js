@@ -8,6 +8,7 @@ const AddressIsValid = require("../../utils/check_validwallet");
 var ethers = require('ethers');
 const abi = require( "../../abi" );
 const CryptoJS = require('crypto-js');
+const moment = require("moment");
 
 //  Generate Wallet or Get wallet for userAcc
 // new
@@ -211,6 +212,11 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     const isValidAddress = ethers.utils.getAddress(dest_wallet);
 
+    
+    const format = "HH:mm:ss DD-MMM-YYYY"
+    var date = new Date();
+    dateTime = moment(date).format(format);
+
     //=====================================check if user doesn't have a wallet=================
     if (!confirm) {
       res.status(401).json({ message: "Incorrect password!" });
@@ -232,8 +238,18 @@ router.post("/transfer", authorization, async (req, res) => {
           }
           
           await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
-            .then(() => {
-              res.status(200).json({ message: "Transfer successful" });
+            .then(txObj => {
+              // res.status(200).json({ 
+              //   message: txObj
+              //  });
+              res.status(200).json(JSON.parse(JSON.stringify({
+                from: txObj.from,
+                to: isValidAddress,
+                amount: amount,
+                symbol: "RISE",
+                memo: memo,
+                date: dateTime
+              })));
             })
             .catch(err => {
               console.log("selendra's bug with payment", err);
@@ -264,7 +280,15 @@ router.post("/transfer", authorization, async (req, res) => {
           // Send a transaction
           userWallet.sendTransaction(tx)
           .then((txObj) => {
-            res.status(200).json({ message: "Transfer successful" });
+            // res.status(200).json({ message: txObj });
+            res.status(200).json(JSON.parse(JSON.stringify({
+              from: txObj.from,
+              to: isValidAddress,
+              amount: amount,
+              symbol: "SEL",
+              memo: memo,
+              date: dateTime
+            })));
           })
           .catch(err => {
             console.log("selendra's bug with payment", err);
