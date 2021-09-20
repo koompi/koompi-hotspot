@@ -213,9 +213,7 @@ router.post("/transfer", authorization, async (req, res) => {
     const isValidAddress = ethers.utils.getAddress(dest_wallet);
 
     
-    const format = "HH:mm:ss DD-MMM-YYYY"
-    var date = new Date();
-    dateTime = moment(date).format(format);
+    let dateTime = moment("2020-01-08T19:47:00.000Z").format("h:mm a MMM DD, YYYY");
 
     //=====================================check if user doesn't have a wallet=================
     if (!confirm) {
@@ -468,7 +466,7 @@ router.get("/history", authorization, async (req, res) => {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
         await pool.query(
-          "SELECT * FROM txhistory WHERE sender || destination = $1",
+          "SELECT * FROM txhistory WHERE sender = $1 OR destination = $1",
           [checkWallet.rows[0].wallet]
         )
         .then(async r => {
