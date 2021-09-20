@@ -213,7 +213,7 @@ router.post("/transfer", authorization, async (req, res) => {
     const isValidAddress = ethers.utils.getAddress(dest_wallet);
 
     
-    let dateTime = moment("2020-01-08T19:47:00.000Z").format("h:mm a MMM DD, YYYY");
+    let dateTime = new Date();
 
     //=====================================check if user doesn't have a wallet=================
     if (!confirm) {
@@ -252,7 +252,7 @@ router.post("/transfer", authorization, async (req, res) => {
                 fee: "",
                 symbol: "RISE",
                 memo: memo,
-                datetime: dateTime
+                datetime: dateTime.toISOString()
               })));
             })
             .catch(err => {
