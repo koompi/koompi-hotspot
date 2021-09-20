@@ -297,7 +297,7 @@ router.post("/transfer", authorization, async (req, res) => {
               fee: "",
               symbol: "SEL",
               memo: memo,
-              datetime: dateTime
+              datetime: dateTime.toISOString()
             })));
           })
           .catch(err => {
