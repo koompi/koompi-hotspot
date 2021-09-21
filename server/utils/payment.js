@@ -20,6 +20,8 @@ const payment = async (req, asset, plan, memo) => {
       dis_value = 0;
     }
 
+    let dateTime = new Date();
+
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
@@ -62,7 +64,11 @@ const payment = async (req, asset, plan, memo) => {
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
-              .then(() => {
+              .then(txObj => {
+                pool.query(
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", "RISE", "Buy Hotspot Plan 30 Days", dateTime]
+                );
                 return [200, "Paid successfull"];
               })
               .catch(err => {
@@ -92,7 +98,11 @@ const payment = async (req, asset, plan, memo) => {
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
-              .then(() => {
+              .then(txObj => {
+                pool.query(
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", "RISE", "Buy Hotspot Plan 365 Days", dateTime]
+                );
                 return [200, "Paid successfull"];
               })
               .catch(err => {
@@ -132,11 +142,15 @@ const checking = async (req, plan) => {
       dis_value = 0;
     }
 
+    let dateTime = new Date();
+
     const checkWallet = await pool.query(
       "SELECT seed FROM useraccount WHERE id = $1",
       [req.user]
     );
     
+    let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
+    let recieverAddress = "0x8B055a926201c5fe4990A6D612314C2Bd4D78785";
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
    
     const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
@@ -165,7 +179,11 @@ const checking = async (req, plan) => {
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
 
             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
-              .then(() => {
+              .then(txObj => {
+                pool.query(
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", "RISE", "Renew Hotspot Plan 30 Days", dateTime]
+                );
                 return [200, "Paid successfull"];
               })
               .catch(err => {
@@ -196,6 +214,10 @@ const checking = async (req, plan) => {
             const contract = new ethers.Contract(riseContract, abi, senderWallet);
             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
               .then(() => {
+                pool.query(
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", "RISE", "Renew Hotspot Plan 365 Days", dateTime]
+                );
                 return [200, "Paid successfull"];
               })
               .catch(err => {
