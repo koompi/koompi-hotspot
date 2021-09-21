@@ -8,7 +8,6 @@ const AddressIsValid = require("../../utils/check_validwallet");
 var ethers = require('ethers');
 const abi = require( "../../abi" );
 const CryptoJS = require('crypto-js');
-const moment = require("moment");
 
 //  Generate Wallet or Get wallet for userAcc
 // new
@@ -466,7 +465,7 @@ router.get("/history", authorization, async (req, res) => {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
         await pool.query(
-          "SELECT * FROM txhistory WHERE sender = $1 OR destination = $1",
+          "SELECT * FROM txhistory WHERE sender = $1 OR destination = $1 ORDER BY datetime DESC",
           [checkWallet.rows[0].wallet]
         )
         .then(async r => {
