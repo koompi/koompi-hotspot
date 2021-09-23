@@ -211,6 +211,7 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     const isValidAddress = ethers.utils.getAddress(dest_wallet);
 
+    let gas_limit = "0x100000"
     
     let dateTime = new Date();
 
@@ -229,10 +230,20 @@ router.post("/transfer", authorization, async (req, res) => {
           let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
           const contract = new ethers.Contract(riseContract, abi, senderWallet);
           
-          let gas = {
-            gasLimit: 100000,
-            gasPrice: ethers.utils.parseUnits("100", "gwei"),
-          }
+
+
+          
+          selendraProvider.getGasPrice().then(async (currentGasPrice)  => {
+
+            let gas_price = ethers.utils.hexlify(parseInt(currentGasPrice))
+
+            console.log(`gas_price: ${gas_price}`)
+
+            let gas = {
+              gasLimit: ethers.utils.hexlify(gas_limit),
+              // gasPrice: ethers.utils.parseUnits("100", "gwei"),
+              gasPrice: gas_price
+            }
           
           await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
             .then(txObj => {
@@ -241,14 +252,14 @@ router.post("/transfer", authorization, async (req, res) => {
               //  });
               pool.query(
                 "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), isValidAddress, amount, "", "RISE", memo, dateTime]
+                [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), isValidAddress, amount, gas_price, "RISE", memo, dateTime]
               );
               res.status(200).json(JSON.parse(JSON.stringify({
                 hash: txObj.hash,
                 sender: txObj.from,
                 destination: isValidAddress,
                 amount: amount,
-                fee: "",
+                fee: gas_price,
                 symbol: "RISE",
                 memo: memo,
                 datetime: dateTime.toISOString()
@@ -258,7 +269,8 @@ router.post("/transfer", authorization, async (req, res) => {
               console.log("selendra's bug with payment", err);
               res.status(501).json({ message: err.reason });
             });
-        }
+          }
+        )}
       })
       .catch(err => {
         console.error(err);
