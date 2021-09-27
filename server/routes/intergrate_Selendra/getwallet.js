@@ -211,8 +211,6 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     const isValidAddress = ethers.utils.getAddress(dest_wallet);
 
-    let gas_limit = "0x100000"
-    
     let dateTime = new Date();
 
     //=====================================check if user doesn't have a wallet=================
@@ -229,21 +227,11 @@ router.post("/transfer", authorization, async (req, res) => {
         } else {
           let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
           const contract = new ethers.Contract(riseContract, abi, senderWallet);
-          
 
-
-          
-          selendraProvider.getGasPrice().then(async (currentGasPrice)  => {
-
-            let gas_price = ethers.utils.hexlify(parseInt(currentGasPrice))
-
-            console.log(`gas_price: ${gas_price}`)
-
-            let gas = {
-              gasLimit: ethers.utils.hexlify(gas_limit),
-              // gasPrice: ethers.utils.parseUnits("100", "gwei"),
-              gasPrice: gas_price
-            }
+          let gas = {
+            gasLimit: 100000,
+            gasPrice: ethers.utils.parseUnits("100", "gwei"),
+          }
           
           await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
             .then(txObj => {
@@ -270,7 +258,6 @@ router.post("/transfer", authorization, async (req, res) => {
               res.status(501).json({ message: err.reason });
             });
           }
-        )}
       })
       .catch(err => {
         console.error(err);
