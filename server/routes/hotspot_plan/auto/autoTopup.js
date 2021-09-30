@@ -2,6 +2,9 @@ const axios = require("axios");
 const moment = require("moment");
 const pool = require("../../../db");
 require("dotenv").config({ path: `../../../.env` });
+var ethers = require('ethers');
+const abi = require("../../../abi.json");
+const CryptoJS = require('crypto-js');
 
 const payment = async (req, asset, plan, memo) => {
   try {
@@ -16,6 +19,7 @@ const payment = async (req, asset, plan, memo) => {
     } else {
       dis_value = 0;
     }
+
 
     let dateTime = new Date();
 
@@ -55,7 +59,7 @@ const payment = async (req, asset, plan, memo) => {
       } else {
         const check = await getBalance(userWallet).then(async r => {
           const wallet = ethers.utils.formatUnits(r, 18);
-          if (wallet < amount.toString() - dis_value.toString()) {
+          if (wallet < amount.toString()) {
             return [400, "You don't have enough money!"];
           } else {
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
@@ -176,6 +180,35 @@ const autoRenew = async () => {
     }
   } catch (error) {
     console.log("error on auto topup", error);
+  }
+};
+
+const checkDiscount = async req => {
+  try {
+    const a = await pool.query("SELECT role  FROM useraccount where id=$1", [
+      req.user
+    ]);
+    if (a.rows[0].role === "Teacher") {
+      var b = await pool.query(
+        "select d.*,s.* from discount_teachers as d INNER JOIN setdiscount as s ON (d.acc_id=$1 AND d.approved IS TRUE AND s.role = 'Teacher')",
+        [req.user]
+      );
+      if (b.rowCount === 0) {
+        return ["teacher", 0];
+      }
+      return ["teacher", b.rows[0].discount];
+    } else if (a.rows[0].role === "Normal") {
+      const c = await pool.query(
+        "SELECT *  FROM setdiscount where role='Normal'"
+      );
+      if (b.rowCount === 0) {
+        return ["normal", 0];
+      }
+      return ["normal", c.rows[0].discount];
+    } else return ["null", 0];
+  } catch (error) {
+    console.log("Error on method checkDiscount on payment.js", error);
+    return ["error function", 0];
   }
 };
 

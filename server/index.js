@@ -70,8 +70,8 @@ app.listen(5000, () => {
   });
 
   // Check  every minute for automatically to up.
-  // cron.schedule("* * * * *", () => {
-  //   autoTopUp.autoRenew();
-  //   console.log("automatically topup every minute");
-  // });
+  cron.schedule("* * * * *", () => {
+    autoTopUp.autoRenew();
+    console.log("automatically topup every minute");
+  });
 });
