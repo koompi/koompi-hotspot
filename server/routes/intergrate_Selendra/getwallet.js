@@ -240,14 +240,14 @@ router.post("/transfer", authorization, async (req, res) => {
               //  });
               pool.query(
                 "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), isValidAddress, amount, gas_price, "RISE", memo, dateTime]
+                [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), isValidAddress, amount, "", "RISE", memo, dateTime]
               );
               res.status(200).json(JSON.parse(JSON.stringify({
                 hash: txObj.hash,
                 sender: txObj.from,
                 destination: isValidAddress,
                 amount: amount,
-                fee: gas_price,
+                fee: "",
                 symbol: "RISE",
                 memo: memo,
                 datetime: dateTime.toISOString()
