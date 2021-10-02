@@ -8,6 +8,7 @@ const AddressIsValid = require("../../utils/check_validwallet");
 var ethers = require('ethers');
 const abi = require( "../../abi" );
 const CryptoJS = require('crypto-js');
+const moment = require("moment");
 
 //  Generate Wallet or Get wallet for userAcc
 // new
@@ -211,7 +212,7 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     const isValidAddress = ethers.utils.getAddress(dest_wallet);
 
-    let dateTime = new Date();
+    let dateTime = new moment().format();
 
     //=====================================check if user doesn't have a wallet=================
     if (!confirm) {
@@ -250,7 +251,7 @@ router.post("/transfer", authorization, async (req, res) => {
                 fee: "",
                 symbol: "RISE",
                 memo: memo,
-                datetime: dateTime.toISOString()
+                datetime: dateTime
               })));
             })
             .catch(err => {
@@ -295,7 +296,7 @@ router.post("/transfer", authorization, async (req, res) => {
               fee: "",
               symbol: "SEL",
               memo: memo,
-              datetime: dateTime.toISOString()
+              datetime: dateTime
             })));
           })
           .catch(err => {

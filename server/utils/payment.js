@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 var ethers = require('ethers');
 const abi = require("../abi.json");
 const CryptoJS = require('crypto-js');
+const moment = require("moment");
 
 const payment = async (req, asset, plan, memo) => {
   try {
@@ -20,7 +21,7 @@ const payment = async (req, asset, plan, memo) => {
       dis_value = 0;
     }
 
-    let dateTime = new Date();
+    let dateTime = new moment().format();
 
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
@@ -142,7 +143,7 @@ const checking = async (req, plan) => {
       dis_value = 0;
     }
 
-    let dateTime = new Date();
+    let dateTime = new moment().format();
 
     const checkWallet = await pool.query(
       "SELECT seed FROM useraccount WHERE id = $1",
