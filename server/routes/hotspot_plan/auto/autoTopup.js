@@ -6,18 +6,145 @@ var ethers = require('ethers');
 const abi = require("../../../abi.json");
 const CryptoJS = require('crypto-js');
 
+// const payment = async (req, asset, plan, memo) => {
+//   try {
+//     let amnt = parseFloat(plan, 10);
+//     var amount = 0;
+
+
+//     let dateTime = new Date();
+
+//     const checkWallet = await pool.query(
+//       "SELECT seed FROM useraccount WHERE id = $1",[req]
+//     );
+//     console.log(checkWallet)
+
+//     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
+//     let recieverAddress = "0x8B055a926201c5fe4990A6D612314C2Bd4D78785";
+//     let selendraProvider = new ethers.providers.JsonRpcProvider(
+//       'https://rpc.testnet.selendra.org/', 
+//     );
+
+//     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+
+//     const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+//     const getBalance = async (wallet) => {
+//       const contract = new ethers.Contract(riseContract, abi, wallet);
+//       const balance = await contract.balanceOf(wallet.address)
+//       return balance
+//     }
+
+//     let gas = {
+//       gasLimit: 100000,
+//       gasPrice: ethers.utils.parseUnits("100", "gwei"),
+//     }
+
+//     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
+//     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
+//     //============ amount for checking condition
+
+//     if (amnt === 30) {
+//       amount = 50;
+//       if (checkWallet.rows[0].seed === null) {
+//         return [400, "Please get a wallet first!"];
+//       } else {
+//         const check = await getBalance(userWallet).then(async r => {
+//           const wallet = ethers.utils.formatUnits(r, 18);
+//           if (wallet < amount.toString()) {
+//             return [400, "You don't have enough money!"];
+//           } else {
+//             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+//             const contract = new ethers.Contract(riseContract, abi, senderWallet);
+//             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
+//               .then(txObj => {
+//                 pool.query(
+//                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+//                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", asset, memo, dateTime]
+//                 );
+//                 return [200, "Paid successfull"];
+//               })
+//               .catch(err => {
+//                 console.log("selendra's bug with payment", err);
+//                 return [501, err.reason];
+//               });
+//             return done;
+//           }
+//         })
+//         .catch(err => {
+//           console.error(err);
+//           res.status(501).json({ message: "Selendra server is in maintenance." });
+//         });
+//         return check;
+//       }
+//     }
+//     if (amnt === 365) {
+//       amount = 600;
+//       if (checkWallet.rows[0].seed === null) {
+//         return [400, "Please get a wallet first!"];
+//       } else {
+//         const check = await getBalance(userWallet).then(async r => {
+//           const wallet = ethers.utils.formatUnits(r, 18);
+//           if (wallet < amount.toString()) {
+//             return [400, "You don't have enough money!"];
+//           } else {
+//             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+//             const contract = new ethers.Contract(riseContract, abi, senderWallet);
+//             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
+//               .then(txObj => {
+//                 pool.query(
+//                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+//                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", asset, memo, dateTime]
+//                 );
+//                 return [200, "Paid successfull"];
+//               })
+//               .catch(err => {
+//                 console.log("selendra's bug with payment", err);
+//                 return [501, err.reason];
+//               });
+//             return done;
+//           }
+//         })
+//         .catch(err => {
+//           console.error(err);
+//           res.status(501).json({ message: "Selendra server is in maintenance." });
+//         });
+//         return check;
+//       }
+//     }
+
+//     // =====================================check if user doesn't have a wallet=================
+
+//   } catch (err) {
+//     console.log("Payment error", err);
+//     return [500, "Server error!"];
+//   }
+// };
+
 const payment = async (req, asset, plan, memo) => {
   try {
     let amnt = parseFloat(plan, 10);
     var amount = 0;
 
+    let dateTime = new moment().format();
+    
+    //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
+    //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
+    //============ amnt for push data to selendra as string
+    //============ amount for checking condition
 
-    let dateTime = new Date();
+    if (amnt === 30) {
+      amnt = "50";
+      amount = 50;
+    }
+    if (amnt === 365) {
+      amnt = "600";
+      amount = 600;
+    }
 
     const checkWallet = await pool.query(
-      "SELECT * FROM useraccount WHERE seed IS NOT NULL",
+      "SELECT seed FROM useraccount WHERE id = $1",
+      [req]
     );
-    console.log(checkWallet);
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let recieverAddress = "0x8B055a926201c5fe4990A6D612314C2Bd4D78785";
@@ -39,86 +166,45 @@ const payment = async (req, asset, plan, memo) => {
       gasPrice: ethers.utils.parseUnits("100", "gwei"),
     }
 
-    //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
-    //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
-    //============ amount for checking condition
-
-    if (amnt === 30) {
-      amount = 50;
-      if (checkWallet.rows[0].seed === null) {
-        return [400, "Please get a wallet first!"];
-      } else {
-        const check = await getBalance(userWallet).then(async r => {
-          const wallet = ethers.utils.formatUnits(r, 18);
-          if (wallet < amount.toString()) {
-            return [400, "You don't have enough money!"];
-          } else {
-            let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-            const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
-              .then(txObj => {
-                pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", asset, memo, dateTime]
-                );
-                return [200, "Paid successfull"];
-              })
-              .catch(err => {
-                console.log("selendra's bug with payment", err);
-                return [501, err.reason];
-              });
-            return done;
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          res.status(501).json({ message: "Selendra server is in maintenance." });
-        });
-        return check;
-      }
-    }
-    if (amnt === 365) {
-      amount = 600;
-      if (checkWallet.rows[0].seed === null) {
-        return [400, "Please get a wallet first!"];
-      } else {
-        const check = await getBalance(userWallet).then(async r => {
-          const wallet = ethers.utils.formatUnits(r, 18);
-          if (wallet < amount.toString()) {
-            return [400, "You don't have enough money!"];
-          } else {
-            let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-            const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
-              .then(txObj => {
-                pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", asset, memo, dateTime]
-                );
-                return [200, "Paid successfull"];
-              })
-              .catch(err => {
-                console.log("selendra's bug with payment", err);
-                return [501, err.reason];
-              });
-            return done;
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          res.status(501).json({ message: "Selendra server is in maintenance." });
-        });
-        return check;
-      }
-    }
 
     // =====================================check if user doesn't have a wallet=================
-
+    if (checkWallet.rows[0].seed === null) {
+      return [400, "Please get a wallet first!"];
+    } else {
+      const check = await getBalance(userWallet).then(async r => {
+        const wallet = ethers.utils.formatUnits(r, 18);
+        if (Number(wallet) < amount) {
+          return [400, "You don't have enough money!"];
+        } else {
+          let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+          const contract = new ethers.Contract(riseContract, abi, senderWallet);
+          const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
+            .then(txObj => {
+              pool.query(
+                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+                [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", asset, memo, dateTime]
+              );
+              return [200, "Paid successfull"];
+            })
+            .catch(err => {
+              console.log("selendra's bug with payment", err);
+              return [501, err.reason];
+            });
+          return done;
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(501).json({ message: "Selendra server is in maintenance." });
+      });
+      return check;
+    }
   } catch (err) {
     console.log("Payment error", err);
     return [500, "Server error!"];
   }
 };
+
 
 const autoRenew = async () => {
   try {
@@ -164,6 +250,9 @@ const autoRenew = async () => {
           );
 
           console.log(`Automatically top-up for ${result.rows[i].acc_id}`);
+        }
+        else{
+          console.log(paid[1])
         }
 
         i++;
