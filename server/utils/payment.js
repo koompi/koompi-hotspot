@@ -21,7 +21,7 @@ const payment = async (req, asset, plan, memo) => {
       dis_value = 0;
     }
 
-    let dateTime = new moment().utcOffset(0, true).format();
+    let dateTime = new moment().utcOffset(+7, false).format();
 
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
@@ -143,7 +143,7 @@ const checking = async (req, plan) => {
       dis_value = 0;
     }
 
-    let dateTime = new moment().utcOffset(0, true).format();
+    let dateTime = new moment().utcOffset(+7, false).format();
 
     const checkWallet = await pool.query(
       "SELECT seed FROM useraccount WHERE id = $1",

@@ -212,7 +212,7 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     const isValidAddress = ethers.utils.getAddress(dest_wallet);
 
-    let dateTime = new moment().utcOffset(0, true).format();
+    let dateTime = new moment().utcOffset(+7, false).format();
 
     //=====================================check if user doesn't have a wallet=================
     if (!confirm) {
