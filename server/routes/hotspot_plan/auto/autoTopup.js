@@ -125,7 +125,7 @@ const payment = async (req, asset, plan, memo) => {
     let amnt = parseFloat(plan, 10);
     var amount = 0;
 
-    let dateTime = new moment().utcOffset(0, true).format();
+    let dateTime = new moment().utcOffset(+7, false).format();
     
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
