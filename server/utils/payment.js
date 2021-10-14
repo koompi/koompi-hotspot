@@ -34,19 +34,6 @@ const payment = async (req, asset, plan, memo) => {
       'https://rpc.testnet.selendra.org/', 
     );
 
-    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
-
-    const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-    const getBalance = async (wallet) => {
-      const contract = new ethers.Contract(riseContract, abi, wallet);
-      const balance = await contract.balanceOf(wallet.address)
-      return balance
-    }
-
-    let gas = {
-      gasLimit: 100000,
-      gasPrice: ethers.utils.parseUnits("100", "gwei"),
-    }
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
@@ -57,6 +44,22 @@ const payment = async (req, asset, plan, memo) => {
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
+
+        const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+
+        const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+        const getBalance = async (wallet) => {
+          const contract = new ethers.Contract(riseContract, abi, wallet);
+          const balance = await contract.balanceOf(wallet.address)
+          return balance
+        }
+
+        let gas = {
+          gasLimit: 100000,
+          gasPrice: ethers.utils.parseUnits("100", "gwei"),
+        }
+        
+
         const check = await getBalance(userWallet).then(async r => {
           const wallet = ethers.utils.formatUnits(r, 18);
           if (wallet < amount.toString() - dis_value.toString()) {
@@ -91,6 +94,22 @@ const payment = async (req, asset, plan, memo) => {
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
+        
+        const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+
+        const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+        const getBalance = async (wallet) => {
+          const contract = new ethers.Contract(riseContract, abi, wallet);
+          const balance = await contract.balanceOf(wallet.address)
+          return balance
+        }
+
+        let gas = {
+          gasLimit: 100000,
+          gasPrice: ethers.utils.parseUnits("100", "gwei"),
+        }
+
+
         const check = await getBalance(userWallet).then(async r => {
           const wallet = ethers.utils.formatUnits(r, 18);
           if (wallet < amount.toString() - dis_value.toString()) {
