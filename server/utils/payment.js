@@ -71,7 +71,7 @@ const payment = async (req, asset, plan, memo) => {
               .then(txObj => {
                 pool.query(
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", "RISE", "Buy Hotspot Plan 30 Days", dateTime]
+                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", "RISE", "Subscribed Hotspot Plan 30 Days", dateTime]
                 );
                 return [200, "Paid successfull"];
               })
@@ -121,7 +121,7 @@ const payment = async (req, asset, plan, memo) => {
               .then(txObj => {
                 pool.query(
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", "RISE", "Buy Hotspot Plan 365 Days", dateTime]
+                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", "RISE", "Subscribed Hotspot Plan 365 Days", dateTime]
                 );
                 return [200, "Paid successfull"];
               })
