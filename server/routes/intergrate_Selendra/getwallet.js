@@ -430,12 +430,12 @@ router.get("/portfolio", authorization, async (req, res) => {
         await res.status(200).json([
           {
             id: "rise",
-            token: ethers.utils.formatUnits(userBalanceRise, 18),
+            token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
             symbol: "RISE"
           },
           {
             id: "sel",
-            token: ethers.utils.formatUnits(userBalanceSel, 18),
+            token: Number.parseFloat(ethers.utils.formatUnits(userBalanceSel, 18)).toFixed(5),
             symbol: "SEL"
           }
         ]);
