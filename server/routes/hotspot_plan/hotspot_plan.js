@@ -222,15 +222,15 @@ router.get("/get-plan", authorization, async (req, res) => {
 
     let balance = parseFloat(plan, 10);
     if (balance === 30) {
-      balance = "50";
+      balance = "5";
     }
     if (balance === 365) {
-      balance = "600";
+      balance = "50";
     }
 
     res.status(200).json({
       username: user.rows[0].username,
-      balance: balance,
+      balance: Number.parseFloat(balance).toFixed(3),
       device: sim.rows[0].value,
       plan: plan,
       time_left: detail.rows[0].value,
