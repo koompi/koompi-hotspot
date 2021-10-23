@@ -35,12 +35,12 @@ const payment = async (req, asset, plan, memo) => {
     );
 
 
-    //===============================convert days to token of selendara 30 days = 5000 riels = 50 SEL
-    //================================================================= 365days = 60000 riels = 600 SEL    by:   1 SEL = 100 riel
+    //===============================convert days to token of selendara 30 days = 5000 riels = 5 SEL
+    //================================================================= 365days = 60000 riels = 600 SEL    by:   1 RISE = 1000 riel
     //============ amount for checking condition
 
     if (amnt === 30) {
-      amount = 50;
+      amount = 5;
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
@@ -90,7 +90,7 @@ const payment = async (req, asset, plan, memo) => {
       }
     }
     if (amnt === 365) {
-      amount = 600;
+      amount = 50;
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
