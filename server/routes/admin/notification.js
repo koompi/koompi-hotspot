@@ -152,4 +152,5 @@ router.get("/notification", authorization, async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
+
 module.exports = router;

@@ -40,6 +40,10 @@ app.use(
   require("./routes/Account/change_password_Acc")
 );
 
+// vote ads
+app.use("/api/ads", require("./utils/vote_ads"));
+
+
 //  Admin
 app.use("/api/auth/admin", require("./routes/admin/adminAuth"));
 app.use("/api/admin", require("./routes/admin/notification"));
@@ -56,7 +60,6 @@ app.use("/api", require("./routes/Account/request_discount"));
 
 // integration with selendra wallet
 app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
-app.use("/api/sel", require("./routes/selendra_sdk/setup"));
 // send sms to testing
 app.use("/api/test", require("./routes/Account/twilioSMS/lookup"));
 
