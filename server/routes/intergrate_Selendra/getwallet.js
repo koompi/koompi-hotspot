@@ -180,66 +180,6 @@ router.post("/transfer", authorization, async (req, res) => {
 });
 
 // Porfilio user balance
-// router.get("/portfolio", authorization, async (req, res) => {
-//   try {
-//     const checkWallet = await pool.query(
-//       "SELECT * FROM useraccount WHERE id = $1",
-//       [req.user]
-//     );
-
-//     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
-//     let selendraProvider = new ethers.providers.JsonRpcProvider(
-//       'https://rpc.testnet.selendra.org/', 
-//     );
-
-
-    
-//     if (checkWallet.rows[0].seed === null) {
-//       res.status(401).json({ message: "Please get wallet first!" });
-//     } else {
-//       const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
-      
-//       const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-      
-//       // Get Balance
-//       const getBalance = async (wallet) => {
-//         const contract = new ethers.Contract(riseContract, abi, selendraProvider);
-//         const balance = await contract.balanceOf(wallet.address)
-//         return balance
-//       }
-      
-//       const userBalanceRise = await getBalance(userWallet);
-      
-//       // Get SEL Balance
-//       const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
-
-//       await getBalance(userWallet).then(async r => {
-
-//         await res.status(200).json([
-//           {
-//             id: "rise",
-//             token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
-//             symbol: "RISE"
-//           },
-//           {
-//             id: "sel",
-//             token: Number.parseFloat(ethers.utils.formatUnits(userBalanceSel, 18)).toFixed(5),
-//             symbol: "SEL"
-//           }
-//         ]);
-//       })
-//       .catch(err => {
-//         console.error(err);
-//         res.status(500).json({ message: "Internal server error!" });
-//       });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error!" });
-//   }
-// });
-
-// raw portfolio
 router.get("/portfolio", authorization, async (req, res) => {
   try {
     const checkWallet = await pool.query(
@@ -260,29 +200,89 @@ router.get("/portfolio", authorization, async (req, res) => {
       const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
       
       const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-    
+      
+      // Get Balance
+      const getBalance = async (wallet) => {
+        const contract = new ethers.Contract(riseContract, abi, selendraProvider);
+        const balance = await contract.balanceOf(wallet.address)
+        return balance
+      }
+      
+      const userBalanceRise = await getBalance(userWallet);
       
       // Get SEL Balance
       const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
 
-      await res.status(200).json([
-        // {
-        //   id: "rise",
-        //   token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
-        //   symbol: "RISE"
-        // },
-        {
-          id: "sel",
-          token: Number.parseFloat(ethers.utils.formatUnits(userBalanceSel, 18)).toFixed(5),
-          symbol: "SEL"
-        }
-      ]);
+      await getBalance(userWallet).then(async r => {
+
+        await res.status(200).json([
+          {
+            id: "rise",
+            token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
+            symbol: "RISE"
+          },
+          {
+            id: "sel",
+            token: Number.parseFloat(ethers.utils.formatUnits(userBalanceSel, 18)).toFixed(5),
+            symbol: "SEL"
+          }
+        ]);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error!" });
+      });
     }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error!" });
   }
 });
+
+// raw portfolio
+// router.get("/portfolio", authorization, async (req, res) => {
+//   try {
+//     const checkWallet = await pool.query(
+//       "SELECT * FROM useraccount WHERE id = $1",
+//       [req.user]
+//     );
+
+//     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
+//     let selendraProvider = new ethers.providers.JsonRpcProvider(
+//       'https://rpc.testnet.selendra.org/', 
+//     );
+
+
+    
+//     if (checkWallet.rows[0].seed === null) {
+//       res.status(401).json({ message: "Please get wallet first!" });
+//     } else {
+//       const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+      
+//       const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+    
+      
+//       // Get SEL Balance
+//       const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
+
+//       await res.status(200).json([
+//         // {
+//         //   id: "rise",
+//         //   token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
+//         //   symbol: "RISE"
+//         // },
+//         {
+//           id: "sel",
+//           token: Number.parseFloat(ethers.utils.formatUnits(userBalanceSel, 18)).toFixed(5),
+//           symbol: "SEL"
+//         }
+//       ]);
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error!" });
+//   }
+// });
 
 
 // History user balance
