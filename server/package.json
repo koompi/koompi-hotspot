@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@ethereumjs/tx": "^3.3.0",
+    "@polkadot/api": "^6.8.1",
     "@polkadot/keyring": "^6.0.5",
     "@polkadot/util": "^6.0.5",
     "aws-sdk": "^2.731.0",
@@ -36,6 +37,7 @@
     "nodemon": "^2.0.4",
     "onesignal-node": "^3.2.1",
     "pg": "^8.3.0",
-    "twilio": "^3.55.1"
+    "twilio": "^3.55.1",
+    "web3": "^1.6.0"
   }
 }
