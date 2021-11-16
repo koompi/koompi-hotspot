@@ -246,10 +246,10 @@ router.put("/unvote-ads", authorization, async (req, res) => {
   }
 });
 
-router.get("/get-voted", authorization, async (req, res) => {
+router.get("/get-voted/:id", authorization, async (req, res) => {
   try{
 
-    const {id} = req.body;
+    var id = req.params.id;
 
     const checkVoted = await pool.query("SELECT * FROM uservoted WHERE user_id = $1 AND ads_id = $2", [req.user, id]);
 
