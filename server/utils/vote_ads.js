@@ -246,4 +246,27 @@ router.put("/unvote-ads", authorization, async (req, res) => {
   }
 });
 
+router.get("/get-voted", authorization, async (req, res) => {
+  try{
+
+    const {id} = req.body;
+
+    const checkVoted = await pool.query("SELECT * FROM uservoted WHERE user_id = $1 AND ads_id = $2", [req.user, id]);
+
+
+    if(id == checkVoted.rows[0].ads_id){
+      res.status(200).send({
+        notification: checkVoted.rows
+      });
+    }
+
+  } 
+  catch (error) {
+    res.status(422).send({
+      Error: error.message
+    });
+  }
+})
+
+
 module.exports = router;
