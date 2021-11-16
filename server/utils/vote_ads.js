@@ -256,7 +256,11 @@ router.get("/get-voted", authorization, async (req, res) => {
 
     if(id == checkVoted.rows[0].ads_id){
       res.status(200).send({
-        notification: checkVoted.rows
+        "user_id": checkVoted.rows[0].user_id,
+        "voted": checkVoted.rows[0].voted,
+        "voted_type": checkVoted.rows[0].voted_type,
+        "ads_id": checkVoted.rows[0].ads_id,
+        "rewarded": checkVoted.rows[0].rewarded
       });
     }
 
