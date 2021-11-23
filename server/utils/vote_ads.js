@@ -72,8 +72,15 @@ router.put("/upvote-ads", authorization, async (req, res) => {
           });
         }
         else{
-          res.status(404).send({
-            message: "Something went wrong!"
+          await pool.query(
+            "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
+            ["Voted Down", req.user, id]
+          );
+      
+          await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 2, id]);
+      
+          res.status(200).send({
+            notification: ads.rows
           });
         }
       } catch (error) {
@@ -161,8 +168,15 @@ router.put("/downvote-ads", authorization, async (req, res) => {
           });
         }
         else{
-          res.status(404).send({
-            message: "Something went wrong!"
+          await pool.query(
+            "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
+            ["Voted Down", req.user, id]
+          );
+      
+          await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 2, id]);
+      
+          res.status(200).send({
+            notification: ads.rows
           });
         }
       } catch (error) {
