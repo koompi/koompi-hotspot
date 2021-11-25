@@ -29,9 +29,13 @@ router.post("/upvote-ads", authorization, async (req, res) => {
         });
       }
       else{
-        res.status(200).send({
-          message: 'No Reward'
-        });
+        // res.status(200).send({
+        //   message: 'No Reward'
+        // });
+        await pool.query(
+          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
+          ["Voted Up", id]
+        );
       }
     }
   } 
@@ -124,9 +128,13 @@ router.post("/downvote-ads", authorization, async (req, res) => {
         });
       }
       else{
-        res.status(200).send({
-          message: 'No Reward'
-        });
+        // res.status(200).send({
+        //   message: 'No Reward'
+        // });
+        await pool.query(
+          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
+          ["Voted Down", id]
+        );
       }
     }
   } 
