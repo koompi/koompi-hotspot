@@ -28,6 +28,11 @@ router.post("/upvote-ads", authorization, async (req, res) => {
           notification: ads.rows
         });
       }
+      else if(checkRewared.rows[0].voted_type == vote){
+        res.status(422).send({
+          message: "Already voted up"
+        });
+      }
       else{
         // res.status(200).send({
         //   message: 'No Reward'
@@ -36,6 +41,9 @@ router.post("/upvote-ads", authorization, async (req, res) => {
           "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
           ["Voted Up", id]
         );
+        res.status(200).send({
+          notification: ads.rows
+        });
       }
     }
   } 
@@ -127,6 +135,11 @@ router.post("/downvote-ads", authorization, async (req, res) => {
           notification: ads.rows
         });
       }
+      else if(checkRewared.rows[0].voted_type == vote){
+        res.status(422).send({
+          message: "Already voted up"
+        });
+      }
       else{
         // res.status(200).send({
         //   message: 'No Reward'
@@ -135,6 +148,9 @@ router.post("/downvote-ads", authorization, async (req, res) => {
           "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
           ["Voted Down", id]
         );
+        res.status(200).send({
+          notification: ads.rows
+        });
       }
     }
   } 
