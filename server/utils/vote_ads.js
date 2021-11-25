@@ -18,8 +18,8 @@ router.post("/upvote-ads", authorization, async (req, res) => {
     if(vote == "Voted Up"){
       if(checkRewared.rows.length == 0){
         await pool.query(
-          "INSERT INTO uservoted(user_id, voted, voted_type, ads_id, rewarded) VALUES($1, $2, $3, $4, $5)",
-          [req.user, 1, "Voted Up", id, 1]
+          "INSERT INTO uservoted(user_id, voted, voted_type, ads_id, voted_name) VALUES($1, $2, $3, $4, $5)",
+          [req.user, 1, 1, id, "Voted Up"]
         );
     
         await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
@@ -38,8 +38,8 @@ router.post("/upvote-ads", authorization, async (req, res) => {
         //   message: 'No Reward'
         // });
         await pool.query(
-          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
-          ["Voted Up", id]
+          "UPDATE uservoted SET (voted_type, voted_name) VALUES($1, $2) WHERE ads_id = $3",
+          [1, "Voted Up", id]
         );
         res.status(200).send({
           notification: ads.rows
@@ -125,8 +125,8 @@ router.post("/downvote-ads", authorization, async (req, res) => {
     if(vote == "Voted Down"){
       if(checkRewared.rows.length == 0){
         await pool.query(
-          "INSERT INTO uservoted(user_id, voted, voted_type, ads_id, rewarded) VALUES($1, $2, $3, $4, $5)",
-          [req.user, 1, "Voted Down", id, 1]
+          "INSERT INTO uservoted(user_id, voted, voted_type, ads_id, voted_name) VALUES($1, $2, $3, $4, $5)",
+          [req.user, 1, 1, id, "Voted Down"]
         );
     
         await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
@@ -145,8 +145,8 @@ router.post("/downvote-ads", authorization, async (req, res) => {
         //   message: 'No Reward'
         // });
         await pool.query(
-          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
-          ["Voted Down", id]
+          "UPDATE uservoted SET (voted_type, voted_name) VALUES($1, $2) WHERE ads_id = $3",
+          [1, "Voted Down", id]
         );
         res.status(200).send({
           notification: ads.rows
@@ -298,7 +298,7 @@ router.get("/get-voted/:id", authorization, async (req, res) => {
         "voted": checkVoted.rows[0].voted,
         "voted_type": checkVoted.rows[0].voted_type,
         "ads_id": checkVoted.rows[0].ads_id,
-        "rewarded": checkVoted.rows[0].rewarded
+        "voted_name": checkVoted.rows[0].voted_name
       });
     }
 
