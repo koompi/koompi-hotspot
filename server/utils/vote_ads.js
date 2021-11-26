@@ -227,17 +227,17 @@ router.put("/unvote-ads", authorization, async (req, res) => {
     var count = await pool.query("SELECT vote FROM notification WHERE _id = $1",[id]); 
     var i = count.rows[0].vote;
     
-    const checkVoted = await pool.query("SELECT voted_type FROM uservoted WHERE user_id = $1 AND ads_id = $2", [req.user, id]);
+    const checkVoted = await pool.query("SELECT voted_name FROM uservoted WHERE user_id = $1 AND ads_id = $2", [req.user, id]);
 
     const ads = await pool.query("SELECT * FROM notification WHERE _id = $1", [id]);
 
     if(vote == "Un Voted"){
       console.log(checkVoted.rows[0].voted)
       try {
-        if(checkVoted.rows[0].voted_type == "Voted Up"){
+        if(checkVoted.rows[0].voted_name == "Voted Up"){
           await pool.query(
-            "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
-            [null, req.user, id]
+            "UPDATE uservoted SET voted_name = $1 WHERE user_id = $2 AND ads_id = $3",
+            ["Voted Up", req.user, id]
           );
       
           await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
@@ -247,10 +247,10 @@ router.put("/unvote-ads", authorization, async (req, res) => {
           });
         }
          
-        else if(checkVoted.rows[0].voted_type == "Voted Down"){
+        else if(checkVoted.rows[0].voted_name == "Voted Down"){
           await pool.query(
-            "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
-            [null, req.user, id]
+            "UPDATE uservoted SET voted_name = $1 WHERE user_id = $2 AND ads_id = $3",
+            ["Voted Down", req.user, id]
           );
       
           await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
