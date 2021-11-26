@@ -28,7 +28,7 @@ router.post("/upvote-ads", authorization, async (req, res) => {
           notification: ads.rows
         });
       }
-      else if(checkRewared.rows[0].voted_type == vote){
+      else if(checkRewared.rows[0].voted_name == vote){
         res.status(422).send({
           message: "Already voted up"
         });
@@ -38,9 +38,11 @@ router.post("/upvote-ads", authorization, async (req, res) => {
         //   message: 'No Reward'
         // });
         await pool.query(
-          "UPDATE uservoted SET (voted_type, voted_name) VALUES($1, $2) WHERE ads_id = $3",
+          "UPDATE uservoted SET voted_type = $1, voted_name = $2 WHERE ads_id = $3",
           [1, "Voted Up", id]
         );
+        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
+
         res.status(200).send({
           notification: ads.rows
         });
@@ -135,7 +137,7 @@ router.post("/downvote-ads", authorization, async (req, res) => {
           notification: ads.rows
         });
       }
-      else if(checkRewared.rows[0].voted_type == vote){
+      else if(checkRewared.rows[0].voted_name == vote){
         res.status(422).send({
           message: "Already voted up"
         });
@@ -144,10 +146,12 @@ router.post("/downvote-ads", authorization, async (req, res) => {
         // res.status(200).send({
         //   message: 'No Reward'
         // });
+        console.log("else condition")
         await pool.query(
-          "UPDATE uservoted SET (voted_type, voted_name) VALUES($1, $2) WHERE ads_id = $3",
+          "UPDATE uservoted SET voted_type = $1, voted_name = $2 WHERE ads_id = $3",
           [0, "Voted Down", id]
         );
+        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
         res.status(200).send({
           notification: ads.rows
         });
