@@ -18,8 +18,8 @@ router.post("/upvote-ads", authorization, async (req, res) => {
     if(vote == "Voted Up"){
       if(checkRewared.rows.length == 0){
         await pool.query(
-          "INSERT INTO uservoted(user_id, voted, voted_type, ads_id, voted_name) VALUES($1, $2, $3, $4, $5)",
-          [req.user, 1, 1, id, "Voted Up"]
+          "INSERT INTO uservoted(user_id, voted, ads_id, voted_type) VALUES($1, $2, $3, $4)",
+          [req.user, 1, id, "Voted Up"]
         );
     
         await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
@@ -38,10 +38,10 @@ router.post("/upvote-ads", authorization, async (req, res) => {
         //   message: 'No Reward'
         // });
         await pool.query(
-          "UPDATE uservoted SET voted_type = $1, voted_name = $2 WHERE ads_id = $3",
-          [1, "Voted Up", id]
+          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
+          ["Voted Up", id]
         );
-        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
+        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 2, id]);
 
         res.status(200).send({
           notification: ads.rows
@@ -127,8 +127,8 @@ router.post("/downvote-ads", authorization, async (req, res) => {
     if(vote == "Voted Down"){
       if(checkRewared.rows.length == 0){
         await pool.query(
-          "INSERT INTO uservoted(user_id, voted, voted_type, ads_id, voted_name) VALUES($1, $2, $3, $4, $5)",
-          [req.user, 1, 0, id, "Voted Down"]
+          "INSERT INTO uservoted(user_id, voted, ads_id, voted_type) VALUES($1, $2, $3, $4, $5)",
+          [req.user, 1, id, "Voted Down"]
         );
     
         await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
@@ -148,10 +148,10 @@ router.post("/downvote-ads", authorization, async (req, res) => {
         // });
         console.log("else condition")
         await pool.query(
-          "UPDATE uservoted SET voted_type = $1, voted_name = $2 WHERE ads_id = $3",
-          [0, "Voted Down", id]
+          "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2",
+          ["Voted Down", id]
         );
-        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
+        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 2, id]);
         res.status(200).send({
           notification: ads.rows
         });
@@ -227,17 +227,17 @@ router.put("/unvote-ads", authorization, async (req, res) => {
     var count = await pool.query("SELECT vote FROM notification WHERE _id = $1",[id]); 
     var i = count.rows[0].vote;
     
-    const checkVoted = await pool.query("SELECT voted_name FROM uservoted WHERE user_id = $1 AND ads_id = $2", [req.user, id]);
+    const checkVoted = await pool.query("SELECT voted_type FROM uservoted WHERE user_id = $1 AND ads_id = $2", [req.user, id]);
 
     const ads = await pool.query("SELECT * FROM notification WHERE _id = $1", [id]);
 
     if(vote == "Un Voted"){
       console.log(checkVoted.rows[0].voted)
       try {
-        if(checkVoted.rows[0].voted_name == "Voted Up"){
+        if(checkVoted.rows[0].voted_type == "Voted Up"){
           await pool.query(
-            "UPDATE uservoted SET voted_name = $1 WHERE user_id = $2 AND ads_id = $3",
-            ["Voted Up", req.user, id]
+            "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
+            [null, req.user, id]
           );
       
           await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
@@ -247,10 +247,10 @@ router.put("/unvote-ads", authorization, async (req, res) => {
           });
         }
          
-        else if(checkVoted.rows[0].voted_name == "Voted Down"){
+        else if(checkVoted.rows[0].voted_type == "Voted Down"){
           await pool.query(
-            "UPDATE uservoted SET voted_name = $1 WHERE user_id = $2 AND ads_id = $3",
-            ["Voted Down", req.user, id]
+            "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
+            [null, req.user, id]
           );
       
           await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
