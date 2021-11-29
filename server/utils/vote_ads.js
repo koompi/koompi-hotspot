@@ -127,7 +127,7 @@ router.post("/downvote-ads", authorization, async (req, res) => {
     if(vote == "Voted Down"){
       if(checkRewared.rows.length == 0){
         await pool.query(
-          "INSERT INTO uservoted(user_id, voted, ads_id, voted_type) VALUES($1, $2, $3, $4, $5)",
+          "INSERT INTO uservoted(user_id, voted, ads_id, voted_type) VALUES($1, $2, $3, $4)",
           [req.user, 1, id, "Voted Down"]
         );
     
