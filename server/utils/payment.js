@@ -47,12 +47,12 @@ const payment = async (req, asset, plan, memo) => {
 
         const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
-        const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-        const getBalance = async (wallet) => {
-          const contract = new ethers.Contract(riseContract, abi, wallet);
-          const balance = await contract.balanceOf(wallet.address)
-          return balance
-        }
+        // const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+        // const getBalance = async (wallet) => {
+        //   const contract = new ethers.Contract(riseContract, abi, wallet);
+        //   const balance = await contract.balanceOf(wallet.address)
+        //   return balance
+        // }
 
         let gas = {
           gasLimit: 100000,
@@ -60,20 +60,30 @@ const payment = async (req, asset, plan, memo) => {
         }
         
 
-        const check = await getBalance(userWallet).then(async r => {
-          const wallet = ethers.utils.formatUnits(r, 18);
+        const check = selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async balance => {
+          const wallet = ethers.utils.formatUnits(balance, 18);
           if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
+            // RISE Contract Transfer
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-            const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
+            // const contract = new ethers.Contract(riseContract, abi, senderWallet);
+            
+            // RAW SEL Transfer
+            let tx = {
+              to: recieverAddress,
+              value: ethers.utils.parseUnits(amount.toString(), 18),
+              gasLimit: 100000,
+              gasPrice: ethers.utils.parseUnits("100", "gwei"),
+            }
+
+            const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Subscribed Fi-Fi Plan 30 Days", dateTime]
                 );
-                return [200, "Paid successfull"];
+                return [200, "Paid successfully"];
               })
               .catch(err => {
                 console.log("selendra's bug with payment", err);
@@ -110,20 +120,30 @@ const payment = async (req, asset, plan, memo) => {
         }
 
 
-        const check = await getBalance(userWallet).then(async r => {
-          const wallet = ethers.utils.formatUnits(r, 18);
+        const check = selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async balance => {
+          const wallet = ethers.utils.formatUnits(balance, 18);
           if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
+            // RISE Contract Transfer
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-            const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
+            // const contract = new ethers.Contract(riseContract, abi, senderWallet);
+
+            // RAW SEL Transfer
+            let tx = {
+              to: recieverAddress,
+              value: ethers.utils.parseUnits(amount.toString(), 18),
+              gasLimit: 100000,
+              gasPrice: ethers.utils.parseUnits("100", "gwei"),
+            }
+
+            const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Subscribed Fi-Fi Plan 365 Days", dateTime]
                 );
-                return [200, "Paid successfull"];
+                return [200, "Paid successfully"];
               })
               .catch(err => {
                 console.log("selendra's bug with payment", err);
@@ -173,12 +193,12 @@ const checking = async (req, plan) => {
     let recieverAddress = "0x8B055a926201c5fe4990A6D612314C2Bd4D78785";
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
    
-    const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-    const getBalance = async (wallet) => {
-      const contract = new ethers.Contract(riseContract, abi, wallet);
-      const balance = await contract.balanceOf(wallet.address)
-      return balance
-    }
+    // const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+    // const getBalance = async (wallet) => {
+    //   const contract = new ethers.Contract(riseContract, abi, wallet);
+    //   const balance = await contract.balanceOf(wallet.address)
+    //   return balance
+    // }
 
     let gas = {
       gasLimit: 100000,
@@ -190,21 +210,30 @@ const checking = async (req, plan) => {
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
-        const check = await getBalance(userWallet).then(async r => {
-          const wallet = ethers.utils.formatUnits(r, 18);
+        const check = await selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async balance => {
+          const wallet = ethers.utils.formatUnits(balance, 18);
           if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
+            // RISE Contract Transfer
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-            const contract = new ethers.Contract(riseContract, abi, senderWallet);
+            // const contract = new ethers.Contract(riseContract, abi, senderWallet);
 
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
+            // RAW SEL Transfer
+            let tx = {
+              to: recieverAddress,
+              value: ethers.utils.parseUnits(amount.toString(), 18),
+              gasLimit: 100000,
+              gasPrice: ethers.utils.parseUnits("100", "gwei"),
+            }
+
+            const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Renew Hotspot Plan 30 Days", dateTime]
                 );
-                return [200, "Paid successfull"];
+                return [200, "Paid successfully"];
               })
               .catch(err => {
                 console.log("selendra's bug with payment", err);
@@ -225,20 +254,30 @@ const checking = async (req, plan) => {
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
-        const check = await getBalance(userWallet).then(async r => {
-          const wallet = ethers.utils.formatUnits(r, 18);
+        const check = await selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async balance => {
+          const wallet = ethers.utils.formatUnits(balance, 18);
           if (wallet < amount.toString() - dis_value.toString()) {
             return [400, "You don't have enough money!"];
           } else {
+            // RISE Contract Transfer
             let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-            const contract = new ethers.Contract(riseContract, abi, senderWallet);
-            const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
+            // const contract = new ethers.Contract(riseContract, abi, senderWallet);
+
+            // RAW SEL Transfer
+            let tx = {
+              to: recieverAddress,
+              value: ethers.utils.parseUnits(amount.toString(), 18),
+              gasLimit: 100000,
+              gasPrice: ethers.utils.parseUnits("100", "gwei"),
+            }
+            
+            const done = await senderWallet.sendTransaction(tx)
               .then(() => {
                 pool.query(
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Renew Hotspot Plan 365 Days", dateTime]
                 );
-                return [200, "Paid successfull"];
+                return [200, "Paid successfully"];
               })
               .catch(err => {
                 console.log("selendra's bug with payment", err);

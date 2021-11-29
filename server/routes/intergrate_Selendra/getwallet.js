@@ -202,28 +202,33 @@ router.get("/portfolio", authorization, async (req, res) => {
       const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
       
       // Get Balance
-      const getBalance = async (wallet) => {
-        const contract = new ethers.Contract(riseContract, abi, selendraProvider);
-        const balance = await contract.balanceOf(wallet.address)
-        return balance
-      }
+      // const getBalance = async (wallet) => {
+      //   const contract = new ethers.Contract(riseContract, abi, selendraProvider);
+      //   const balance = await contract.balanceOf(wallet.address)
+      //   return balance
+      // }
       
-      const userBalanceRise = await getBalance(userWallet);
+      // const userBalanceRise = await getBalance(userWallet);
       
       // Get SEL Balance
       const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
 
-      await getBalance(userWallet).then(async r => {
+      await selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async balance => {
 
         await res.status(200).json([
+          // {
+          //   id: "rise",
+          //   token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
+          //   symbol: "RISE"
+          // },
           {
             id: "rise",
-            token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
+            token: "Token Suspended",
             symbol: "RISE"
           },
           {
             id: "sel",
-            token: Number.parseFloat(ethers.utils.formatUnits(userBalanceSel, 18)).toFixed(5),
+            token: Number.parseFloat(ethers.utils.formatUnits(balance, 18)).toFixed(5),
             symbol: "SEL"
           }
         ]);
