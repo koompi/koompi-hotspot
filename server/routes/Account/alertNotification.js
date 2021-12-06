@@ -6,52 +6,39 @@ const authorization = require("../../middleware/authorization");
 const OneSignal = require('onesignal-node');    
 
 
-// create a new Client for a single app
-var myClient = new OneSignal.Client({
-    userAuthKey: `${process.env.API_USER_AUTH_KEY_ONESIGNAL}`,
-    // note that "app" must have "appAuthKey" and "appId" keys
-    app: { appAuthKey: `${process.env.API_KEY_ONESIGNAL}`, appId: `${process.env.API_ID_ONESIGNAL}` }
-});
-
-router.post("/alert-notification", authorization, async (req, res) => {
+router.put("/add-playerid", authorization, async (req, res) => {
     try {
-        const { turnNotication } = req.body;
-        const addPlayerId = await pool.query(
-            "SELECT * FROM alertnotification"
+      //1. destructure the req.body (full_name,gender , email, password,bithdate,address)
+  
+      const { player_id } = req.body;
+  
+      //2. check if user exist (if user exist then throw error)
+  
+      const user = await pool.query(
+        "SELECT * FROM useraccount WHERE id = $1",
+        [req.user]
+      );
+      if (user.rows.length === 0) {
+        return res.status(401).json({ message: "Account isn't exist yet!" });
+      }
+      const activate = await user.rows[0].activate;
+  
+      if (!activate) {
+        return res
+          .status(401)
+          .json({ message: "Please activate your account first!" });
+      } else {
+        await pool.query(
+          "UPDATE useraccount SET player_id=$1 WHERE id=$2",
+          [player_id, req.user]
         );
   
-        if (turnNotication == true) {
-            OneSignal.push(function() {
-                OneSignal.getExternalUserId().then(function(externalUserId){
-                  console.log("externalUserId: ", externalUserId);
-                });
-              });
-            // OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-            //     if (isEnabled) {
-            //         // user has subscribed
-            //         OneSignal.getUserId( function(userId) {
-            //             console.log('player_id of the subscribed user is : ' + userId);
-            //             // Make a POST call to your server with the user ID        
-            //         });
-            //     }
-            //   });
-            // if(addPlayerId.rows[0] == null){
-            //     pool.query(
-            //         "INSERT INTO alertnotification ( user_id, player_id, turn_notification) VALUES($1,$2,$3)",
-            //         [req.user, "", ""]
-            //     );
-            // }
-        } else {
-            pool.query(
-                "INSERT INTO alertnotification ( user_id, player_id, turn_notification) VALUES($1,$2,$3)",
-                [req.user, "", ""]
-            );
-        }
-    } 
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error!" });
+        res.status(200).json({ message: "Completed Information Player ID." });
+      }
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ message: "Server Error!" });
     }
-});
+  });
 
 module.exports = router;
