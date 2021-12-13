@@ -13,13 +13,10 @@ var myClient = new OneSignal.Client({
     app: { appAuthKey: `${process.env.API_KEY_ONESIGNAL}`, appId: `${process.env.API_ID_ONESIGNAL}` }
 });
 
-router.post("/alert-notification", authorization, async (req, res) => {
+router.put("/alert-notification", authorization, async (req, res) => {
     try {
-        //1. destructure the req.body (full_name,gender , email, password,bithdate,address)
     
         const { player_id } = req.body;
-    
-        //2. check if user exist (if user exist then throw error)
     
         const user = await pool.query(
           "SELECT * FROM useraccount WHERE id = $1",
