@@ -10,6 +10,39 @@ const abi = require( "../../abi.json" );
 const CryptoJS = require('crypto-js');
 const moment = require("moment");
 
+
+// OneSignal Notification
+var sendNotification = function(data) {
+  var headers = {
+    "Content-Type": "application/json; charset=utf-8",
+    "Authorization": `Basic ${process.env.API_KEY_ONESIGNAL}`
+  };
+  
+  var options = {
+    host: "onesignal.com",
+    port: 443,
+    path: "/api/v1/notifications",
+    method: "POST",
+    headers: headers
+  };
+  
+  var https = require('https');
+  var req = https.request(options, function(res) {  
+    res.on('data', function(data) {
+      console.log("Response:");
+      console.log(JSON.parse(data));
+    });
+  });
+  
+  req.on('error', function(e) {
+    console.log("ERROR:");
+    console.log(e);
+  });
+  
+  req.write(JSON.stringify(data));
+  req.end();
+};
+
 //  Generate Wallet or Get wallet for userAcc
 router.get("/get-wallet", authorization, async (req, res) => {
   try{
@@ -48,6 +81,26 @@ router.post("/transfer", authorization, async (req, res) => {
   try {
     const { password, dest_wallet, asset, amount, memo } = req.body;
     let typeAsset = asset;
+
+    const checkPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req.user]);
+    const checkDestPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [dest_wallet]);
+
+    // OneSignal Message
+    let senderMessage = { 
+      app_id: process.env.API_ID_ONESIGNAL,
+      headings: {"en": "Sent to" + checkDestPlayerid.rows[0].fullname},
+      contents: {"en": amount + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
+      // included_segments: ["Subscribed Users"]
+      include_player_ids: [checkPlayerid.rows[0].player_id]
+    };
+
+    let recieverMessage = { 
+      app_id: process.env.API_ID_ONESIGNAL,
+      headings: {"en": "Recieved from" + checkPlayerid.rows[0].fullname},
+      contents: {"en": amount + " " + typeAsset + " " + "from address" + " " + checkPlayerid.rows[0].wallet},
+      // included_segments: ["Subscribed Users"]
+      include_player_ids: [checkDestPlayerid.rows[0].player_id]
+    };
 
     const confirm = await confirmPass.confirm_pass(req, password);
 
@@ -112,6 +165,10 @@ router.post("/transfer", authorization, async (req, res) => {
                 memo: memo,
                 datetime: dateTime
               })));
+
+              sendNotification(senderMessage);
+              sendNotification(recieverMessage);
+              
             })
             .catch(err => {
               console.log("selendra's bug with payment", err);
@@ -157,6 +214,9 @@ router.post("/transfer", authorization, async (req, res) => {
               memo: memo,
               datetime: dateTime
             })));
+
+            sendNotification(senderMessage);
+            sendNotification(recieverMessage);
           })
           .catch(err => {
             console.log("selendra's bug with payment", err);
