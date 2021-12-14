@@ -13,6 +13,7 @@ var myClient = new OneSignal.Client({
     app: { appAuthKey: `${process.env.API_KEY_ONESIGNAL}`, appId: `${process.env.API_ID_ONESIGNAL}` }
 });
 
+
 router.put("/alert-notification", authorization, async (req, res) => {
     try {
     
