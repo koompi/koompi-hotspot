@@ -330,7 +330,7 @@ router.get("/portfolio", authorization, async (req, res) => {
           // },
           {
             id: "sel",
-            token: Number.parseFloat(ethers.utils.formatUnits(balance, 18)).toFixed(5),
+            token: Number.parseFloat(ethers.utils.formatUnits(userBalanceSel, 18)).toFixed(5),
             symbol: "SEL"
           }
         ]);
