@@ -49,6 +49,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
     let selendraProvider = new ethers.providers.JsonRpcProvider(
       'https://rpc.testnet.selendra.org/', 
     )
+
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
@@ -290,8 +291,8 @@ router.get("/portfolio", authorization, async (req, res) => {
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let selendraProvider = new ethers.providers.JsonRpcProvider(
-      'https://rpc1.testnet.selendra.org/', 
-    );
+      'https://rpc.testnet.selendra.org/', 
+    )
 
 
     
@@ -303,13 +304,13 @@ router.get("/portfolio", authorization, async (req, res) => {
       const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
       
       // Get Balance
-      // const getBalance = async (wallet) => {
-      //   const contract = new ethers.Contract(riseContract, abi, selendraProvider);
-      //   const balance = await contract.balanceOf(wallet.address)
-      //   return balance
-      // }
+      const getBalance = async (wallet) => {
+        const contract = new ethers.Contract(riseContract, abi, selendraProvider);
+        const balance = await contract.balanceOf(wallet.address)
+        return balance
+      }
       
-      // const userBalanceRise = await getBalance(userWallet);
+      const userBalanceRise = await getBalance(userWallet);
       
       // Get SEL Balance
       const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
@@ -317,16 +318,16 @@ router.get("/portfolio", authorization, async (req, res) => {
       await selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async balance => {
 
         await res.status(200).json([
-          // {
-          //   id: "rise",
-          //   token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
-          //   symbol: "RISE"
-          // },
           {
             id: "rise",
-            token: "Token Suspended",
+            token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
             symbol: "RISE"
           },
+          // {
+          //   id: "rise",
+          //   token: "Token Suspended",
+          //   symbol: "RISE"
+          // },
           {
             id: "sel",
             token: Number.parseFloat(ethers.utils.formatUnits(balance, 18)).toFixed(5),
