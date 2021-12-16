@@ -47,7 +47,7 @@ var sendNotification = function(data) {
 router.get("/get-wallet", authorization, async (req, res) => {
   try{
     let selendraProvider = new ethers.providers.JsonRpcProvider(
-      'https://rpc.testnet.selendra.org/', 
+      'https://apiselendra-testnet.koompi.org/', 
     )
 
     const checkWallet = await pool.query(
@@ -78,46 +78,46 @@ router.get("/get-wallet", authorization, async (req, res) => {
   }
 })
 
-// router.post('/test-alert', authorization, async (req, res) => {
+router.post('/test-alert', authorization, async (req, res) => {
 
-//   const { password, dest_wallet, asset, amount, memo } = req.body;
-//   let typeAsset = asset;
+  const { password, dest_wallet, asset, amount, memo } = req.body;
+  let typeAsset = asset;
 
-//   const checkPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req.user]);
-//   const checkDestPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [dest_wallet]);
+  const checkPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req.user]);
+  const checkDestPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [dest_wallet]);
 
-//   // OneSignal Message
-//   var message = { 
-//     app_id: process.env.API_ID_ONESIGNAL,
-//     headings: {"en": "hello"},
-//     contents: {"en": "test"},
-//     // included_segments: ["Subscribed Users"]
-//     include_player_ids: ["6ad14c02-5cc1-11ec-b645-82f0e2c90ac4"]
-//   };
+  // OneSignal Message
+  var message = { 
+    app_id: process.env.API_ID_ONESIGNAL,
+    headings: {"en": "hello"},
+    contents: {"en": "test"},
+    // included_segments: ["Subscribed Users"]
+    include_player_ids: ["6ad14c02-5cc1-11ec-b645-82f0e2c90ac4"]
+  };
 
-//   let senderMessage = { 
-//     app_id: process.env.API_ID_ONESIGNAL,
-//     headings: {"en": "Sent to" + " " + checkDestPlayerid.rows[0].fullname},
-//     contents: {"en": amount + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
-//     // included_segments: ["Subscribed Users"]
-//     include_player_ids: [checkPlayerid.rows[0].player_id]
-//   };
+  let senderMessage = { 
+    app_id: process.env.API_ID_ONESIGNAL,
+    headings: {"en": "Sent to" + " " + checkDestPlayerid.rows[0].fullname},
+    contents: {"en": amount + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
+    // included_segments: ["Subscribed Users"]
+    include_player_ids: [checkPlayerid.rows[0].player_id]
+  };
 
-//   let recieverMessage = { 
-//     app_id: process.env.API_ID_ONESIGNAL,
-//     headings: {"en": "Recieved from" + " " + checkPlayerid.rows[0].fullname},
-//     contents: {"en": amount + " " + typeAsset + " " + "from address" + " " + checkPlayerid.rows[0].wallet},
-//     // included_segments: ["Subscribed Users"]
-//     include_player_ids: [checkDestPlayerid.rows[0].player_id]
-//   };
+  let recieverMessage = { 
+    app_id: process.env.API_ID_ONESIGNAL,
+    headings: {"en": "Recieved from" + " " + checkPlayerid.rows[0].fullname},
+    contents: {"en": amount + " " + typeAsset + " " + "from address" + " " + checkPlayerid.rows[0].wallet},
+    // included_segments: ["Subscribed Users"]
+    include_player_ids: [checkDestPlayerid.rows[0].player_id]
+  };
 
-//   // sendNotification(message);
-//   sendNotification(senderMessage);
-//   sendNotification(recieverMessage);
+  // sendNotification(message);
+  sendNotification(senderMessage);
+  sendNotification(recieverMessage);
 
-//   res.status(200).json({ message: "sent message" });
+  res.status(200).json({ message: "sent message" });
 
-// })
+})
 
 router.post("/transfer", authorization, async (req, res) => {
   try {
@@ -154,7 +154,7 @@ router.post("/transfer", authorization, async (req, res) => {
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let selendraProvider = new ethers.providers.JsonRpcProvider(
-      'https://rpc.testnet.selendra.org/', 
+      'https://apiselendra-testnet.koompi.org/', 
     )
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
@@ -291,7 +291,7 @@ router.get("/portfolio", authorization, async (req, res) => {
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let selendraProvider = new ethers.providers.JsonRpcProvider(
-      'https://rpc.testnet.selendra.org/', 
+      'https://apiselendra-testnet.koompi.org/', 
     )
 
 
@@ -356,7 +356,7 @@ router.get("/portfolio", authorization, async (req, res) => {
 
 //     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
 //     let selendraProvider = new ethers.providers.JsonRpcProvider(
-//       'https://rpc.testnet.selendra.org/', 
+//       'https://apiselendra-testnet.koompi.org/', 
 //     );
 
 
