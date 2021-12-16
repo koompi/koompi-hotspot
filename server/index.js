@@ -73,10 +73,10 @@ cron.schedule("59 23 * * *", () => {
 });
 
 // // Check  every minute for automatically to up.
-// cron.schedule("* * * * *", () => {
-//   autoTopUp.autoRenew();
-//   console.log("automatically topup every minute");
-// });
+cron.schedule("* * * * *", () => {
+  autoTopUp.autoRenew();
+  // console.log("automatically topup every minute");
+});
 
 app.listen(5000, () => {
   console.log("server is running on port 5000...");

@@ -7,6 +7,38 @@ const abi = require("../abi.json");
 const CryptoJS = require('crypto-js');
 const moment = require("moment");
 
+// OneSignal Notification
+var sendNotification = function(data) {
+  var headers = {
+    "Content-Type": "application/json; charset=utf-8",
+    "Authorization": `Basic ${process.env.API_KEY_ONESIGNAL}`
+  };
+  
+  var options = {
+    host: "onesignal.com",
+    port: 443,
+    path: "/api/v1/notifications",
+    method: "POST",
+    headers: headers
+  };
+  
+  var https = require('https');
+  var req = https.request(options, function(res) {  
+    res.on('data', function(data) {
+      console.log("Response:");
+      console.log(JSON.parse(data));
+    });
+  });
+  
+  req.on('error', function(e) {
+    console.log("ERROR:");
+    console.log(e);
+  });
+  
+  req.write(JSON.stringify(data));
+  req.end();
+};
+
 const payment = async (req, asset, plan, memo) => {
   try {
     let amnt = parseFloat(plan, 10);
@@ -35,6 +67,24 @@ const payment = async (req, asset, plan, memo) => {
     )
 
 
+    const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req.user]);
+    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [recieverAddress]);
+
+    // OneSignal Message
+    let subscribePlanMessage = { 
+      app_id: process.env.API_ID_ONESIGNAL,
+      headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
+      contents: {"en": amount + " " + asset + " " + "has been paid from your wallet"},
+      include_player_ids: [checkUserPlayerid.rows[0].player_id]
+    };
+
+    let sellerMessage = { 
+      app_id: process.env.API_ID_ONESIGNAL,
+      headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
+      contents: {"en": amount + " " + asset + " " + "has been paid to your wallet"},
+      include_player_ids: [checkSellerPlayerid.rows[0].player_id]
+    };
+
     //===============================convert days to token of selendara 30 days = 5000 riels = 5 SEL
     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 RISE = 1000 riel
     //============ amount for checking condition
@@ -47,6 +97,7 @@ const payment = async (req, asset, plan, memo) => {
 
         const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
+        // RISE Transaction
         // const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
         // const getBalance = async (wallet) => {
         //   const contract = new ethers.Contract(riseContract, abi, wallet);
@@ -83,6 +134,9 @@ const payment = async (req, asset, plan, memo) => {
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Subscribed Fi-Fi Plan 30 Days", dateTime]
                 );
+                sendNotification(subscribePlanMessage);
+                sendNotification(sellerMessage);
+
                 return [200, "Paid successfully"];
               })
               .catch(err => {
@@ -143,6 +197,10 @@ const payment = async (req, asset, plan, memo) => {
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Subscribed Fi-Fi Plan 365 Days", dateTime]
                 );
+
+                sendNotification(subscribePlanMessage);
+                sendNotification(sellerMessage);
+
                 return [200, "Paid successfully"];
               })
               .catch(err => {
