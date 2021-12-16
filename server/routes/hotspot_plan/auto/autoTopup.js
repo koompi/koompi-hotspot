@@ -120,6 +120,38 @@ const CryptoJS = require('crypto-js');
 //   }
 // };
 
+// OneSignal Notification
+var sendNotification = function(data) {
+  var headers = {
+    "Content-Type": "application/json; charset=utf-8",
+    "Authorization": `Basic ${process.env.API_KEY_ONESIGNAL}`
+  };
+  
+  var options = {
+    host: "onesignal.com",
+    port: 443,
+    path: "/api/v1/notifications",
+    method: "POST",
+    headers: headers
+  };
+  
+  var https = require('https');
+  var req = https.request(options, function(res) {  
+    res.on('data', function(data) {
+      console.log("Response:");
+      console.log(JSON.parse(data));
+    });
+  });
+  
+  req.on('error', function(e) {
+    console.log("ERROR:");
+    console.log(e);
+  });
+  
+  req.write(JSON.stringify(data));
+  req.end();
+};
+
 const payment = async (req, asset, plan, memo) => {
   try {
     let amnt = parseFloat(plan, 10);
@@ -143,7 +175,7 @@ const payment = async (req, asset, plan, memo) => {
 
     const checkWallet = await pool.query(
       "SELECT seed FROM useraccount WHERE id = $1",
-      [req]
+      [req.user]
     );
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
@@ -166,6 +198,23 @@ const payment = async (req, asset, plan, memo) => {
       gasPrice: ethers.utils.parseUnits("100", "gwei"),
     }
 
+    const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req.user]);
+    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [recieverAddress]);
+
+    // OneSignal Message
+    let autoRenewPlanMessage = { 
+      app_id: process.env.API_ID_ONESIGNAL,
+      headings: {"en": "Auto Renew Fi-Fi Plan" + " " + amnt + " " + "days"},
+      contents: {"en": amount + " " + asset + " " + "has been paid from your wallet"},
+      include_player_ids: [checkUserPlayerid.rows[0].player_id]
+    };
+
+    let sellerMessage = { 
+      app_id: process.env.API_ID_ONESIGNAL,
+      headings: {"en": "Auto Renew Fi-Fi Plan" + " " + amnt + " " + "days"},
+      contents: {"en": amount + " " + asset + " " + "has been paid to your wallet"},
+      include_player_ids: [checkSellerPlayerid.rows[0].player_id]
+    };
 
     // =====================================check if user doesn't have a wallet=================
     if (checkWallet.rows[0].seed === null) {
@@ -184,6 +233,10 @@ const payment = async (req, asset, plan, memo) => {
                 "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                 [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", asset, memo, dateTime]
               );
+
+              sendNotification(autoRenewPlanMessage);
+              sendNotification(sellerMessage);
+
               return [200, "Paid successfull"];
             })
             .catch(err => {
