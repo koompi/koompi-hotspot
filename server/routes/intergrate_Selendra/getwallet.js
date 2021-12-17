@@ -189,7 +189,7 @@ router.post("/transfer", authorization, async (req, res) => {
           await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
             .then(txObj => {
               pool.query(
-                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
                 [
                   JSON.parse(JSON.stringify(txObj.hash)), 
                   JSON.parse(JSON.stringify(txObj.from)), 
@@ -248,34 +248,35 @@ router.post("/transfer", authorization, async (req, res) => {
           // Send a transaction
           userWallet.sendTransaction(tx).then((txObj) => {
             pool.query(
-              "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+              "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
               [
                 JSON.parse(JSON.stringify(txObj.hash)), 
                 JSON.parse(JSON.stringify(txObj.from)), 
-                isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                isValidAddress,
+                Number.parseFloat(amount).toFixed(5), 
                 "", 
-                "RISE", 
+                "SEL", 
                 memo, 
                 dateTime, 
-                checkSenderPlayerid.rows[0].fullname,  
-                checkDestPlayerid.rows[0].fullname, 
+                checkSenderPlayerid.rows[0].fullname,
+                checkDestPlayerid.rows[0].fullname,
               ]
             );
             res.status(200).json(JSON.parse(JSON.stringify({
               hash: txObj.hash,
               sender: txObj.from,
               destination: isValidAddress,
-              amount: Number.parseFloat(amount).toFixed(3),
+              amount: Number.parseFloat(amount).toFixed(5),
               fee: "",
-              symbol: "RISE",
+              symbol: "SEL",
               memo: memo,
               datetime: dateTime,
               from: checkSenderPlayerid.rows[0].fullname,
-              to: checkDestPlayerid.rows[0].fullname,
+              to: checkDestPlayerid.rows[0].fullname
             })));
 
-            sendNotification(senderMessage);
-            sendNotification(recieverMessage);
+            // sendNotification(senderMessage);
+            // sendNotification(recieverMessage);
           })
           .catch(err => {
             console.log("selendra's bug with payment", err);
