@@ -131,9 +131,20 @@ const payment = async (req, asset, plan, memo) => {
             const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Subscribed Fi-Fi Plan 30 Days", dateTime]
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                  [
+                    JSON.parse(JSON.stringify(txObj.hash)), 
+                    JSON.parse(JSON.stringify(txObj.from)), 
+                    isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                    "", 
+                    "RISE", 
+                    memo, 
+                    dateTime, 
+                    checkUserPlayerid.rows[0].fullname,  
+                    checkSellerPlayerid.rows[0].fullname, 
+                  ]
                 );
+
                 sendNotification(subscribePlanMessage);
                 sendNotification(sellerMessage);
 
@@ -194,8 +205,18 @@ const payment = async (req, asset, plan, memo) => {
             const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Subscribed Fi-Fi Plan 365 Days", dateTime]
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                  [
+                    JSON.parse(JSON.stringify(txObj.hash)), 
+                    JSON.parse(JSON.stringify(txObj.from)), 
+                    isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                    "", 
+                    "RISE", 
+                    memo, 
+                    dateTime, 
+                    checkUserPlayerid.rows[0].fullname,  
+                    checkSellerPlayerid.rows[0].fullname, 
+                  ]
                 );
 
                 sendNotification(subscribePlanMessage);
@@ -288,9 +309,20 @@ const checking = async (req, plan) => {
             const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Renew Hotspot Plan 30 Days", dateTime]
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                  [
+                    JSON.parse(JSON.stringify(txObj.hash)), 
+                    JSON.parse(JSON.stringify(txObj.from)), 
+                    isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                    "", 
+                    "RISE", 
+                    memo, 
+                    dateTime, 
+                    checkUserPlayerid.rows[0].fullname,  
+                    checkSellerPlayerid.rows[0].fullname, 
+                  ]
                 );
+
                 return [200, "Paid successfully"];
               })
               .catch(err => {
@@ -331,10 +363,21 @@ const checking = async (req, plan) => {
             
             const done = await senderWallet.sendTransaction(tx)
               .then(() => {
-                pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                  [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", "Renew Hotspot Plan 365 Days", dateTime]
+                 pool.query(
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                  [
+                    JSON.parse(JSON.stringify(txObj.hash)), 
+                    JSON.parse(JSON.stringify(txObj.from)), 
+                    isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                    "", 
+                    "RISE", 
+                    memo, 
+                    dateTime, 
+                    checkUserPlayerid.rows[0].fullname,  
+                    checkSellerPlayerid.rows[0].fullname, 
+                  ]
                 );
+                
                 return [200, "Paid successfully"];
               })
               .catch(err => {

@@ -188,12 +188,19 @@ router.post("/transfer", authorization, async (req, res) => {
           
           await contract.transfer(isValidAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
             .then(txObj => {
-              // res.status(200).json({ 
-              //   message: txObj
-              //  });
               pool.query(
-                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), isValidAddress, Number.parseFloat(amount).toFixed(3), "", "RISE", memo, dateTime]
+                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                [
+                  JSON.parse(JSON.stringify(txObj.hash)), 
+                  JSON.parse(JSON.stringify(txObj.from)), 
+                  isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                  "", 
+                  "RISE", 
+                  memo, 
+                  dateTime, 
+                  checkSenderPlayerid.rows[0].fullname,  
+                  checkDestPlayerid.rows[0].fullname, 
+                ]
               );
               res.status(200).json(JSON.parse(JSON.stringify({
                 hash: txObj.hash,
@@ -203,7 +210,9 @@ router.post("/transfer", authorization, async (req, res) => {
                 fee: "",
                 symbol: "RISE",
                 memo: memo,
-                datetime: dateTime
+                datetime: dateTime,
+                from: checkSenderPlayerid.rows[0].fullname,
+                to: checkDestPlayerid.rows[0].fullname,
               })));
 
               sendNotification(senderMessage);
@@ -238,20 +247,31 @@ router.post("/transfer", authorization, async (req, res) => {
           
           // Send a transaction
           userWallet.sendTransaction(tx).then((txObj) => {
-            // res.status(200).json({ message: txObj });
             pool.query(
-              "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-              [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), isValidAddress, Number.parseFloat(amount).toFixed(5), "", "SEL", memo, dateTime]
+              "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+              [
+                JSON.parse(JSON.stringify(txObj.hash)), 
+                JSON.parse(JSON.stringify(txObj.from)), 
+                isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                "", 
+                "RISE", 
+                memo, 
+                dateTime, 
+                checkSenderPlayerid.rows[0].fullname,  
+                checkDestPlayerid.rows[0].fullname, 
+              ]
             );
             res.status(200).json(JSON.parse(JSON.stringify({
               hash: txObj.hash,
               sender: txObj.from,
               destination: isValidAddress,
-              amount: Number.parseFloat(amount).toFixed(5),
+              amount: Number.parseFloat(amount).toFixed(3),
               fee: "",
-              symbol: "SEL",
+              symbol: "RISE",
               memo: memo,
-              datetime: dateTime
+              datetime: dateTime,
+              from: checkSenderPlayerid.rows[0].fullname,
+              to: checkDestPlayerid.rows[0].fullname,
             })));
 
             sendNotification(senderMessage);
