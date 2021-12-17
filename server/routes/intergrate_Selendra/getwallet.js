@@ -275,8 +275,8 @@ router.post("/transfer", authorization, async (req, res) => {
               to: checkDestPlayerid.rows[0].fullname
             })));
 
-            // sendNotification(senderMessage);
-            // sendNotification(recieverMessage);
+            sendNotification(senderMessage);
+            sendNotification(recieverMessage);
           })
           .catch(err => {
             console.log("selendra's bug with payment", err);
