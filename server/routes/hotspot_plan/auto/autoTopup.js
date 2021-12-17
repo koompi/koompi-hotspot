@@ -234,7 +234,7 @@ const payment = async (req, asset, plan, memo) => {
                 [
                   JSON.parse(JSON.stringify(txObj.hash)), 
                   JSON.parse(JSON.stringify(txObj.from)), 
-                  isValidAddress, 
+                  recieverAddress, 
                   Number.parseFloat(amount).toFixed(5), 
                   "", 
                   "SEL", 
@@ -252,7 +252,7 @@ const payment = async (req, asset, plan, memo) => {
             })
             .catch(err => {
               console.log("selendra's bug with payment", err);
-              return [501, err.reason];
+              return [501, "Something went wrong! Please try again later"];
             });
           return done;
         }
