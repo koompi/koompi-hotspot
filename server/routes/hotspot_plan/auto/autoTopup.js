@@ -296,7 +296,7 @@ const autoRenew = async () => {
           result.rows[i].acc_id,
           "RISE",
           value,
-          "Automatically top-up for renew plan."
+          "Automatically Renew Plan"
         );
 
         if (paid[0] === 200) {
