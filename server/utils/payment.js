@@ -131,13 +131,14 @@ const payment = async (req, asset, plan, memo) => {
             const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
                   [
                     JSON.parse(JSON.stringify(txObj.hash)), 
                     JSON.parse(JSON.stringify(txObj.from)), 
-                    isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                    isValidAddress, 
+                    Number.parseFloat(amount).toFixed(5), 
                     "", 
-                    "RISE", 
+                    "SEL", 
                     memo, 
                     dateTime, 
                     checkUserPlayerid.rows[0].fullname,  
@@ -205,13 +206,14 @@ const payment = async (req, asset, plan, memo) => {
             const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
                   [
                     JSON.parse(JSON.stringify(txObj.hash)), 
                     JSON.parse(JSON.stringify(txObj.from)), 
-                    isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                    isValidAddress, 
+                    Number.parseFloat(amount).toFixed(5), 
                     "", 
-                    "RISE", 
+                    "SEL", 
                     memo, 
                     dateTime, 
                     checkUserPlayerid.rows[0].fullname,  
@@ -309,13 +311,14 @@ const checking = async (req, plan) => {
             const done = await senderWallet.sendTransaction(tx)
               .then(txObj => {
                 pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
                   [
                     JSON.parse(JSON.stringify(txObj.hash)), 
                     JSON.parse(JSON.stringify(txObj.from)), 
-                    isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                    isValidAddress, 
+                    Number.parseFloat(amount).toFixed(5), 
                     "", 
-                    "RISE", 
+                    "SEL", 
                     memo, 
                     dateTime, 
                     checkUserPlayerid.rows[0].fullname,  
@@ -364,20 +367,21 @@ const checking = async (req, plan) => {
             const done = await senderWallet.sendTransaction(tx)
               .then(() => {
                  pool.query(
-                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                  "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
                   [
                     JSON.parse(JSON.stringify(txObj.hash)), 
                     JSON.parse(JSON.stringify(txObj.from)), 
-                    isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                    isValidAddress, 
+                    Number.parseFloat(amount).toFixed(5), 
                     "", 
-                    "RISE", 
+                    "SEL", 
                     memo, 
                     dateTime, 
                     checkUserPlayerid.rows[0].fullname,  
                     checkSellerPlayerid.rows[0].fullname, 
                   ]
                 );
-                
+
                 return [200, "Paid successfully"];
               })
               .catch(err => {

@@ -58,7 +58,7 @@ const CryptoJS = require('crypto-js');
 //             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
 //               .then(txObj => {
 //                 pool.query(
-//                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+//                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
 //                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", asset, memo, dateTime]
 //                 );
 //                 return [200, "Paid successfull"];
@@ -92,7 +92,7 @@ const CryptoJS = require('crypto-js');
 //             const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
 //               .then(txObj => {
 //                 pool.query(
-//                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+//                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
 //                   [JSON.parse(JSON.stringify(txObj.hash)), JSON.parse(JSON.stringify(txObj.from)), recieverAddress, amount, "", asset, memo, dateTime]
 //                 );
 //                 return [200, "Paid successfull"];
@@ -230,13 +230,14 @@ const payment = async (req, asset, plan, memo) => {
           const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
             .then(txObj => {
               pool.query(
-                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, from, to) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
                 [
                   JSON.parse(JSON.stringify(txObj.hash)), 
                   JSON.parse(JSON.stringify(txObj.from)), 
-                  isValidAddress, Number.parseFloat(amount).toFixed(3), 
+                  isValidAddress, 
+                  Number.parseFloat(amount).toFixed(5), 
                   "", 
-                  "RISE", 
+                  "SEL", 
                   memo, 
                   dateTime, 
                   checkUserPlayerid.rows[0].fullname,  
@@ -247,7 +248,7 @@ const payment = async (req, asset, plan, memo) => {
               sendNotification(autoRenewPlanMessage);
               sendNotification(sellerMessage);
 
-              return [200, "Paid successfull"];
+              return [200, "Paid successfully!"];
             })
             .catch(err => {
               console.log("selendra's bug with payment", err);
