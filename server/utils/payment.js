@@ -70,20 +70,6 @@ const payment = async (req, asset, plan, memo) => {
     const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req.user]);
     const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [recieverAddress]);
 
-    // OneSignal Message
-    let subscribePlanMessage = { 
-      app_id: process.env.API_ID_ONESIGNAL,
-      headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
-      contents: {"en": amount + " " + asset + " " + "has been paid from your wallet"},
-      include_player_ids: [checkUserPlayerid.rows[0].player_id]
-    };
-
-    let sellerMessage = { 
-      app_id: process.env.API_ID_ONESIGNAL,
-      headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
-      contents: {"en": amount + " " + asset + " " + "has been paid to your wallet"},
-      include_player_ids: [checkSellerPlayerid.rows[0].player_id]
-    };
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 5 SEL
     //================================================================= 365days = 60000 riels = 600 SEL    by:   1 RISE = 1000 riel
@@ -91,6 +77,22 @@ const payment = async (req, asset, plan, memo) => {
 
     if (amnt === 30) {
       amount = 5;
+
+      // OneSignal Message
+      let subscribePlanMessage = { 
+        app_id: process.env.API_ID_ONESIGNAL,
+        headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
+        contents: {"en": amount + " " + asset + " " + "has been paid to address" + " " + checkSellerPlayerid.rows[0].wallet},
+        include_player_ids: [checkUserPlayerid.rows[0].player_id]
+      };
+
+      let sellerMessage = { 
+        app_id: process.env.API_ID_ONESIGNAL,
+        headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
+        contents: {"en": amount + " " + asset + " " + "has been paid from address" + " " + checkUserPlayerid.rows[0].wallet},
+        include_player_ids: [checkSellerPlayerid.rows[0].player_id]
+      };
+
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
@@ -135,7 +137,7 @@ const payment = async (req, asset, plan, memo) => {
                   [
                     JSON.parse(JSON.stringify(txObj.hash)), 
                     JSON.parse(JSON.stringify(txObj.from)), 
-                    isValidAddress, 
+                    recieverAddress, 
                     Number.parseFloat(amount).toFixed(5), 
                     "", 
                     "SEL", 
@@ -153,7 +155,7 @@ const payment = async (req, asset, plan, memo) => {
               })
               .catch(err => {
                 console.log("selendra's bug with payment", err);
-                return [501, err.reason];
+                return [501, "Something went wrong! Please try again later"];
               });
             return done;
           }
@@ -167,6 +169,22 @@ const payment = async (req, asset, plan, memo) => {
     }
     if (amnt === 365) {
       amount = 50;
+
+      // OneSignal Message
+      let subscribePlanMessage = { 
+        app_id: process.env.API_ID_ONESIGNAL,
+        headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
+        contents: {"en": amount + " " + asset + " " + "has been paid to address" + " " + checkSellerPlayerid.rows[0].wallet},
+        include_player_ids: [checkUserPlayerid.rows[0].player_id]
+      };
+
+      let sellerMessage = { 
+        app_id: process.env.API_ID_ONESIGNAL,
+        headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
+        contents: {"en": amount + " " + asset + " " + "has been paid from address" + " " + checkUserPlayerid.rows[0].wallet},
+        include_player_ids: [checkSellerPlayerid.rows[0].player_id]
+      };
+
       if (checkWallet.rows[0].seed === null) {
         return [400, "Please get a wallet first!"];
       } else {
@@ -210,7 +228,7 @@ const payment = async (req, asset, plan, memo) => {
                   [
                     JSON.parse(JSON.stringify(txObj.hash)), 
                     JSON.parse(JSON.stringify(txObj.from)), 
-                    isValidAddress, 
+                    recieverAddress, 
                     Number.parseFloat(amount).toFixed(5), 
                     "", 
                     "SEL", 
@@ -228,7 +246,7 @@ const payment = async (req, asset, plan, memo) => {
               })
               .catch(err => {
                 console.log("selendra's bug with payment", err);
-                return [501, err.reason];
+                return [501, "Something went wrong! Please try again later"];
               });
             return done;
           }
@@ -315,7 +333,7 @@ const checking = async (req, plan) => {
                   [
                     JSON.parse(JSON.stringify(txObj.hash)), 
                     JSON.parse(JSON.stringify(txObj.from)), 
-                    isValidAddress, 
+                    recieverAddress, 
                     Number.parseFloat(amount).toFixed(5), 
                     "", 
                     "SEL", 
@@ -365,13 +383,13 @@ const checking = async (req, plan) => {
             }
             
             const done = await senderWallet.sendTransaction(tx)
-              .then(() => {
-                 pool.query(
+              .then(txObj => {
+                pool.query(
                   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
                   [
                     JSON.parse(JSON.stringify(txObj.hash)), 
                     JSON.parse(JSON.stringify(txObj.from)), 
-                    isValidAddress, 
+                    recieverAddress, 
                     Number.parseFloat(amount).toFixed(5), 
                     "", 
                     "SEL", 
