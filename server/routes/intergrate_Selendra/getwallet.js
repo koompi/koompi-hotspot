@@ -335,7 +335,7 @@ router.get("/portfolio", authorization, async (req, res) => {
 
       await selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async balance => {
 
-        await res.status(200).json([
+        res.status(200).json([
           // {
           //   id: "rise",
           //   token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
@@ -426,7 +426,7 @@ router.get("/history", authorization, async (req, res) => {
           [checkWallet.rows[0].wallet]
         )
         .then(async r => {
-          await res.status(200).json(JSON.parse(JSON.stringify(r.rows)));
+          res.status(200).json(JSON.parse(JSON.stringify(r.rows)));
         })
         .catch(err => {
           res.status(500).json({ message: "Internal server error" });
