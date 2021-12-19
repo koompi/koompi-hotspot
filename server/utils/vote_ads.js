@@ -33,6 +33,17 @@ router.post("/upvote-ads", authorization, async (req, res) => {
           message: "Already voted up"
         });
       }
+      else if(checkRewared.rows[0].voted_type == "Voted Down"){
+        await pool.query(
+          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
+          ["Voted Up", id]
+        );
+        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 2, id]);
+
+        res.status(200).send({
+          notification: ads.rows
+        });
+      }
       else{
         // res.status(200).send({
         //   message: 'No Reward'
@@ -55,62 +66,6 @@ router.post("/upvote-ads", authorization, async (req, res) => {
     });
   }
 })
-
-// router.put("/upvote-ads", authorization, async (req, res) => {
-//   try{
-//     const {id, vote} = req.body;
-//     var count = await pool.query("SELECT vote FROM notification WHERE _id = $1",[id]); 
-//     var i = count.rows[0].vote;
-
-//     const checkVoted = await pool.query("SELECT voted_type FROM uservoted WHERE user_id = $1 AND ads_id = $2", [req.user, id]);
-
-//     const ads = await pool.query("SELECT * FROM notification WHERE _id = $1", [id]);
-
-//     if(vote == "Voted Up"){
-//       try {
-//         if(checkVoted.rows[0].voted_type == "Voted Up"){
-//           res.status(422).send({
-//             error: "Cannot vote the same ID"
-//           });
-//         }
-//         else if(checkVoted.rows[0].voted_type == null){
-//           await pool.query(
-//             "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
-//             ["Voted Up", req.user, id]
-//           );
-      
-//           await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
-      
-//           res.status(200).send({
-//             notification: ads.rows
-//           });
-//         }
-//         else{
-//           await pool.query(
-//             "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
-//             ["Voted Down", req.user, id]
-//           );
-      
-//           await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
-      
-//           res.status(200).send({
-//             notification: ads.rows
-//           });
-//         }
-//       } catch (error) {
-//         res.status(422).send({
-//           Error: error.message
-//         });
-//       }
-//     }
-//   }
-  
-//   catch (error) {
-//     res.status(422).send({
-//       Error: error.message
-//     });
-//   }
-// });
 
 
 router.post("/downvote-ads", authorization, async (req, res) => {
@@ -142,6 +97,16 @@ router.post("/downvote-ads", authorization, async (req, res) => {
           message: "Already voted up"
         });
       }
+      else if(checkRewared.rows[0].voted_type == "Voted Up"){
+        await pool.query(
+          "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2",
+          ["Voted Down", id]
+        );
+        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 2, id]);
+        res.status(200).send({
+          notification: ads.rows
+        });
+      }
       else{
         await pool.query(
           "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2",
@@ -161,61 +126,6 @@ router.post("/downvote-ads", authorization, async (req, res) => {
   }
 });
 
-// router.put("/downvote-ads", authorization, async (req, res) => {
-//   try{
-//     const {id, vote} = req.body;
-//     var count = await pool.query("SELECT vote FROM notification WHERE _id = $1",[id]); 
-//     var i = count.rows[0].vote;
-
-//     const checkVoted = await pool.query("SELECT voted_type FROM uservoted WHERE user_id = $1 AND ads_id = $2", [req.user, id]);
-
-//     const ads = await pool.query("SELECT * FROM notification WHERE _id = $1", [id]);
-
-//     if(vote == "Voted Down"){
-
-//       try {
-//         if(checkVoted.rows[0].voted_type == "Voted Down"){
-//           res.status(422).send({
-//             error: "Cannot vote the same ID"
-//           });
-//         }
-//         else if(checkVoted.rows[0].voted_type == null){
-//           await pool.query(
-//             "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
-//             ["Voted Down", req.user, id]
-//           );
-      
-//           await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
-      
-//           res.status(200).send({
-//             notification: ads.rows
-//           });
-//         }
-//         else{
-//           await pool.query(
-//             "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
-//             ["Voted Down", req.user, id]
-//           );
-      
-//           await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 2, id]);
-      
-//           res.status(200).send({
-//             notification: ads.rows
-//           });
-//         }
-//       } catch (error) {
-//         res.status(422).send({
-//           Error: error.message
-//         });
-//       }
-//     }
-//   } 
-//   catch (error) {
-//     res.status(422).send({
-//       Error: error.message
-//     });
-//   }
-// })
 
 router.put("/unvote-ads", authorization, async (req, res) => {
   try{
