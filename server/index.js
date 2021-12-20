@@ -75,7 +75,7 @@ cron.schedule("59 23 * * *", () => {
 // // Check  every minute for automatically to up.
 cron.schedule("* * * * *", () => {
   autoTopUp.autoRenew();
-  // console.log("automatically topup every minute");
+  console.log("automatically topup every minute");
 });
 
 app.listen(5000, () => {
