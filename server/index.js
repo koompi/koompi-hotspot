@@ -67,7 +67,7 @@ app.use("/api/test", require("./routes/Account/twilioSMS/lookup"));
 app.use("/api", require("./routes/Account/alertNotification"));
 
 // Check deadline at 11:59 PM every day.
-cron.schedule("* * * * *", () => {
+cron.schedule("59 23 * * *", () => {
   autoCheck.statusPlan();
   console.log("checking automatically plan every day");
 });
