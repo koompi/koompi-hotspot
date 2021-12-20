@@ -31,7 +31,7 @@ router.put("/renew", authorization, async (req, res) => {
     const value = parseFloat(plan, 10);
 
     /////////// check balance with payment /////////////////////////
-    const paid = await Payment.payment(req, "RISE", value, "Renew Plan");
+    const paid = await Payment.payment(req, "SEL", value, `Renewed Plan ${value} Days`);
 
     if (paid[0] === 200) {
       const due = moment()

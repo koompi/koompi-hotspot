@@ -126,7 +126,7 @@ router.put("/change-plan", authorization, async (req, res) => {
     groupnameNew = groupnameNew + value + "_" + user.rows[0].username;
 
     ///////////////// check balance with payment /////////////////////////
-    const paid = await Payment.payment(req, "RISE", val, "Change new plan");
+    const paid = await Payment.payment(req, "SEL", val, `Changed Subscribe Fi-Fi Plan To ${value} Days`);
 
     if (paid[0] === 200) {
       const due = moment()

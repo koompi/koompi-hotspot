@@ -165,17 +165,15 @@ const payment = async (req, asset, plan, memo) => {
     //============ amount for checking condition
 
     if (amnt === 30) {
-      amnt = "50";
-      amount = 50;
+      amount = 5;
     }
     if (amnt === 365) {
-      amnt = "600";
-      amount = 600;
+      amount = 50;
     }
 
     const checkWallet = await pool.query(
-      "SELECT seed FROM useraccount WHERE id = $1",
-      [req.user]
+      "SELECT * FROM useraccount WHERE id = $1",
+      [req]
     );
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
@@ -186,19 +184,19 @@ const payment = async (req, asset, plan, memo) => {
 
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
-    const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-    const getBalance = async (wallet) => {
-      const contract = new ethers.Contract(riseContract, abi, wallet);
-      const balance = await contract.balanceOf(wallet.address)
-      return balance
-    }
+    // const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+    // const getBalance = async (wallet) => {
+    //   const contract = new ethers.Contract(riseContract, abi, wallet);
+    //   const balance = await contract.balanceOf(wallet.address)
+    //   return balance
+    // }
 
-    let gas = {
-      gasLimit: 100000,
-      gasPrice: ethers.utils.parseUnits("100", "gwei"),
-    }
+    // let gas = {
+    //   gasLimit: 100000,
+    //   gasPrice: ethers.utils.parseUnits("100", "gwei"),
+    // }
 
-    const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req.user]);
+    const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req]);
     const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [recieverAddress]);
 
     // OneSignal Message
@@ -220,14 +218,26 @@ const payment = async (req, asset, plan, memo) => {
     if (checkWallet.rows[0].seed === null) {
       return [400, "Please get a wallet first!"];
     } else {
-      const check = await getBalance(userWallet).then(async r => {
-        const wallet = ethers.utils.formatUnits(r, 18);
+      const check = selendraProvider.getBalance(checkWallet.rows[0].wallet).then(async balance => {
+        const wallet = ethers.utils.formatUnits(balance, 18);
         if (Number(wallet) < amount) {
           return [400, "You don't have enough money!"];
         } else {
+          // let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
+          // const contract = new ethers.Contract(riseContract, abi, senderWallet);
+
+
+          // RAW SEL Transfer
           let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-          const contract = new ethers.Contract(riseContract, abi, senderWallet);
-          const done = await contract.transfer(recieverAddress, ethers.utils.parseUnits(amount.toString(), 18), gas)
+
+          let tx = {
+            to: recieverAddress,
+            value: ethers.utils.parseUnits(amount.toString(), 18),
+            gasLimit: 100000,
+            gasPrice: ethers.utils.parseUnits("100", "gwei"),
+          }
+
+          const done = await senderWallet.sendTransaction(tx)
             .then(txObj => {
               pool.query(
                 "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
@@ -259,7 +269,7 @@ const payment = async (req, asset, plan, memo) => {
       })
       .catch(err => {
         console.error(err);
-        res.status(501).json({ message: "Selendra server is in maintenance." });
+        return [501, "Selendra server is in maintenance."];
       });
       return check;
     }
@@ -294,9 +304,9 @@ const autoRenew = async () => {
 
         const paid = await payment(
           result.rows[i].acc_id,
-          "RISE",
+          "SEL",
           value,
-          "Automatically Renew Plan"
+          `Automatically Renewed Fi-Fi Plan ${value} Days`
         );
 
         if (paid[0] === 200) {

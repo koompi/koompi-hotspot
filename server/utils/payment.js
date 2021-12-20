@@ -82,14 +82,14 @@ const payment = async (req, asset, plan, memo) => {
       let subscribePlanMessage = { 
         app_id: process.env.API_ID_ONESIGNAL,
         headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
-        contents: {"en": amount + " " + asset + " " + "has been paid to address" + " " + checkSellerPlayerid.rows[0].wallet},
+        contents: {"en": amount + " " + asset + " " + "has been paid from your wallet"},
         include_player_ids: [checkUserPlayerid.rows[0].player_id]
       };
 
       let sellerMessage = { 
         app_id: process.env.API_ID_ONESIGNAL,
         headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
-        contents: {"en": amount + " " + asset + " " + "has been paid from address" + " " + checkUserPlayerid.rows[0].wallet},
+        contents: {"en": amount + " " + asset + " " + "has been paid to your wallet"},
         include_player_ids: [checkSellerPlayerid.rows[0].player_id]
       };
 
@@ -174,14 +174,14 @@ const payment = async (req, asset, plan, memo) => {
       let subscribePlanMessage = { 
         app_id: process.env.API_ID_ONESIGNAL,
         headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
-        contents: {"en": amount + " " + asset + " " + "has been paid to address" + " " + checkSellerPlayerid.rows[0].wallet},
+        contents: {"en": amount + " " + asset + " " + "has been paid from your wallet"},
         include_player_ids: [checkUserPlayerid.rows[0].player_id]
       };
 
       let sellerMessage = { 
         app_id: process.env.API_ID_ONESIGNAL,
         headings: {"en": "Subscribed Fi-Fi Plan" + " " + amnt + " " + "days"},
-        contents: {"en": amount + " " + asset + " " + "has been paid from address" + " " + checkUserPlayerid.rows[0].wallet},
+        contents: {"en": amount + " " + asset + " " + "has been paid to your wallet"},
         include_player_ids: [checkSellerPlayerid.rows[0].player_id]
       };
 
