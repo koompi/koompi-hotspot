@@ -19,7 +19,7 @@ const TableNotifications = () => {
     };
     axios({
       method: "GET",
-      url: "http://localhost:5000/api/admin/notification",
+      url: "https://api-hotspot-dev.koompi.org/api/admin/notification",
       headers: {
         "content-type": "application/json; charset=utf-8",
         ...auth,
@@ -45,7 +45,7 @@ const TableNotifications = () => {
         if(image!==null)
         return (
           <img
-            src="http://localhost:5000/uploads/noti/notification_1623254707278.jpg"
+            src={("https://api-hotspot-dev.koompi.org/uploads/noti/notification_1626256683554.jpg")}
             className="thumbnail-notification"
             alt="thumbnail"
           />

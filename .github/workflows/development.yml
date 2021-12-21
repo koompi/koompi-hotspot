@@ -10,12 +10,32 @@ jobs:
     name: Deploy to Dev 
     if: github.event.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
+
     environment: 
-      name: Development      
+      name: Development
       url: 'https://api-hotspot-dev.koompi.org'
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
     steps:
       - name: Checkout Here
         uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Build dashboard to production
+        run: |
+          cd ${{ github.workspace }}/admin
+          npm ci
+          npm run build 
+        env:
+          CI: false
+
       - name: Install ssh key
         uses: shimataro/ssh-key-action@v2
         with:

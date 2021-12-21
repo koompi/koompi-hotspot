@@ -1,9 +1,9 @@
 const express = require("express");
-
+require('dotenv').config();
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-
+const moment = require("moment");
 // For auto checking
 const cron = require("node-cron");
 const autoCheck = require("./routes/hotspot_plan/auto/autoCheck");
@@ -40,6 +40,10 @@ app.use(
   require("./routes/Account/change_password_Acc")
 );
 
+// vote ads
+app.use("/api/ads", require("./utils/vote_ads"));
+
+
 //  Admin
 app.use("/api/auth/admin", require("./routes/admin/adminAuth"));
 app.use("/api/admin", require("./routes/admin/notification"));
@@ -56,22 +60,26 @@ app.use("/api", require("./routes/Account/request_discount"));
 
 // integration with selendra wallet
 app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
-
 // send sms to testing
 app.use("/api/test", require("./routes/Account/twilioSMS/lookup"));
+
+// alert notification
+app.use("/api", require("./routes/Account/alertNotification"));
+
+// Check deadline at 11:59 PM every day.
+cron.schedule("59 23 * * *", () => {
+  autoCheck.statusPlan();
+  console.log("checking automatically plan every day");
+});
+
+// // Check  every minute for automatically to up.
+cron.schedule("* * * * *", () => {
+  autoTopUp.autoRenew();
+  console.log("automatically topup every minute");
+});
 
 app.listen(5000, () => {
   console.log("server is running on port 5000...");
 
-  // Check deadline at 11:59 PM every day.
-  cron.schedule("59 23 * * *", () => {
-    autoCheck.statusPlan();
-    console.log("checking automatically plan every day");
-  });
 
-  // Check  every minute for automatically to up.
-  // cron.schedule("* * * * *", () => {
-  //   autoTopUp.autoRenew();
-  //   console.log("automatically topup every minute");
-  // });
 });

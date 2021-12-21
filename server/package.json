@@ -12,15 +12,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ethereumjs/tx": "^3.3.0",
+    "@polkadot/api": "^6.8.1",
     "@polkadot/keyring": "^6.0.5",
     "@polkadot/util": "^6.0.5",
-    "aws-sdk": "^2.731.0",
+    "aws-sdk": "^2.1043.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "crypto-js": "^4.1.1",
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
+    "ethers": "^5.4.4",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.0",
     "indra-js": "^1.0.6",
@@ -33,6 +37,8 @@
     "nodemon": "^2.0.4",
     "onesignal-node": "^3.2.1",
     "pg": "^8.3.0",
-    "twilio": "^3.55.1"
+    "twilio": "^3.55.1",
+    "web3": "^1.6.0",
+    "ws": "^8.3.0"
   }
 }
