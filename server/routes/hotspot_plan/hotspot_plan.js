@@ -222,10 +222,10 @@ router.get("/get-plan", authorization, async (req, res) => {
 
     let balance = parseFloat(plan, 10);
     if (balance === 30) {
-      balance = "5";
+      balance = "50";
     }
     if (balance === 365) {
-      balance = "50";
+      balance = "500";
     }
 
     res.status(200).json({
