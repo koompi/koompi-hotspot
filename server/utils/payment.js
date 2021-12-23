@@ -76,7 +76,11 @@ const payment = async (req, asset, plan, memo) => {
     //============ amount for checking condition
 
     if (amnt === 30) {
-      amount = 5;
+      // RISE PRICE
+      // amount = 5;
+
+      // SEL PRICE
+      amount = 50;
 
       // OneSignal Message
       let subscribePlanMessage = { 
@@ -168,7 +172,11 @@ const payment = async (req, asset, plan, memo) => {
       }
     }
     if (amnt === 365) {
-      amount = 50;
+      // RISE PRICE
+      // amount = 50;
+
+      // SEL PRICE
+      amount = 500;
 
       // OneSignal Message
       let subscribePlanMessage = { 
