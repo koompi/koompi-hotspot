@@ -174,7 +174,7 @@ const payment = async (req, asset, plan, memo) => {
     }
     if (amnt === 365) {
       // RISE PRICE
-      // amount = 5;
+      // amount = 50;
 
       // SEL PRICE
       amount = 500;
