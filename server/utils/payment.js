@@ -80,7 +80,7 @@ const payment = async (req, asset, plan, memo) => {
       // amount = 5;
 
       // SEL PRICE
-      amount = 5;
+      amount = 50;
 
       // OneSignal Message
       let subscribePlanMessage = { 
