@@ -169,7 +169,7 @@ const payment = async (req, asset, plan, memo) => {
       // amount = 5;
 
       // SEL PRICE
-      amount = 50;
+      amount = 5;
 
     }
     if (amnt === 365) {
