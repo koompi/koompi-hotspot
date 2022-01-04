@@ -28,12 +28,12 @@ router.post("/upvote-ads", authorization, async (req, res) => {
           notification: ads.rows
         });
       }
-      else if(checkRewared.rows[0].voted_type == vote){
+      if(checkRewared.rows[0].voted_type == vote){
         res.status(422).send({
           message: "Already voted up"
         });
       }
-      else if(checkRewared.rows[0].voted_type == "Voted Down"){
+      if(checkRewared.rows[0].voted_type == "Voted Down"){
         await pool.query(
           "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
           ["Voted Up", id]
@@ -44,20 +44,20 @@ router.post("/upvote-ads", authorization, async (req, res) => {
           notification: ads.rows
         });
       }
-      else{
-        // res.status(200).send({
-        //   message: 'No Reward'
-        // });
-        await pool.query(
-          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
-          ["Voted Up", id]
-        );
-        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
+      // else{
+      //   // res.status(200).send({
+      //   //   message: 'No Reward'
+      //   // });
+      //   await pool.query(
+      //     "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
+      //     ["Voted Up", id]
+      //   );
+      //   await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
 
-        res.status(200).send({
-          notification: ads.rows
-        });
-      }
+      //   res.status(200).send({
+      //     notification: ads.rows
+      //   });
+      // }
     }
   } 
   catch (error) {
@@ -92,12 +92,12 @@ router.post("/downvote-ads", authorization, async (req, res) => {
           notification: ads.rows
         });
       }
-      else if(checkRewared.rows[0].voted_type == vote){
+      if(checkRewared.rows[0].voted_type == vote){
         res.status(422).send({
           message: "Already voted up"
         });
       }
-      else if(checkRewared.rows[0].voted_type == "Voted Up"){
+      if(checkRewared.rows[0].voted_type == "Voted Up"){
         await pool.query(
           "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2",
           ["Voted Down", id]
@@ -107,16 +107,16 @@ router.post("/downvote-ads", authorization, async (req, res) => {
           notification: ads.rows
         });
       }
-      else{
-        await pool.query(
-          "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2",
-          ["Voted Down", id]
-        );
-        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
-        res.status(200).send({
-          notification: ads.rows
-        });
-      }
+      // else{
+      //   await pool.query(
+      //     "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2",
+      //     ["Voted Down", id]
+      //   );
+      //   await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
+      //   res.status(200).send({
+      //     notification: ads.rows
+      //   });
+      // }
     }
   } 
   catch (error) {
@@ -153,7 +153,7 @@ router.put("/unvote-ads", authorization, async (req, res) => {
           });
         }
          
-        else if(checkVoted.rows[0].voted_type == "Voted Down"){
+        if(checkVoted.rows[0].voted_type == "Voted Down"){
           await pool.query(
             "UPDATE uservoted SET voted_type = $1 WHERE user_id = $2 AND ads_id = $3",
             [null, req.user, id]
@@ -166,18 +166,18 @@ router.put("/unvote-ads", authorization, async (req, res) => {
           });
         }
         
-        else if(checkVoted.rows[0].voted_type == null){
+        // else if(checkVoted.rows[0].voted_type == null){
 
-          res.status(200).send({
-            message: 'Cannot un voted again!'
-          });
-        }
+        //   res.status(200).send({
+        //     message: 'Cannot un voted again!'
+        //   });
+        // }
 
-        else{
-          res.status(404).send({
-            message: 'Something went wrong!'
-          });
-        }
+        // else{
+        //   res.status(404).send({
+        //     message: 'Something went wrong!'
+        //   });
+        // }
 
       } catch (error) {
         console.log(error);
