@@ -102,7 +102,7 @@ router.post("/downvote-ads", authorization, async (req, res) => {
           "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2 AND user_id = $3",
           ["Voted Down", id, req.user]
         );
-        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2 AND user_id = $3", [i -= 2, id, req.user]);
+        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 2, id]);
         res.status(200).send({
           notification: ads.rows
         });
