@@ -35,8 +35,8 @@ router.post("/upvote-ads", authorization, async (req, res) => {
       }
       else if(checkRewared.rows[0].voted_type == "Voted Down"){
         await pool.query(
-          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
-          ["Voted Up", id]
+          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2 AND user_id = $3",
+          ["Voted Up", id, req.user]
         );
         await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 2, id]);
 
@@ -49,8 +49,8 @@ router.post("/upvote-ads", authorization, async (req, res) => {
         //   message: 'No Reward'
         // });
         await pool.query(
-          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2",
-          ["Voted Up", id]
+          "UPDATE uservoted SET voted_type = $1 WHERE ads_id = $2 AND user_id = $3",
+          ["Voted Up", id, req.user]
         );
         await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i += 1, id]);
 
@@ -99,18 +99,18 @@ router.post("/downvote-ads", authorization, async (req, res) => {
       }
       else if(checkRewared.rows[0].voted_type == "Voted Up"){
         await pool.query(
-          "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2",
-          ["Voted Down", id]
+          "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2 AND user_id = $3",
+          ["Voted Down", id, req.user]
         );
-        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 2, id]);
+        await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2 AND user_id = $3", [i -= 2, id, req.user]);
         res.status(200).send({
           notification: ads.rows
         });
       }
       else{
         await pool.query(
-          "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2",
-          ["Voted Down", id]
+          "UPDATE uservoted SET voted_type = $1  WHERE ads_id = $2, AND user_id = $3",
+          ["Voted Down", id, req.user]
         );
         await pool.query("UPDATE notification SET vote = $1 WHERE _id = $2", [i -= 1, id]);
         res.status(200).send({
