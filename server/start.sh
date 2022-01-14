@@ -1,3 +1,14 @@
-#This script install all dependency of project
-#And run this project with npm
-npm install && npm run server
+#!/usr/bin/env bash
+
+# install new dependencies if any
+npm install
+
+# uninstall the current bcrypt modules
+npm uninstall bcrypt
+
+# install the bcrypt modules for the machine
+npm install bcrypt
+
+echo "Starting API server"
+
+npm run server
