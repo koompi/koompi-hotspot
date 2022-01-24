@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # install new dependencies if any
 npm install
 
