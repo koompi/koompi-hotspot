@@ -62,8 +62,8 @@ const payment = async (req, asset, plan, memo) => {
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let recieverAddress = "0x8B055a926201c5fe4990A6D612314C2Bd4D78785";
-    let selendraProvider = new ethers.providers.JsonRpcProvider(
-      'https://apiselendra-testnet.koompi.org/', 
+    let selendraProvider = new ethers.providers.WebSocketProvider(
+      'wss://indra-testnet.selendra.org', 
     )
 
 
