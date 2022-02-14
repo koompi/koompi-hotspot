@@ -1,3 +1,7 @@
+apk install update
+apk add python3
+apk add build-base
+
 # install new dependencies if any
 npm install
 
