@@ -47,7 +47,7 @@ var sendNotification = function(data) {
 router.get("/get-wallet", authorization, async (req, res) => {
   try{
     let selendraProvider = new ethers.providers.WebSocketProvider(
-      'wss://indra-testnet.selendra.org', 
+      'wss://rpc1-testnet.selendra.org', 
     )
 
     const checkWallet = await pool.query(
@@ -152,7 +152,7 @@ router.post("/transfer", authorization, async (req, res) => {
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let selendraProvider = new ethers.providers.WebSocketProvider(
-      'wss://indra-testnet.selendra.org', 
+      'wss://rpc1-testnet.selendra.org', 
     )
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
 
@@ -309,7 +309,7 @@ router.get("/portfolio", authorization, async (req, res) => {
 
     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
     let selendraProvider = new ethers.providers.WebSocketProvider(
-      'wss://indra-testnet.selendra.org', 
+      'wss://rpc1-testnet.selendra.org', 
     )
 
 
@@ -373,7 +373,7 @@ router.get("/portfolio", authorization, async (req, res) => {
 //     );
 
 //     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
-//     let selendraProvider = new ethers.providers.JsonRpcProvider(
+//     let selendraProvider = new ethers.providers.WebSocketProvider(
 //       'https://rpc-mainnet.selendra.org', 
 //     );
 
