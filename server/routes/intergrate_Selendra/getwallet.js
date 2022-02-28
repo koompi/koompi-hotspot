@@ -200,12 +200,12 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     else if(typeAsset === "SEL"){
 
-      const parsedAmount = Number.parseFloat(amount);
+      const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
       const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
       await api.query.system.account(pair.address).then(async r => {
 
-        const parsedBalance = Number.parseFloat(r.data.free / Math.pow(10, api.registry.chainDecimals));
+        const parsedBalance = BigInt(r.data.free * Math.pow(10, api.registry.chainDecimals));
         if (parsedBalance < parsedAmount) {
           res.status(400).json({ message: "You don't have enough token!" });
         }
@@ -219,7 +219,7 @@ router.post("/transfer", authorization, async (req, res) => {
                   result.toHex(),
                   pair.address,
                   dest_wallet, 
-                  Number.parseFloat(parsedAmount).toFixed(3), 
+                  amount, 
                   "", 
                   "SEL", 
                   memo, 
@@ -232,7 +232,7 @@ router.post("/transfer", authorization, async (req, res) => {
                 hash: result.toHex(),
                 sender: pair.address,
                 destination: dest_wallet,
-                amount: parsedAmount.toFixed(3),
+                amount: amount,
                 fee: "",
                 symbol: "SEL",
                 memo: memo,
