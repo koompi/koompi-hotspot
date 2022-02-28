@@ -237,11 +237,11 @@ router.post("/transfer", authorization, async (req, res) => {
                 symbol: "SEL",
                 memo: memo,
                 datetime: dateTime,
-                // from: checkSenderPlayerid.rows[0].fullname,
-                // to: checkDestPlayerid.rows[0].fullname,
+                from: checkSenderPlayerid.rows[0].fullname,
+                to: checkDestPlayerid.rows[0].fullname,
               })));
-              // sendNotification(senderMessage);
-              // sendNotification(recieverMessage);
+              sendNotification(senderMessage);
+              sendNotification(recieverMessage);
 
             }).catch(err => {
               console.error(err);
