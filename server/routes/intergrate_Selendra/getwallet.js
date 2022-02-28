@@ -131,9 +131,6 @@ router.post("/transfer", authorization, async (req, res) => {
 
     const pair = keyring.createFromUri(seedDecrypted);
 
-    // Retrieve the account balance via the system module
-    const { data: balance } = await api.query.system.account(pair.address);
-
     let dateTime = new moment().utcOffset(+7, false).format();
 
     //=====================================check if user doesn't have a wallet=================
@@ -202,100 +199,55 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     else if(typeAsset === "SEL"){
 
-          const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
-          
-          const nonce = await api.rpc.system.accountNextIndex(pair.address);
-          const transfer = await api.tx.balances
+      const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+      
+      const nonce = await api.rpc.system.accountNextIndex(pair.address);
+
+      await api.query.system.account(pair.address).then(async r => {
+        if (r.data.free < parsedAmount) {
+          res.status(400).json({ message: "You don't have enough token!" });
+        }
+        else{
+          await api.tx.balances
             .transfer(dest_wallet, parsedAmount)
-            .signAndSend(balance.free, { nonce });
+            .signAndSend(pair, { nonce }).then(result =>{
+              // pool.query(
+              //   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+              //   [
+              //     result.toHex(),
+              //     pair.address,
+              //     dest_wallet, 
+              //     Number.parseFloat(parsedAmount).toFixed(3), 
+              //     "", 
+              //     "SEL", 
+              //     memo, 
+              //     dateTime, 
+              //     checkSenderPlayerid.rows[0].fullname,  
+              //     checkDestPlayerid.rows[0].fullname, 
+              //   ]
+              // );
+              res.status(200).json(JSON.parse(JSON.stringify({
+                hash: result.toHex(),
+                sender: pair.address,
+                destination: dest_wallet,
+                amount: Number.parseFloat(parsedAmount).toFixed(3),
+                fee: "",
+                symbol: "SEL",
+                memo: memo,
+                datetime: dateTime,
+                // from: checkSenderPlayerid.rows[0].fullname,
+                // to: checkDestPlayerid.rows[0].fullname,
+              })));
+              // sendNotification(senderMessage);
+              // sendNotification(recieverMessage);
 
-            console.log(transfer);
-          // Send a transaction
-          // transfer.then((txObj) => {
-          //   // pool.query(
-          //   //   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
-          //   //   [
-          //   //     JSON.parse(JSON.stringify(txObj.hash)), 
-          //   //     JSON.parse(JSON.stringify(txObj.from)), 
-          //   //     dest_wallet,
-          //   //     Number.parseFloat(amount).toFixed(5), 
-          //   //     "", 
-          //   //     "SEL", 
-          //   //     memo, 
-          //   //     dateTime, 
-          //   //     checkSenderPlayerid.rows[0].fullname,
-          //   //     checkDestPlayerid.rows[0].fullname,
-          //   //   ]
-          //   // );
-          //   res.status(200).json(JSON.parse(JSON.stringify({
-          //     hash: txObj.hash,
-          //     sender: txObj.from,
-          //     destination: dest_wallet,
-          //     amount: Number.parseFloat(amount).toFixed(5),
-          //     fee: "",
-          //     symbol: "SEL",
-          //     memo: memo,
-          //     datetime: dateTime,
-          //     from: checkSenderPlayerid.rows[0].fullname,
-          //     to: checkDestPlayerid.rows[0].fullname
-          //   })));
-          // })
-      // await api.query.system.account(pair.address).then(async r => {
-      //   const balance = parseFloat(r);
-      //   if (balance < amount) {
-      //     res.status(400).json({ message: "You don't have enough token!" });
-      //   } else {
-          
-      //     const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
-          
-      //     const transfer = await api.tx.balances
-      //       .transfer(dest_wallet, parsedAmount)
-      //       .signAndSend(balance.free, { nonce });
-
-      //     // Send a transaction
-      //     transfer.then((txObj) => {
-      //       // pool.query(
-      //       //   "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
-      //       //   [
-      //       //     JSON.parse(JSON.stringify(txObj.hash)), 
-      //       //     JSON.parse(JSON.stringify(txObj.from)), 
-      //       //     dest_wallet,
-      //       //     Number.parseFloat(amount).toFixed(5), 
-      //       //     "", 
-      //       //     "SEL", 
-      //       //     memo, 
-      //       //     dateTime, 
-      //       //     checkSenderPlayerid.rows[0].fullname,
-      //       //     checkDestPlayerid.rows[0].fullname,
-      //       //   ]
-      //       // );
-      //       res.status(200).json(JSON.parse(JSON.stringify({
-      //         hash: txObj.hash,
-      //         sender: txObj.from,
-      //         destination: dest_wallet,
-      //         amount: Number.parseFloat(amount).toFixed(5),
-      //         fee: "",
-      //         symbol: "SEL",
-      //         memo: memo,
-      //         datetime: dateTime,
-      //         from: checkSenderPlayerid.rows[0].fullname,
-      //         to: checkDestPlayerid.rows[0].fullname
-      //       })));
-
-      //       sendNotification(senderMessage);
-      //       sendNotification(recieverMessage);
-      //     })
-      //     .catch(err => {
-      //       console.log("selendra's bug with payment", err);
-      //       res.status(501).json({ message: err.reason });
-      //     });
-
-      //   }
-      // })
-      // .catch(err => {
-      //   console.error(err);
-      //   res.status(501).json({ message: "Sorry, Something went wrong!" });
-      // });
+            }).catch(err => {
+              console.error(err);
+              res.status(501).json({ message: "Sorry, Something went wrong!" });
+            });
+        }
+      });
+      
     }
     else{
       res.status(404).json({ message: "Sorry, Something went wrong!" });
@@ -343,7 +295,7 @@ router.get("/portfolio", authorization, async (req, res) => {
         },
         {
           id: "sel",
-          token: Number.parseFloat(balance.free).toFixed(5),
+          token: Number.parseFloat(balance.free).toFixed(4),
           symbol: "SEL"
         }
       ]);
@@ -354,51 +306,6 @@ router.get("/portfolio", authorization, async (req, res) => {
     res.status(500).json({ message: "Server error!" });
   }
 });
-
-// raw portfolio
-// router.get("/portfolio", authorization, async (req, res) => {
-//   try {
-//     const checkWallet = await pool.query(
-//       "SELECT * FROM useraccount WHERE id = $1",
-//       [req.user]
-//     );
-
-//     let riseContract = "0x3e6aE2b5D49D58cC8637a1A103e1B6d0B6378b8B";
-//     let selendraProvider = new ethers.providers.WebSocketProvider(
-//       'https://rpc-mainnet.selendra.org', 
-//     );
-
-
-    
-//     if (checkWallet.rows[0].seed === null) {
-//       res.status(401).json({ message: "Please get wallet first!" });
-//     } else {
-//       const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
-      
-//       const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-    
-      
-//       // Get SEL Balance
-//       const userBalanceSel = await selendraProvider.getBalance(checkWallet.rows[0].wallet);
-
-//       await res.status(200).json([
-//         // {
-//         //   id: "rise",
-//         //   token: Number.parseFloat(ethers.utils.formatUnits(userBalanceRise, 18)).toFixed(3),
-//         //   symbol: "RISE"
-//         // },
-//         {
-//           id: "sel",
-//           token: Number.parseFloat(ethers.utils.formatUnits(userBalanceSel, 18)).toFixed(5),
-//           symbol: "SEL"
-//         }
-//       ]);
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error!" });
-//   }
-// });
 
 
 // History user balance
