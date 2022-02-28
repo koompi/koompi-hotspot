@@ -5,6 +5,7 @@ require("dotenv").config({ path: `../../../.env` });
 var ethers = require('ethers');
 const abi = require("../../../abi.json");
 const CryptoJS = require('crypto-js');
+const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 
 // const payment = async (req, asset, plan, memo) => {
 //   try {
@@ -203,6 +204,8 @@ const payment = async (req, asset, plan, memo) => {
     const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req]);
     const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [recieverAddress]);
 
+    const nonce = await api.rpc.system.accountNextIndex(pair.address);
+
     // OneSignal Message
     let autoRenewPlanMessage = { 
       app_id: process.env.API_ID_ONESIGNAL,
@@ -223,12 +226,16 @@ const payment = async (req, asset, plan, memo) => {
       return [400, "Please get a wallet first!"];
     } else {
       const check = api.query.system.account(pair.address).then(async balance => {
-        if (balance.data.free < amount) {
+
+        const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
+        const parsedAmount = Number(amount / Math.pow(10, api.registry.chainDecimals));
+
+        if (parsedBalance < amount) {
           return [400, "You don't have enough money!"];
         } else {
 
           const done = await api.tx.balances
-            .transfer(dest_wallet, parsedAmount)
+            .transfer(recieverAddress, parsedAmount)
             .signAndSend(pair, { nonce })
             .then(txObj => {
               pool.query(
@@ -242,13 +249,13 @@ const payment = async (req, asset, plan, memo) => {
                   "SEL", 
                   memo, 
                   dateTime, 
-                  // checkUserPlayerid.rows[0].fullname,  
-                  // checkSellerPlayerid.rows[0].fullname, 
+                  checkUserPlayerid.rows[0].fullname,  
+                  checkSellerPlayerid.rows[0].fullname, 
                 ]
               );
 
-              // sendNotification(autoRenewPlanMessage);
-              // sendNotification(sellerMessage);
+              sendNotification(autoRenewPlanMessage);
+              sendNotification(sellerMessage);
 
               return [200, "Paid successfully!"];
             })

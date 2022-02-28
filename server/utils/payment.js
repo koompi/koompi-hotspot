@@ -6,6 +6,7 @@ var ethers = require('ethers');
 const abi = require("../abi.json");
 const CryptoJS = require('crypto-js');
 const moment = require("moment");
+const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 
 // OneSignal Notification
 var sendNotification = function(data) {
@@ -111,15 +112,20 @@ const payment = async (req, asset, plan, memo) => {
         
         const pair = keyring.createFromUri(seedDecrypted);
 
-        
+        const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+
+        const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
         const check = await api.query.system.account(pair.address).then(async balance => {
-          if (balance.data.free < amount - dis_value) {
+
+          const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
+
+          if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
             const done = await api.tx.balances
-              .transfer(dest_wallet, parsedAmount)
+              .transfer(recieverAddress, parsedAmount)
               .signAndSend(pair, { nonce })
               .then(txObj => {
                 pool.query(
@@ -133,13 +139,13 @@ const payment = async (req, asset, plan, memo) => {
                     "SEL", 
                     memo, 
                     dateTime, 
-                    // checkUserPlayerid.rows[0].fullname,  
-                    // checkSellerPlayerid.rows[0].fullname, 
+                    checkUserPlayerid.rows[0].fullname,  
+                    checkSellerPlayerid.rows[0].fullname, 
                   ]
                 );
 
-                // sendNotification(subscribePlanMessage);
-                // sendNotification(sellerMessage);
+                sendNotification(subscribePlanMessage);
+                sendNotification(sellerMessage);
 
                 return [200, "Paid successfully"];
               })
@@ -187,15 +193,19 @@ const payment = async (req, asset, plan, memo) => {
         
         const pair = keyring.createFromUri(seedDecrypted);
         
+        const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
 
+        const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
         const check =  await api.query.system.account(pair.address).then(async balance => {
-          if (balance.data.free < amount - dis_value) {
+          const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
+
+          if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
             const done = await api.tx.balances
-              .transfer(dest_wallet, parsedAmount)
+              .transfer(recieverAddress, parsedAmount)
               .signAndSend(pair, { nonce })
               .then(txObj => {
                 pool.query(
@@ -209,13 +219,13 @@ const payment = async (req, asset, plan, memo) => {
                     "SEL", 
                     memo, 
                     dateTime, 
-                    // checkUserPlayerid.rows[0].fullname,  
-                    // checkSellerPlayerid.rows[0].fullname, 
+                    checkUserPlayerid.rows[0].fullname,  
+                    checkSellerPlayerid.rows[0].fullname, 
                   ]
                 );
 
-                // sendNotification(subscribePlanMessage);
-                // sendNotification(sellerMessage);
+                sendNotification(subscribePlanMessage);
+                sendNotification(sellerMessage);
 
                 return [200, "Paid successfully"];
               })
@@ -277,6 +287,9 @@ const checking = async (req, plan) => {
         
     const pair = keyring.createFromUri(seedDecrypted);
   
+    const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+
+    const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
     if (amnt === 30) {
       amount = 50;
@@ -284,12 +297,15 @@ const checking = async (req, plan) => {
         return [400, "Please get a wallet first!"];
       } else {
         const check = await api.query.system.account(pair.address).then(async balance => {
-          if (balance.data.free < amount - dis_value) {
+          const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
+          const parsedAmount = Number(amount / Math.pow(10, api.registry.chainDecimals));
+
+          if (parsedBalance < parsedAmount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
             const done = await api.tx.balances
-              .transfer(dest_wallet, parsedAmount)
+              .transfer(recieverAddress, parsedAmount)
               .signAndSend(pair, { nonce })
               .then(txObj => {
                 pool.query(
@@ -303,8 +319,8 @@ const checking = async (req, plan) => {
                     "SEL", 
                     memo, 
                     dateTime, 
-                    // checkUserPlayerid.rows[0].fullname,  
-                    // checkSellerPlayerid.rows[0].fullname, 
+                    checkUserPlayerid.rows[0].fullname,  
+                    checkSellerPlayerid.rows[0].fullname, 
                   ]
                 );
 
@@ -330,12 +346,15 @@ const checking = async (req, plan) => {
         return [400, "Please get a wallet first!"];
       } else {
         const check = await api.query.system.account(pair.address).then(async balance => {
-          if (balance.data.free < amount - dis_value) {
+          const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
+          const parsedAmount = Number(amount / Math.pow(10, api.registry.chainDecimals));
+
+          if (parsedBalance < parsedAmount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
             const done = await api.tx.balances
-              .transfer(dest_wallet, parsedAmount)
+              .transfer(recieverAddress, parsedAmount)
               .signAndSend(pair, { nonce })
               .then(txObj => {
                 pool.query(
@@ -349,8 +368,8 @@ const checking = async (req, plan) => {
                     "SEL", 
                     memo, 
                     dateTime, 
-                    // checkUserPlayerid.rows[0].fullname,  
-                    // checkSellerPlayerid.rows[0].fullname, 
+                    checkUserPlayerid.rows[0].fullname,  
+                    checkSellerPlayerid.rows[0].fullname, 
                   ]
                 );
 
