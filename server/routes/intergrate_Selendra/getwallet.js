@@ -100,14 +100,14 @@ router.post("/transfer", authorization, async (req, res) => {
     let senderMessage = { 
       app_id: process.env.API_ID_ONESIGNAL,
       headings: {"en": "Sent to" + " " + checkDestPlayerid.rows[0].fullname},
-      contents: {"en": Number.parseFloat(amount).toFixed(3) + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
+      contents: {"en": Number.parseFloat(amount).toFixed(4) + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
       include_player_ids: [checkSenderPlayerid.rows[0].player_id]
     };
   
     let recieverMessage = { 
       app_id: process.env.API_ID_ONESIGNAL,
       headings: {"en": "Recieved from" + " " + checkSenderPlayerid.rows[0].fullname},
-      contents: {"en": Number.parseFloat(amount).toFixed(3) + " " + typeAsset + " " + "from address" + " " + checkSenderPlayerid.rows[0].wallet},
+      contents: {"en": Number.parseFloat(amount).toFixed(4) + " " + typeAsset + " " + "from address" + " " + checkSenderPlayerid.rows[0].wallet},
       include_player_ids: [checkDestPlayerid.rows[0].player_id]
     };
 
