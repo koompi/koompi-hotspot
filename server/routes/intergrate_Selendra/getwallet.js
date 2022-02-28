@@ -199,14 +199,14 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     else if(typeAsset === "SEL"){
 
-      const parsedAmount = Number(amount / Math.pow(10, api.registry.chainDecimals));
+      const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
 
       
       const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
-      await api.query.system.account(pair.address).then(async r => {
+      await api.query.system.account(pair.address).then(async balance => {
 
-        const parsedBalance = Number(r.balance.free / Math.pow(10, api.registry.chainDecimals));
+        const parsedBalance = BigInt(balance.data.free * Math.pow(10, api.registry.chainDecimals));
 
         if (parsedBalance < parsedAmount) {
           res.status(400).json({ message: "You don't have enough token!" });

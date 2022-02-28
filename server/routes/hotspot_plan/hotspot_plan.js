@@ -230,7 +230,7 @@ router.get("/get-plan", authorization, async (req, res) => {
 
     res.status(200).json({
       username: user.rows[0].username,
-      balance: Number.parseFloat(balance).toFixed(3),
+      balance: Number.parseFloat(balance).toFixed(4),
       device: sim.rows[0].value,
       plan: plan,
       time_left: detail.rows[0].value,
