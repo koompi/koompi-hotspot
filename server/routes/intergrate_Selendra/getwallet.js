@@ -97,19 +97,19 @@ router.post("/transfer", authorization, async (req, res) => {
     const checkDestPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [dest_wallet]);
 
     // OneSignal Message
-    // let senderMessage = { 
-    //   app_id: process.env.API_ID_ONESIGNAL,
-    //   headings: {"en": "Sent to" + " " + checkDestPlayerid.rows[0].fullname},
-    //   contents: {"en": amount + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
-    //   include_player_ids: [checkSenderPlayerid.rows[0].player_id]
-    // };
+    let senderMessage = { 
+      app_id: process.env.API_ID_ONESIGNAL,
+      headings: {"en": "Sent to" + " " + checkDestPlayerid.rows[0].fullname},
+      contents: {"en": Number.parseFloat(amount).toFixed(3) + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
+      include_player_ids: [checkSenderPlayerid.rows[0].player_id]
+    };
   
-    // let recieverMessage = { 
-    //   app_id: process.env.API_ID_ONESIGNAL,
-    //   headings: {"en": "Recieved from" + " " + checkSenderPlayerid.rows[0].fullname},
-    //   contents: {"en": amount + " " + typeAsset + " " + "from address" + " " + checkSenderPlayerid.rows[0].wallet},
-    //   include_player_ids: [checkDestPlayerid.rows[0].player_id]
-    // };
+    let recieverMessage = { 
+      app_id: process.env.API_ID_ONESIGNAL,
+      headings: {"en": "Recieved from" + " " + checkSenderPlayerid.rows[0].fullname},
+      contents: {"en": Number.parseFloat(amount).toFixed(3) + " " + typeAsset + " " + "from address" + " " + checkSenderPlayerid.rows[0].wallet},
+      include_player_ids: [checkDestPlayerid.rows[0].player_id]
+    };
 
     const confirm = await confirmPass.confirm_pass(req, password);
 
@@ -237,11 +237,11 @@ router.post("/transfer", authorization, async (req, res) => {
                 symbol: "SEL",
                 memo: memo,
                 datetime: dateTime,
-                // from: checkSenderPlayerid.rows[0].fullname,
-                // to: checkDestPlayerid.rows[0].fullname,
+                from: checkSenderPlayerid.rows[0].fullname,
+                to: checkDestPlayerid.rows[0].fullname,
               })));
-              // sendNotification(senderMessage);
-              // sendNotification(recieverMessage);
+              sendNotification(senderMessage);
+              sendNotification(recieverMessage);
 
             }).catch(err => {
               console.error(err);
