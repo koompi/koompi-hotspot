@@ -11,6 +11,7 @@ const CryptoJS = require('crypto-js');
 const moment = require("moment");
 const { randomAsHex } = require('@polkadot/util-crypto');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
+const BN = require('bn.js');
 
 // OneSignal Notification
 var sendNotification = function(data) {
@@ -199,15 +200,12 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     else if(typeAsset === "SEL"){
 
-      const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
-
-      
+      const parsedAmount = Number.parseFloat(amount);
       const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
-      await api.query.system.account(pair.address).then(async balance => {
+      await api.query.system.account(pair.address).then(async r => {
 
-        const parsedBalance = BigInt(balance.data.free * Math.pow(10, api.registry.chainDecimals));
-
+        const parsedBalance = Number.parseFloat(r.data.free / Math.pow(10, api.registry.chainDecimals));
         if (parsedBalance < parsedAmount) {
           res.status(400).json({ message: "You don't have enough token!" });
         }
@@ -234,16 +232,16 @@ router.post("/transfer", authorization, async (req, res) => {
                 hash: result.toHex(),
                 sender: pair.address,
                 destination: dest_wallet,
-                amount: Number.parseFloat(parsedAmount).toFixed(3),
+                amount: parsedAmount.toFixed(3),
                 fee: "",
                 symbol: "SEL",
                 memo: memo,
                 datetime: dateTime,
-                from: checkSenderPlayerid.rows[0].fullname,
-                to: checkDestPlayerid.rows[0].fullname,
+                // from: checkSenderPlayerid.rows[0].fullname,
+                // to: checkDestPlayerid.rows[0].fullname,
               })));
-              sendNotification(senderMessage);
-              sendNotification(recieverMessage);
+              // sendNotification(senderMessage);
+              // sendNotification(recieverMessage);
 
             }).catch(err => {
               console.error(err);
@@ -292,8 +290,6 @@ router.get("/portfolio", authorization, async (req, res) => {
   
 
       const parsedAmount = Number(balance.free / Math.pow(10, api.registry.chainDecimals));
-
-      console.log(typeof parsedAmount)
       
 
       res.status(200).json([
