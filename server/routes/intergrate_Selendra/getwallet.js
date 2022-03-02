@@ -97,19 +97,19 @@ router.post("/transfer", authorization, async (req, res) => {
     const checkDestPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [dest_wallet]);
 
     // OneSignal Message
-    let senderMessage = { 
-      app_id: process.env.API_ID_ONESIGNAL,
-      headings: {"en": "Sent to" + " " + checkDestPlayerid.rows[0].fullname},
-      contents: {"en": Number.parseFloat(amount).toFixed(4) + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
-      include_player_ids: [checkSenderPlayerid.rows[0].player_id]
-    };
+    // let senderMessage = { 
+    //   app_id: process.env.API_ID_ONESIGNAL,
+    //   headings: {"en": "Sent to" + " " + checkDestPlayerid.rows[0].fullname},
+    //   contents: {"en": Number.parseFloat(amount).toFixed(4) + " " + typeAsset + " " + "to address" + " " + checkDestPlayerid.rows[0].wallet},
+    //   include_player_ids: [checkSenderPlayerid.rows[0].player_id]
+    // };
   
-    let recieverMessage = { 
-      app_id: process.env.API_ID_ONESIGNAL,
-      headings: {"en": "Recieved from" + " " + checkSenderPlayerid.rows[0].fullname},
-      contents: {"en": Number.parseFloat(amount).toFixed(4) + " " + typeAsset + " " + "from address" + " " + checkSenderPlayerid.rows[0].wallet},
-      include_player_ids: [checkDestPlayerid.rows[0].player_id]
-    };
+    // let recieverMessage = { 
+    //   app_id: process.env.API_ID_ONESIGNAL,
+    //   headings: {"en": "Recieved from" + " " + checkSenderPlayerid.rows[0].fullname},
+    //   contents: {"en": Number.parseFloat(amount).toFixed(4) + " " + typeAsset + " " + "from address" + " " + checkSenderPlayerid.rows[0].wallet},
+    //   include_player_ids: [checkDestPlayerid.rows[0].player_id]
+    // };
 
     const confirm = await confirmPass.confirm_pass(req, password);
 
@@ -157,7 +157,7 @@ router.post("/transfer", authorization, async (req, res) => {
           await contract.transfer(dest_wallets, ethers.utils.parseUnits(amount.toString(), 18), gas)
             .then(txObj => {
               pool.query(
-                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                 [
                   JSON.parse(JSON.stringify(txObj.hash)), 
                   JSON.parse(JSON.stringify(txObj.from)), 
@@ -166,8 +166,8 @@ router.post("/transfer", authorization, async (req, res) => {
                   "RISE", 
                   memo, 
                   dateTime, 
-                  checkSenderPlayerid.rows[0].fullname,  
-                  checkDestPlayerid.rows[0].fullname, 
+                  // checkSenderPlayerid.rows[0].fullname,  
+                  // checkDestPlayerid.rows[0].fullname, 
                 ]
               );
               res.status(200).json(JSON.parse(JSON.stringify({
@@ -179,8 +179,8 @@ router.post("/transfer", authorization, async (req, res) => {
                 symbol: "RISE",
                 memo: memo,
                 datetime: dateTime,
-                from: checkSenderPlayerid.rows[0].fullname,
-                to: checkDestPlayerid.rows[0].fullname,
+                // from: checkSenderPlayerid.rows[0].fullname,
+                // to: checkDestPlayerid.rows[0].fullname,
               })));
 
               // sendNotification(senderMessage);
@@ -214,7 +214,7 @@ router.post("/transfer", authorization, async (req, res) => {
             .transfer(dest_wallet, parsedAmount)
             .signAndSend(pair, { nonce }).then(result =>{
               pool.query(
-                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime, fromname, toname) VALUES($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)",
+                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                 [
                   result.toHex(),
                   pair.address,
@@ -224,8 +224,8 @@ router.post("/transfer", authorization, async (req, res) => {
                   "SEL", 
                   memo, 
                   dateTime, 
-                  checkSenderPlayerid.rows[0].fullname,  
-                  checkDestPlayerid.rows[0].fullname, 
+                  // checkSenderPlayerid.rows[0].fullname,  
+                  // checkDestPlayerid.rows[0].fullname, 
                 ]
               );
               res.status(200).json(JSON.parse(JSON.stringify({
@@ -237,11 +237,11 @@ router.post("/transfer", authorization, async (req, res) => {
                 symbol: "SEL",
                 memo: memo,
                 datetime: dateTime,
-                from: checkSenderPlayerid.rows[0].fullname,
-                to: checkDestPlayerid.rows[0].fullname,
+                // from: checkSenderPlayerid.rows[0].fullname,
+                // to: checkDestPlayerid.rows[0].fullname,
               })));
-              sendNotification(senderMessage);
-              sendNotification(recieverMessage);
+              // sendNotification(senderMessage);
+              // sendNotification(recieverMessage);
 
             }).catch(err => {
               console.error(err);
