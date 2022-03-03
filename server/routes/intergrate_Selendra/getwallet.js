@@ -101,7 +101,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
               Number.parseFloat(amount).toFixed(4), 
               "", 
               "SEL", 
-              "You recieved free 100.100 SEL.", 
+              "You recieved free 100.1000 SEL.", 
               dateTime, 
               // checkSenderPlayerid.rows[0].fullname,  
               // checkDestPlayerid.rows[0].fullname, 
