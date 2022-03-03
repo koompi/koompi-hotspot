@@ -49,34 +49,71 @@ var sendNotification = function(data) {
 router.get("/get-wallet", authorization, async (req, res) => {
   try{
 
+    let dateTime = new moment().utcOffset(+7, false).format();
+
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
     );
 
+    const senderWallet = await pool.query(
+      "SELECT * FROM useraccount WHERE id = $1",
+      ['08682825-e9df-437f-b3f8-1172825512b3']
+    );
+
     // generate wallet address and seed
     const seed = randomAsHex(32);
 
+    const ws = new WsProvider('wss://rpc1-testnet.selendra.org');
+    const api = await ApiPromise.create({ provider: ws });
+    
     const keyring = new Keyring({ 
       type: 'sr25519', 
       ss58Format: 972
     });
-
     
     const pair = keyring.createFromUri(seed);
 
     const seedEncrypted = CryptoJS.AES.encrypt(seed, "seed");
-    
+
+    // sender initialize
+    const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+    const pairSender = keyring.createFromUri(senderSeedDecrypted);
+    const amount = 100.1;
+    const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+    const nonce = await api.rpc.system.accountNextIndex(pairSender.address);
+
+
     if (checkWallet.rows[0].seed === null) {
       await pool.query(
         "UPDATE useraccount SET wallet = $2, seed = $3 WHERE id = $1",
         [req.user, pair.address, seedEncrypted.toString()]
-      )
+      ).then (async () => {
+        await api.tx.balances
+        .transfer(pair.address, parsedAmount)
+        .signAndSend(pairSender, { nonce }).then(result => {
+          pool.query(
+            "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+            [
+              result.toHex(),
+              pairSender.address,
+              pair.address, 
+              Number.parseFloat(amount).toFixed(4), 
+              "", 
+              "SEL", 
+              "You recieved free 100.100 SEL.", 
+              dateTime, 
+              // checkSenderPlayerid.rows[0].fullname,  
+              // checkDestPlayerid.rows[0].fullname, 
+            ]
+          );
+        });
+        res.status(200).json({ message: "You've got a selendra wallet." });
+      })  
       .catch(err => {
         console.error(err);
         res.status(500).json({ message: "Internal server error!" });
       });
-      res.status(200).json({ message: "You've got a selendra wallet." });
     } else {
       res.status(401).json({ message: "You already have a selendra wallet!" });
     }
