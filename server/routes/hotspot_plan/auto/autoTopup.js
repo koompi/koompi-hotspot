@@ -227,10 +227,10 @@ const payment = async (req, asset, plan, memo) => {
     } else {
       const check = api.query.system.account(pair.address).then(async balance => {
 
-        const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
-        const parsedAmount = Number(amount / Math.pow(10, api.registry.chainDecimals));
+        const parsedBalance = new BN(r.data.free, 16)
+        const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals));
 
-        if (parsedBalance < amount) {
+        if (parsedBalance < parsedAmount) {
           return [400, "You don't have enough money!"];
         } else {
 
