@@ -118,9 +118,9 @@ const payment = async (req, asset, plan, memo) => {
 
         const check = await api.query.system.account(pair.address).then(async balance => {
 
-          const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
+          const parsedBalance = new BN(balance.data.free, 16)
 
-          if (parsedBalance < amount - dis_value) {
+          if (parsedBalance < parsedAmount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
@@ -198,9 +198,9 @@ const payment = async (req, asset, plan, memo) => {
         const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
         const check =  await api.query.system.account(pair.address).then(async balance => {
-          const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
+          const parsedBalance = new BN(balance.data.free, 16)
 
-          if (parsedBalance < amount - dis_value) {
+          if (parsedBalance < parsedAmount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
@@ -297,8 +297,9 @@ const checking = async (req, plan) => {
         return [400, "Please get a wallet first!"];
       } else {
         const check = await api.query.system.account(pair.address).then(async balance => {
-          const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
-          const parsedAmount = Number(amount / Math.pow(10, api.registry.chainDecimals));
+          const parsedBalance = new BN(r.data.free, 16)
+
+          const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals));
 
           if (parsedBalance < parsedAmount - dis_value) {
             return [400, "You don't have enough money!"];
@@ -346,8 +347,8 @@ const checking = async (req, plan) => {
         return [400, "Please get a wallet first!"];
       } else {
         const check = await api.query.system.account(pair.address).then(async balance => {
-          const parsedBalance = Number(balance.data.free / Math.pow(10, api.registry.chainDecimals));
-          const parsedAmount = Number(amount / Math.pow(10, api.registry.chainDecimals));
+          const parsedBalance = new BN(balance.data.free, 16)
+          const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals));
 
           if (parsedBalance < parsedAmount - dis_value) {
             return [400, "You don't have enough money!"];
