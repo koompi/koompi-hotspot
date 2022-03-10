@@ -241,9 +241,9 @@ router.post("/transfer", authorization, async (req, res) => {
 
       const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
-      await api.query.system.account(pair.address).then(async r => {
+      await api.query.system.account(pair.address).then(async balance => {
 
-        const parsedBalance = new BN(r.data.free, 16)
+        const parsedBalance = new BN(balance.data.free, 16)
 
         if (parsedBalance < parsedAmount) {
           res.status(400).json({ message: "You don't have enough token!" });
