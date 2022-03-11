@@ -297,9 +297,7 @@ const checking = async (req, plan) => {
         return [400, "Please get a wallet first!"];
       } else {
         const check = await api.query.system.account(pair.address).then(async balance => {
-          const parsedBalance = new BN(r.data.free, 16)
-
-          const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals));
+          const parsedBalance = new BN(balance.data.free, 16)
 
           if (parsedBalance < parsedAmount - dis_value) {
             return [400, "You don't have enough money!"];
