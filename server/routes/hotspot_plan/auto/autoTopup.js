@@ -189,7 +189,7 @@ const payment = async (req, asset, plan, memo) => {
     let recieverAddress = "serHGAaWQe9KrC8rDA1WyUY2jsQWstqeubMVtPPcZJ1Tqa4V6";
 
 
-    const ws = new WsProvider('wss://rpc1-testnet.selendra.org');
+    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
 
     const keyring = new Keyring({ 
