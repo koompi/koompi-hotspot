@@ -12,7 +12,7 @@ router.post("/contactlist", authorization, async (req, res) => {
         console.log(req.user);
 
         await pool.query(
-            "insert into contacts (contact_id, contact_name, contact_wallet) values ($1, $2, $3)",
+            "insert into contacts (user_id, contact_name, contact_wallet) values ($1, $2, $3)",
             [req.user, contact_name, contact_wallet]
         )
 
@@ -21,6 +21,77 @@ router.post("/contactlist", authorization, async (req, res) => {
             contact_name: contact_name,
             contact_wallet: contact_wallet
         });
+
+    }
+    catch (err) {
+        res.status(500).json({ message: err });
+    }
+
+})
+
+router.put("/contactlist", authorization, async (req, res) => {
+
+    try{
+
+        const { id, contact_name, contact_wallet  } = req.body;
+
+        const checkid = await pool.query(
+            "select id from contacts where id = $1", 
+            [id]
+        );
+
+        if(checkid.rows.length === 0){
+            return res.status(401).json({ message: "Contact wallet is not exist!" });
+        }
+        else{
+            const id = checkid.rows[0].id;
+
+            await pool.query(
+                "update contacts set contact_name = $1, contact_wallet = $2 where id = $3",
+                [contact_name, contact_wallet, id]
+            )
+
+            return res.status(200).json({
+                contact_id: id,
+                contact_name: contact_name,
+                contact_wallet: contact_wallet
+            });
+        }
+
+
+    }
+    catch (err) {
+        res.status(500).json({ message: err });
+    }
+
+})
+
+router.delete("/contactlist", authorization, async (req, res) => {
+
+    try{
+
+        const { id } = req.body;
+
+        const checkid = await pool.query(
+            "select id from contacts where id = $1", 
+            [id]
+        );
+
+        if(checkid.rows.length === 0){
+            return res.status(401).json({ message: "Contact wallet is not exist!" });
+        }
+        else{
+            const id = checkid.rows[0].id;
+
+            await pool.query(
+                "delete from contacts  where id = $1",
+                [id]
+            )
+
+            return res.status(200).json({
+                success: true,
+            });
+        }
 
     }
     catch (err) {
