@@ -30,6 +30,7 @@ app.use("/api/auth", require("./routes/Account/completeInfo"));
 //dashboard route
 app.use("/api/dashboard", require("./routes/Account/dashboard"));
 
+
 // Hotspot Plan
 app.use("/api/hotspot", require("./routes/hotspot_plan/hotspot_plan"));
 app.use("/api/hotspot", require("./routes/hotspot_plan/renewPlan"));
@@ -57,6 +58,9 @@ app.use("/api", require("./routes/Account/forgot_reset_pass"));
 // upload avata
 app.use("/api", require("./routes/Account/uploadProfile"));
 app.use("/api", require("./routes/Account/request_discount"));
+
+// save contact address
+app.use("/api/", require("./routes/Account/contact_list"));
 
 // integration with selendra wallet
 app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
