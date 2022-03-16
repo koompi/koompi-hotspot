@@ -29,6 +29,27 @@ router.post("/contactlist", authorization, async (req, res) => {
 
 })
 
+router.get("/contactlist", authorization, async (req, res) => {
+
+    try{
+
+        console.log(req.body);
+        console.log(req.user);
+
+        getContactList = await pool.query(
+            "select * from contacts where user_id = $1",
+            [req.user]
+        )
+
+        return res.status(200).json(JSON.parse(JSON.stringify(getContactList.rows)));
+
+    }
+    catch (err) {
+        res.status(500).json({ message: err });
+    }
+
+})
+
 router.put("/contactlist", authorization, async (req, res) => {
 
     try{
