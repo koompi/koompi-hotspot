@@ -33,15 +33,42 @@ router.get("/contactlist", authorization, async (req, res) => {
 
     try{
 
-        console.log(req.body);
-        console.log(req.user);
-
         getContactList = await pool.query(
             "select * from contacts where user_id = $1",
             [req.user]
         )
 
-        return res.status(200).json(JSON.parse(JSON.stringify(getContactList.rows)));
+        // sort by name
+        // const itemSort = items.sort(function(a, b) {
+
+        //     var a = getContactList.rows[0].contact_name;
+        //     var b = getContactList.rows[0].contact_name;
+
+        //     const nameA = a.toUpperCase(); // ignore upper and lowercase
+        //     const nameB = b.toUpperCase(); // ignore upper and lowercase
+        //     if (nameA < nameB) {
+        //     return -1;
+        //     }
+        //     if (nameA > nameB) {
+        //     return 1;
+        //     }
+        
+        //     // names must be equal
+        //     return 0;
+        // });
+
+        var sortName = getContactList.rows.sort(function(a, b) {
+            var textA = a.contact_name.toUpperCase();
+            var textB = b.contact_name.toUpperCase();
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+        });
+
+
+        return res.status(200).json(
+            JSON.parse(
+                JSON.stringify(sortName)
+            )
+        );
 
     }
     catch (err) {
