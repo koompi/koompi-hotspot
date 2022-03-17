@@ -12,6 +12,8 @@ const moment = require("moment");
 const { randomAsHex } = require('@polkadot/util-crypto');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 const BN = require('bn.js');
+require("../../utils/functions")();
+
 
 // OneSignal Notification
 var sendNotification = function(data) {
@@ -238,14 +240,16 @@ router.post("/transfer", authorization, async (req, res) => {
     else if(typeAsset === "SEL"){
 
       const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+      // const parsedAmount = new BN(amount, 16);
 
       const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
       await api.query.system.account(pair.address).then(async balance => {
 
-        const parsedBalance = new BN(balance.data.free, 16)
+        const parsedBalance = parseFloat(balance.data.free / Math.pow(10, api.registry.chainDecimals));
 
-        if (parsedBalance < parsedAmount) {
+        console.log(parsedAmount);
+        if (parsedBalance < amount) {
           res.status(400).json({ message: "You don't have enough token!" });
         }
         else{
@@ -266,21 +270,23 @@ router.post("/transfer", authorization, async (req, res) => {
                   // checkSenderPlayerid.rows[0].fullname,  
                   // checkDestPlayerid.rows[0].fullname, 
                 ]
-              );
-              res.status(200).json(JSON.parse(JSON.stringify({
-                hash: result.toHex(),
-                sender: pair.address,
-                destination: dest_wallet,
-                amount: Number.parseFloat(amount).toFixed(4),
-                fee: "",
-                symbol: "SEL",
-                memo: memo,
-                datetime: dateTime,
-                // from: checkSenderPlayerid.rows[0].fullname,
-                // to: checkDestPlayerid.rows[0].fullname,
-              })));
-              // sendNotification(senderMessage);
-              // sendNotification(recieverMessage);
+              ).then(() => {
+                  res.status(200).json(JSON.parse(JSON.stringify({
+                    hash: result.toHex(),
+                    sender: pair.address,
+                    destination: dest_wallet,
+                    amount: Number.parseFloat(amount).toFixed(4),
+                    fee: "",
+                    symbol: "SEL",
+                    memo: memo,
+                    datetime: dateTime,
+                    // from: checkSenderPlayerid.rows[0].fullname,
+                    // to: checkDestPlayerid.rows[0].fullname,
+                  })));
+                  // sendNotification(senderMessage);
+                  // sendNotification(recieverMessage);
+              });
+              
 
             }).catch(err => {
               console.error(err);
@@ -328,7 +334,7 @@ router.get("/portfolio", authorization, async (req, res) => {
       const { data: balance } = await api.query.system.account(pair.address);
   
 
-      const parsedAmount = Number(balance.free / Math.pow(10, api.registry.chainDecimals));
+      const parsedAmount = parseFloat(balance.free / Math.pow(10, api.registry.chainDecimals));
       
 
       res.status(200).json([
@@ -339,7 +345,7 @@ router.get("/portfolio", authorization, async (req, res) => {
         },
         {
           id: "sel",
-          token: parsedAmount.toFixed(4),
+          token: getParseFloat(parsedAmount,4).toString(),
           symbol: "SEL"
         }
       ]);

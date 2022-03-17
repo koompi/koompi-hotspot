@@ -230,7 +230,7 @@ const payment = async (req, asset, plan, memo) => {
         const parsedBalance = new BN(r.data.free, 16)
         const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals));
 
-        if (parsedBalance < parsedAmount) {
+        if (parsedBalance < amount) {
           return [400, "You don't have enough money!"];
         } else {
 

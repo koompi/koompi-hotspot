@@ -8,20 +8,16 @@ router.post("/contactlist", authorization, async (req, res) => {
 
         const { contact_name, contact_wallet  } = req.body;
 
-        console.log(req.body);
-        console.log(req.user);
-
         await pool.query(
             "insert into contacts (user_id, contact_name, contact_wallet) values ($1, $2, $3)",
             [req.user, contact_name, contact_wallet]
-        )
-
-        res.status(200).json({
-            contact_id: req.user,
-            contact_name: contact_name,
-            contact_wallet: contact_wallet
+        ).then(() => {
+            res.status(200).json({
+                contact_id: req.user,
+                contact_name: contact_name,
+                contact_wallet: contact_wallet
+            });
         });
-
     }
     catch (err) {
         res.status(500).json({ message: err });
@@ -37,25 +33,6 @@ router.get("/contactlist", authorization, async (req, res) => {
             "select * from contacts where user_id = $1",
             [req.user]
         )
-
-        // sort by name
-        // const itemSort = items.sort(function(a, b) {
-
-        //     var a = getContactList.rows[0].contact_name;
-        //     var b = getContactList.rows[0].contact_name;
-
-        //     const nameA = a.toUpperCase(); // ignore upper and lowercase
-        //     const nameB = b.toUpperCase(); // ignore upper and lowercase
-        //     if (nameA < nameB) {
-        //     return -1;
-        //     }
-        //     if (nameA > nameB) {
-        //     return 1;
-        //     }
-        
-        //     // names must be equal
-        //     return 0;
-        // });
 
         var sortName = getContactList.rows.sort(function(a, b) {
             var textA = a.contact_name.toUpperCase();

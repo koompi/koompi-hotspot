@@ -7,6 +7,7 @@ const abi = require("../abi.json");
 const CryptoJS = require('crypto-js');
 const moment = require("moment");
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
+require("../utils/functions")();
 
 // OneSignal Notification
 var sendNotification = function(data) {
@@ -118,9 +119,9 @@ const payment = async (req, asset, plan, memo) => {
 
         const check = await api.query.system.account(pair.address).then(async balance => {
 
-          const parsedBalance = new BN(balance.data.free, 16)
+          const parsedBalance = parseFloat(balance.data.free / Math.pow(10, api.registry.chainDecimals));
 
-          if (parsedBalance < parsedAmount - dis_value) {
+          if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
@@ -200,7 +201,7 @@ const payment = async (req, asset, plan, memo) => {
         const check =  await api.query.system.account(pair.address).then(async balance => {
           const parsedBalance = new BN(balance.data.free, 16)
 
-          if (parsedBalance < parsedAmount - dis_value) {
+          if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
@@ -299,7 +300,7 @@ const checking = async (req, plan) => {
         const check = await api.query.system.account(pair.address).then(async balance => {
           const parsedBalance = new BN(balance.data.free, 16)
 
-          if (parsedBalance < parsedAmount - dis_value) {
+          if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
@@ -348,7 +349,7 @@ const checking = async (req, plan) => {
           const parsedBalance = new BN(balance.data.free, 16)
           const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals));
 
-          if (parsedBalance < parsedAmount - dis_value) {
+          if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
