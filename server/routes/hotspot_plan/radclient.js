@@ -40,7 +40,7 @@ router.post("/disconnect" , async (req, res) => {
     console.log(`child process exited with code ${code}`);
   });
   
-
+  res.status(200).json({ message: "Disconnected RadClient!" });
 })
 
 module.exports = router;
