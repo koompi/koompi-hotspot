@@ -20,7 +20,7 @@ const Login = () => {
 
     axios
       .post(
-        "http://localhost:5000/api/auth/admin/login",
+        "https://api-hotspot-dev.koompi.org/api/auth/admin/login",
         adminLogin,
         setLoading(true)
       )
@@ -42,7 +42,7 @@ const Login = () => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);
-        // message.error(err);
+        message.error(err.message);
       });
   };
 

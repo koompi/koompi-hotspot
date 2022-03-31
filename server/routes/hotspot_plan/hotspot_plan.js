@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 
 const authorization = require("../../middleware/authorization");
 const validHotspot = require("../../middleware/valid_hot_planInfo");
+const nthash = require('smbhash').nthash;
 
 // const confirmPass = require("../intergrate_Selendra/payment");
 const Payment = require("../../utils/payment");
@@ -17,7 +18,7 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
     // for attributeMD5 & op it is default from database
     const { phone, password, simultaneous, value, asset, memo } = req.body; // value : 30 , 365  // username=phone number example 098939699
     const op = ":=";
-    const attributeMD5 = "MD5-Password";
+    const attributeMD5 = "NT-Password";
     const priority = "1";
     const attributeSim = "Simultaneous-Use";
     const attributeExp = "Expiration";
@@ -28,7 +29,9 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
     var val = parseFloat(value, 10);
     var sim = parseFloat(simultaneous, 10);
 
-    //   //  ======---===== For Expiration amount of day =====---======
+    const hash = nthash(password); // hash password
+
+      //  ======---===== For Expiration amount of day =====---======
     if (val !== 30 && val !== 365) {
       return res.status(400).json({ message: "Please choose!" });
     }
@@ -51,38 +54,44 @@ router.post("/set-plan", authorization, validHotspot, async (req, res) => {
     const paid = await Payment.payment(req, asset, value, memo);
 
     if (paid[0] === 200) {
-      // 2. enter the user inside database
-      await pool.query(
-        "insert into radcheck( username, attribute, op, value, acc_id, status, auto) VALUES($1, $2, $3, MD5($4), $5, $6, $7)",
-        [username, attributeMD5, op, password, req.user, 1, 1]
-      );
+      try{
+        // 2. enter the user inside database
+        await pool.query(
+          "insert into radcheck( username, attribute, op, value, acc_id, status, auto) VALUES($1, $2, $3, $4, $5, $6, $7)",
+          [username, attributeMD5, op, hash, req.user, 1, 1]
+        );
 
-      //  insert into table RAD_GROUP_CHECK
+        //  insert into table RAD_GROUP_CHECK
 
-      //  Example Group Name: Sim_2_Ex_30_098939699
-      const groupname = "Sim_" + simultaneous + "_Ex_" + value + "_" + username;
+        //  Example Group Name: Sim_2_Ex_30_098939699
+        const groupname = "Sim_" + simultaneous + "_Ex_" + value + "_" + username;
 
-      await pool.query(
-        "insert into radgroupcheck(groupname, attribute, op, value, acc_id) VALUES($1, $2, $3, $4,$5)",
-        [groupname, attributeSim, op, sim, req.user]
-      );
-      //   Format Date
-      var due = moment()
-        .add(val, "days")
-        .format("YYYY MMM DD");
-      await pool.query(
-        "insert into radgroupcheck(groupname, attribute, op, value, acc_id) VALUES($1, $2, $3, $4, $5)",
-        [groupname, attributeExp, op, due, req.user]
-      );
+        await pool.query(
+          "insert into radgroupcheck(groupname, attribute, op, value, acc_id) VALUES($1, $2, $3, $4,$5)",
+          [groupname, attributeSim, op, sim, req.user]
+        );
+        //   Format Date
+        var due = moment()
+          .add(val, "days")
+          .format("YYYY MMM DD");
+        await pool.query(
+          "insert into radgroupcheck(groupname, attribute, op, value, acc_id) VALUES($1, $2, $3, $4, $5)",
+          [groupname, attributeExp, op, due, req.user]
+        );
 
-      //  insert into table RAD_USER_GROUP
+        //  insert into table RAD_USER_GROUP
 
-      await pool.query(
-        "insert into radusergroup(username, groupname, priority,acc_id) VALUES($1, $2, $3, $4)",
-        [username, groupname, priority, req.user]
-      );
+        await pool.query(
+          "insert into radusergroup(username, groupname, priority,acc_id) VALUES($1, $2, $3, $4)",
+          [username, groupname, priority, req.user]
+        );
 
-      res.status(200).json({ message: "Set plan successfully." });
+        res.status(200).json({ message: "Set plan successfully." });
+      }
+      catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Server error!" });
+      }
     } else {
       res.status(paid[0]).json({ message: paid[1] });
     }
@@ -126,7 +135,7 @@ router.put("/change-plan", authorization, async (req, res) => {
     groupnameNew = groupnameNew + value + "_" + user.rows[0].username;
 
     ///////////////// check balance with payment /////////////////////////
-    const paid = await Payment.payment(req, "SEL", val, "Change new plan");
+    const paid = await Payment.payment(req, "SEL", val, `Changed Subscribe Fi-Fi Plan To ${value} Days`);
 
     if (paid[0] === 200) {
       const due = moment()
@@ -225,12 +234,12 @@ router.get("/get-plan", authorization, async (req, res) => {
       balance = "50";
     }
     if (balance === 365) {
-      balance = "600";
+      balance = "500";
     }
 
     res.status(200).json({
       username: user.rows[0].username,
-      balance: balance,
+      balance: Number.parseFloat(balance).toFixed(4),
       device: sim.rows[0].value,
       plan: plan,
       time_left: detail.rows[0].value,

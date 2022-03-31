@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const pool = require("../../db");
+const authorization = require("../../middleware/authorization");
 
 router.put("/complete-inf", async (req, res) => {
   try {
@@ -69,4 +70,6 @@ router.put("/complete-info", async (req, res) => {
     res.status(500).json({ message: "Server Error!" });
   }
 });
+
+
 module.exports = router;

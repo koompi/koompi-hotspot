@@ -26,7 +26,7 @@ const Email_verification = () => {
 
     authAxios
       .post(
-        `http://localhost:5000/api/auth/admin/confirm-admin`,
+        "https://api-hotspot-dev.koompi.org/api/auth/admin/confirm-admin",
         verifyAcc
         // setLoading(true)
       )
@@ -107,7 +107,7 @@ const Email_verification = () => {
                 </Button>
                 <br />
                 <br />
-                Back to <Link to="/admin/login">Login!</Link>
+                Back to <Link to="/login">Login!</Link>
                 <br />
                 try again <Link to="">Try again!</Link>
               </Form.Item>
