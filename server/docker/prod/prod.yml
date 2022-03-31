@@ -1,7 +1,7 @@
 version: "3.0"
 services:
   koompififi_prod:
-    image: pionux/node-alpine:0.1.0
+    image: hongsea/koompi-fifi:0.1.0
     container_name: api-hotspot-prod
     restart: always
     ports:
