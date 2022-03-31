@@ -26,7 +26,7 @@ const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 //       'https://rpc-mainnet.selendra.org', 
 //     );
 
-//     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.keyEncryption).toString(CryptoJS.enc.Utf8);
+//     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
 
 //     const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
 //     const getBalance = async (wallet) => {
@@ -197,7 +197,7 @@ const payment = async (req, asset, plan, memo) => {
       ss58Format: 972
     });
 
-    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.keyEncryption).toString(CryptoJS.enc.Utf8);
+    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
         
     const pair = keyring.createFromUri(seedDecrypted);
 

@@ -75,10 +75,10 @@ router.get("/get-wallet", authorization, async (req, res) => {
     
     const pair = keyring.createFromUri(seed);
 
-    const seedEncrypted = CryptoJS.AES.encrypt(seed, process.env.keyEncryption);
+    const seedEncrypted = CryptoJS.AES.encrypt(seed, process.env.KEYENCRYPTION);
 
     // sender initialize
-    const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, process.env.keyEncryption).toString(CryptoJS.enc.Utf8);
+    const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
     const pairSender = keyring.createFromUri(senderSeedDecrypted);
     const amount = 100.1;
     const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
@@ -166,7 +166,7 @@ router.post("/transfer", authorization, async (req, res) => {
     });
 
 
-    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.keyEncryption).toString(CryptoJS.enc.Utf8);
+    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
 
     const pair = keyring.createFromUri(seedDecrypted);
 
@@ -324,7 +324,7 @@ router.get("/portfolio", authorization, async (req, res) => {
     if (checkWallet.rows[0].seed === null) {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
-      const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.keyEncryption).toString(CryptoJS.enc.Utf8);
+      const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
       
       const pair = keyring.createFromUri(seedDecrypted);
 

@@ -109,7 +109,7 @@ const payment = async (req, asset, plan, memo) => {
         return [400, "Please get a wallet first!"];
       } else {
 
-        const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.keyEncryption).toString(CryptoJS.enc.Utf8);
+        const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
         
         const pair = keyring.createFromUri(seedDecrypted);
 
@@ -190,7 +190,7 @@ const payment = async (req, asset, plan, memo) => {
         return [400, "Please get a wallet first!"];
       } else {
         
-        const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.keyEncryption).toString(CryptoJS.enc.Utf8);
+        const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
         
         const pair = keyring.createFromUri(seedDecrypted);
         
@@ -284,7 +284,7 @@ const checking = async (req, plan) => {
       ss58Format: 972
     });
 
-    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.keyEncryption).toString(CryptoJS.enc.Utf8);
+    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
         
     const pair = keyring.createFromUri(seedDecrypted);
   

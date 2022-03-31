@@ -44,6 +44,3 @@ router.post("/disconnect" , async (req, res) => {
 })
 
 module.exports = router;
-
-
-// radclient -x 10.1.2.120:3791 disconnect Testing123 Acct-Session-Id=mo0cr7b9w48jjn48 User-Name=hongsea NAS-IP-Address=10.1.2.120
