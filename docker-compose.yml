@@ -1,7 +1,7 @@
 version: "3.0"
 services:
   quizzapp:
-    image: pionux/node-alpine:0.1.0
+    image: hongsea/koompi-fifi:0.1.0
     ports:
       - "5000:5000"
     volumes:
