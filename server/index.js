@@ -34,7 +34,7 @@ app.use("/api/dashboard", require("./routes/Account/dashboard"));
 // Hotspot Plan
 app.use("/api/hotspot", require("./routes/hotspot_plan/hotspot_plan"));
 app.use("/api/hotspot", require("./routes/hotspot_plan/renewPlan"));
-app.use("/api/hotspot", require("./routes/hotspot_plan/radclient"));
+// app.use("/api/hotspot", require("./routes/hotspot_plan/radclient"));
 
 //  change password
 app.use(
