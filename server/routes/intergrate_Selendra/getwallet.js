@@ -338,9 +338,9 @@ router.get("/portfolio", authorization, async (req, res) => {
 
       res.status(200).json([
         {
-          id: "rise",
-          token: "Token Suspended",
-          symbol: "RISE"
+          id: "luy",
+          token: "Comming Soon",
+          symbol: "LUY"
         },
         {
           id: "sel",
