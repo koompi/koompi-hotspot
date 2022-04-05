@@ -89,32 +89,34 @@ router.get("/get-wallet", authorization, async (req, res) => {
       await pool.query(
         "UPDATE useraccount SET wallet = $2, seed = $3 WHERE id = $1",
         [req.user, pair.address, seedEncrypted.toString()]
-      ).then (async () => {
-        await api.tx.balances
-        .transfer(pair.address, parsedAmount)
-        .signAndSend(pairSender, { nonce }).then(result => {
-          pool.query(
-            "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-            [
-              result.toHex(),
-              pairSender.address,
-              pair.address, 
-              Number.parseFloat(amount).toFixed(4), 
-              "", 
-              "SEL", 
-              "You recieved free 100.1000 SEL.", 
-              dateTime, 
-              // checkSenderPlayerid.rows[0].fullname,  
-              // checkDestPlayerid.rows[0].fullname, 
-            ]
-          );
-        });
-        res.status(200).json({ message: "You've got a selendra wallet." });
-      })  
-      .catch(err => {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error!" });
-      });
+      )
+      res.status(200).json({ message: "You've got a selendra wallet." });
+      // .then (async () => {
+      //   await api.tx.balances
+      //   .transfer(pair.address, parsedAmount)
+      //   .signAndSend(pairSender, { nonce }).then(result => {
+      //     pool.query(
+      //       "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+      //       [
+      //         result.toHex(),
+      //         pairSender.address,
+      //         pair.address, 
+      //         Number.parseFloat(amount).toFixed(4), 
+      //         "", 
+      //         "SEL", 
+      //         "You recieved free 100.1000 SEL.", 
+      //         dateTime, 
+      //         // checkSenderPlayerid.rows[0].fullname,  
+      //         // checkDestPlayerid.rows[0].fullname, 
+      //       ]
+      //     );
+      //   });
+      //   res.status(200).json({ message: "You've got a selendra wallet." });
+      // })  
+      // .catch(err => {
+      //   console.error(err);
+      //   res.status(500).json({ message: "Internal server error!" });
+      // });
     } else {
       res.status(401).json({ message: "You already have a selendra wallet!" });
     }
