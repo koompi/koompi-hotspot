@@ -42,7 +42,7 @@ router.put("/complete-inf", async (req, res) => {
   }
 });
 
-router.post("/complete-info", async (req, res) => {
+router.put("/complete-info", async (req, res) => {
   try {
     //1. destructure the req.body (full_name,gender , email, password,bithdate,address)
 
