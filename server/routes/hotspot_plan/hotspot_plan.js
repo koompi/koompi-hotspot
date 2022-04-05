@@ -253,7 +253,7 @@ router.get("/get-plan", authorization, async (req, res) => {
   }
 });
 
-router.post("/disconnect" , async (req, res) => {
+router.post("/disconnect", async (req, res) => {
 
   const {session, username, ip} = req.body;
 
