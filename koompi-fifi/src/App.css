@@ -1,0 +1,150 @@
+html {
+  scroll-behavior: smooth;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: bolder !important;
+}
+.loginBackground {
+  background-image: linear-gradient(
+      90deg,
+      rgba(2, 0, 36, 0.363) 0%,
+      rgba(0, 0, 0, 0.616) 0%,
+      rgba(0, 0, 0, 0.363) 100%
+    ),
+    url("../src/assets/images/background.jpg");
+  height: 100%;
+  width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: fixed;
+  overflow: hidden;
+}
+.loginContainer {
+  width: 1200px;
+  height: 750px;
+  margin: 0px auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 12px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  background: #ffffffb0;
+}
+.container-login-form {
+  background: linear-gradient(180deg, #1e2db1 0%, rgba(36, 35, 74, 0) 100%),
+    #570697;
+  height: 750px !important;
+  padding: 22px 0px;
+  border-radius: 0px 12px 12px 0px;
+}
+.container-reset-form {
+  background: #e1f3fe !important;
+  height: 750px !important;
+  padding: 22px 0px;
+  border-radius: 0px 12px 12px 0px;
+}
+.reset-form-container {
+  margin-top: 100px;
+}
+
+.login-icon {
+  width: 60px;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(369deg);
+  }
+}
+
+.login-form {
+  padding: 70px !important;
+}
+.academyInputLarge input {
+  background-color: #eff1f2 !important;
+  border: 1px solid transparent;
+}
+.academyInputLarge {
+  background-color: #eff1f2 !important;
+  height: 45px !important;
+  border: 1px solid transparent;
+  line-height: 40px !important;
+  border-radius: 8px !important;
+}
+.academyInputLarge input:focus {
+  background-color: #eff1f2;
+}
+.academyInputLarge input {
+  background-color: #eff1f2 !important;
+  border: 1px solid transparent;
+}
+.login-form-button {
+  width: 100% !important;
+  padding: 0px 50px;
+  border-radius: 8px !important;
+  min-width: 30%;
+  margin-top: 30px;
+  float: right;
+  font-weight: bolder;
+  background: linear-gradient(
+      270.01deg,
+      rgba(66, 73, 233, 0.64) 0.12%,
+      rgba(255, 255, 255, 0) 99.99%
+    ),
+    #2ea6ea;
+}
+.ant-carousel .slick-dots li button {
+  height: 15px;
+  width: 15px;
+  border-radius: 50px;
+}
+.carousel-login-container h2 {
+  color: #fff !important;
+  font-weight: bold;
+}
+.carousel-login-container p {
+  color: #fff;
+}
+.sign-up {
+  color: #f2994a !important;
+  font-weight: bolder;
+  margin-left: 10px;
+}
+.sign-up:hover {
+  color: #bd681d !important;
+}
+.forgot-password {
+  position: relative;
+  left: 340px;
+  font-weight: bolder;
+  color: #000 !important;
+}
+.create-account {
+  font-size: 22px;
+  font-weight: bolder;
+}
+.reset-img {
+  width: 500px;
+  margin: auto;
+  padding-top: 15%;
+}
+.reset-pass-title {
+  padding-top: 70px;
+}
