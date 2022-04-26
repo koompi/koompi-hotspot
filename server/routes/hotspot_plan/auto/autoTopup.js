@@ -186,8 +186,6 @@ const payment = async (req, asset, plan, memo) => {
       [req]
     );
 
-    let recieverAddress = "serHGAaWQe9KrC8rDA1WyUY2jsQWstqeubMVtPPcZJ1Tqa4V6";
-
 
     const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
@@ -202,7 +200,7 @@ const payment = async (req, asset, plan, memo) => {
     const pair = keyring.createFromUri(seedDecrypted);
 
     const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req]);
-    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [recieverAddress]);
+    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [process.env.SENDERADDRESS]);
 
     const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
@@ -235,7 +233,7 @@ const payment = async (req, asset, plan, memo) => {
         } else {
 
           const done = await api.tx.balances
-            .transfer(recieverAddress, parsedAmount)
+            .transfer(process.env.SENDERADDRESS, parsedAmount)
             .signAndSend(pair, { nonce })
             .then(txObj => {
               pool.query(
@@ -243,7 +241,7 @@ const payment = async (req, asset, plan, memo) => {
                 [
                   txObj.toHex(),
                   pair.address,
-                  recieverAddress, 
+                  process.env.SENDERADDRESS, 
                   Number.parseFloat(amount).toFixed(4), 
                   "", 
                   "SEL", 

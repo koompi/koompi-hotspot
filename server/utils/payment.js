@@ -28,7 +28,7 @@ var sendNotification = function(data) {
   var req = https.request(options, function(res) {  
     res.on('data', function(data) {
       console.log("Response:");
-      console.log(JSON.parse(data));
+      console.log(data);
     });
   });
   
@@ -62,8 +62,6 @@ const payment = async (req, asset, plan, memo) => {
       [req.user]
     );
 
-    let recieverAddress = "serHGAaWQe9KrC8rDA1WyUY2jsQWstqeubMVtPPcZJ1Tqa4V6";
-
 
     const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
@@ -76,7 +74,7 @@ const payment = async (req, asset, plan, memo) => {
 
 
     const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req.user]);
-    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [recieverAddress]);
+    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [process.env.SENDERADDRESS]);
 
 
     //===============================convert days to token of selendara 30 days = 5000 riels = 5 SEL
@@ -126,7 +124,7 @@ const payment = async (req, asset, plan, memo) => {
           } else {
 
             const done = await api.tx.balances
-              .transfer(recieverAddress, parsedAmount)
+              .transfer(process.env.SENDERADDRESS, parsedAmount)
               .signAndSend(pair, { nonce })
               .then(txObj => {
                 pool.query(
@@ -134,7 +132,7 @@ const payment = async (req, asset, plan, memo) => {
                   [
                     txObj.toHex(),
                     pair.address,
-                    recieverAddress, 
+                    process.env.SENDERADDRESS, 
                     Number.parseFloat(amount).toFixed(4), 
                     "", 
                     "SEL", 
@@ -206,7 +204,7 @@ const payment = async (req, asset, plan, memo) => {
           } else {
 
             const done = await api.tx.balances
-              .transfer(recieverAddress, parsedAmount)
+              .transfer(process.env.SENDERADDRESS, parsedAmount)
               .signAndSend(pair, { nonce })
               .then(txObj => {
                 pool.query(
@@ -214,7 +212,7 @@ const payment = async (req, asset, plan, memo) => {
                   [
                     txObj.toHex(),
                     pair.address,
-                    recieverAddress, 
+                    process.env.SENDERADDRESS, 
                     Number.parseFloat(amount).toFixed(4), 
                     "", 
                     "SEL", 
@@ -273,7 +271,6 @@ const checking = async (req, plan) => {
       "SELECT seed FROM useraccount WHERE id = $1",
       [req.user]
     );
-    let recieverAddress = "serHGAaWQe9KrC8rDA1WyUY2jsQWstqeubMVtPPcZJ1Tqa4V6";
 
 
     const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
@@ -305,7 +302,7 @@ const checking = async (req, plan) => {
           } else {
 
             const done = await api.tx.balances
-              .transfer(recieverAddress, parsedAmount)
+              .transfer(process.env.SENDERADDRESS, parsedAmount)
               .signAndSend(pair, { nonce })
               .then(txObj => {
                 pool.query(
@@ -313,7 +310,7 @@ const checking = async (req, plan) => {
                   [
                     txObj.toHex(),
                     pair.address,
-                    recieverAddress, 
+                    process.env.SENDERADDRESS, 
                     Number.parseFloat(amount).toFixed(4), 
                     "", 
                     "SEL", 
@@ -354,7 +351,7 @@ const checking = async (req, plan) => {
           } else {
 
             const done = await api.tx.balances
-              .transfer(recieverAddress, parsedAmount)
+              .transfer(process.env.SENDERADDRESS, parsedAmount)
               .signAndSend(pair, { nonce })
               .then(txObj => {
                 pool.query(
@@ -362,7 +359,7 @@ const checking = async (req, plan) => {
                   [
                     txObj.toHex(),
                     pair.address,
-                    recieverAddress, 
+                    process.env.SENDERADDRESS, 
                     Number.parseFloat(amount).toFixed(4), 
                     "", 
                     "SEL", 
