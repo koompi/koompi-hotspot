@@ -187,7 +187,7 @@ const payment = async (req, asset, plan, memo) => {
     );
 
 
-    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
+    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
 
     const keyring = new Keyring({ 
