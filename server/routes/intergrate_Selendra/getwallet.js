@@ -65,7 +65,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
     // generate wallet address and seed
     const seed = randomAsHex(32);
 
-    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
+    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
     
     const keyring = new Keyring({ 
@@ -159,7 +159,7 @@ router.post("/transfer", authorization, async (req, res) => {
     );
 
 
-    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
+    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
     
     const keyring = new Keyring({ 
@@ -314,7 +314,7 @@ router.get("/portfolio", authorization, async (req, res) => {
       [req.user]
     );
 
-    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
+    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
 
     const keyring = new Keyring({ 
