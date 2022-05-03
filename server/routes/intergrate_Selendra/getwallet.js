@@ -179,7 +179,7 @@ router.post("/transfer", authorization, async (req, res) => {
       res.status(401).json({ message: "Incorrect password!" });
     } else if (checkWallet.rows[0].seed === null) {
       res.status(400).json({ message: "Please get a wallet first!" });
-    } else if(typeAsset === "RISE") {
+    } else if(typeAsset === "LUY") {
       await getBalance(userWallet).then(async r => {
         const wallet = ethers.utils.formatUnits(r, 18);
         const balance = parseFloat(wallet);
@@ -203,7 +203,7 @@ router.post("/transfer", authorization, async (req, res) => {
                   JSON.parse(JSON.stringify(txObj.from)), 
                   dest_wallet, Number.parseFloat(amount).toFixed(3), 
                   "", 
-                  "RISE", 
+                  "LUY", 
                   memo, 
                   dateTime, 
                   // checkSenderPlayerid.rows[0].fullname,  
@@ -216,7 +216,7 @@ router.post("/transfer", authorization, async (req, res) => {
                 destination: dest_wallet,
                 amount: Number.parseFloat(amount).toFixed(3),
                 fee: "",
-                symbol: "RISE",
+                symbol: "LUY",
                 memo: memo,
                 datetime: dateTime,
                 // from: checkSenderPlayerid.rows[0].fullname,
@@ -341,7 +341,7 @@ router.get("/portfolio", authorization, async (req, res) => {
       res.status(200).json([
         {
           id: "luy",
-          token: "Comming Soon",
+          token: "Coming Soon",
           symbol: "LUY"
         },
         {
