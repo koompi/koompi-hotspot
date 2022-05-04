@@ -14,7 +14,6 @@ const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 const BN = require('bn.js');
 require("../../utils/functions")();
 
-
 // OneSignal Notification
 var sendNotification = function(data) {
   var headers = {
@@ -66,7 +65,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
     // generate wallet address and seed
     const seed = randomAsHex(32);
 
-    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
+    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
     
     const keyring = new Keyring({ 
@@ -76,10 +75,10 @@ router.get("/get-wallet", authorization, async (req, res) => {
     
     const pair = keyring.createFromUri(seed);
 
-    const seedEncrypted = CryptoJS.AES.encrypt(seed, "seed");
+    const seedEncrypted = CryptoJS.AES.encrypt(seed, process.env.KEYENCRYPTION);
 
     // sender initialize
-    const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+    const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
     const pairSender = keyring.createFromUri(senderSeedDecrypted);
     const amount = 100.1;
     const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
@@ -90,32 +89,34 @@ router.get("/get-wallet", authorization, async (req, res) => {
       await pool.query(
         "UPDATE useraccount SET wallet = $2, seed = $3 WHERE id = $1",
         [req.user, pair.address, seedEncrypted.toString()]
-      ).then (async () => {
-        await api.tx.balances
-        .transfer(pair.address, parsedAmount)
-        .signAndSend(pairSender, { nonce }).then(result => {
-          pool.query(
-            "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-            [
-              result.toHex(),
-              pairSender.address,
-              pair.address, 
-              Number.parseFloat(amount).toFixed(4), 
-              "", 
-              "SEL", 
-              "You recieved free 100.1000 SEL.", 
-              dateTime, 
-              // checkSenderPlayerid.rows[0].fullname,  
-              // checkDestPlayerid.rows[0].fullname, 
-            ]
-          );
-        });
-        res.status(200).json({ message: "You've got a selendra wallet." });
-      })  
-      .catch(err => {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error!" });
-      });
+      )
+      res.status(200).json({ message: "You've got a selendra wallet." });
+      // .then (async () => {
+      //   await api.tx.balances
+      //   .transfer(pair.address, parsedAmount)
+      //   .signAndSend(pairSender, { nonce }).then(result => {
+      //     pool.query(
+      //       "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+      //       [
+      //         result.toHex(),
+      //         pairSender.address,
+      //         pair.address, 
+      //         Number.parseFloat(amount).toFixed(4), 
+      //         "", 
+      //         "SEL", 
+      //         "You recieved free 100.1000 SEL.", 
+      //         dateTime, 
+      //         // checkSenderPlayerid.rows[0].fullname,  
+      //         // checkDestPlayerid.rows[0].fullname, 
+      //       ]
+      //     );
+      //   });
+      //   res.status(200).json({ message: "You've got a selendra wallet." });
+      // })  
+      // .catch(err => {
+      //   console.error(err);
+      //   res.status(500).json({ message: "Internal server error!" });
+      // });
     } else {
       res.status(401).json({ message: "You already have a selendra wallet!" });
     }
@@ -158,7 +159,7 @@ router.post("/transfer", authorization, async (req, res) => {
     );
 
 
-    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
+    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
     
     const keyring = new Keyring({ 
@@ -167,7 +168,7 @@ router.post("/transfer", authorization, async (req, res) => {
     });
 
 
-    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
 
     const pair = keyring.createFromUri(seedDecrypted);
 
@@ -178,7 +179,7 @@ router.post("/transfer", authorization, async (req, res) => {
       res.status(401).json({ message: "Incorrect password!" });
     } else if (checkWallet.rows[0].seed === null) {
       res.status(400).json({ message: "Please get a wallet first!" });
-    } else if(typeAsset === "RISE") {
+    } else if(typeAsset === "LUY") {
       await getBalance(userWallet).then(async r => {
         const wallet = ethers.utils.formatUnits(r, 18);
         const balance = parseFloat(wallet);
@@ -202,7 +203,7 @@ router.post("/transfer", authorization, async (req, res) => {
                   JSON.parse(JSON.stringify(txObj.from)), 
                   dest_wallet, Number.parseFloat(amount).toFixed(3), 
                   "", 
-                  "RISE", 
+                  "LUY", 
                   memo, 
                   dateTime, 
                   // checkSenderPlayerid.rows[0].fullname,  
@@ -215,7 +216,7 @@ router.post("/transfer", authorization, async (req, res) => {
                 destination: dest_wallet,
                 amount: Number.parseFloat(amount).toFixed(3),
                 fee: "",
-                symbol: "RISE",
+                symbol: "LUY",
                 memo: memo,
                 datetime: dateTime,
                 // from: checkSenderPlayerid.rows[0].fullname,
@@ -313,7 +314,7 @@ router.get("/portfolio", authorization, async (req, res) => {
       [req.user]
     );
 
-    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
+    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
 
     const keyring = new Keyring({ 
@@ -325,7 +326,7 @@ router.get("/portfolio", authorization, async (req, res) => {
     if (checkWallet.rows[0].seed === null) {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
-      const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+      const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
       
       const pair = keyring.createFromUri(seedDecrypted);
 
@@ -339,9 +340,9 @@ router.get("/portfolio", authorization, async (req, res) => {
 
       res.status(200).json([
         {
-          id: "rise",
-          token: "Token Suspended",
-          symbol: "RISE"
+          id: "luy",
+          token: "Coming Soon",
+          symbol: "LUY"
         },
         {
           id: "sel",

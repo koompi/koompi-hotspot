@@ -1,7 +1,7 @@
 const axios = require("axios");
 const moment = require("moment");
 const pool = require("../../../db");
-require("dotenv").config({ path: `../../../.env` });
+require("dotenv").config();
 var ethers = require('ethers');
 const abi = require("../../../abi.json");
 const CryptoJS = require('crypto-js');
@@ -26,7 +26,7 @@ const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 //       'https://rpc-mainnet.selendra.org', 
 //     );
 
-//     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+//     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
 
 //     const userWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
 //     const getBalance = async (wallet) => {
@@ -186,10 +186,8 @@ const payment = async (req, asset, plan, memo) => {
       [req]
     );
 
-    let recieverAddress = "serHGAaWQe9KrC8rDA1WyUY2jsQWstqeubMVtPPcZJ1Tqa4V6";
 
-
-    const ws = new WsProvider('wss://rpc1-mainnet.selendra.org');
+    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
     const api = await ApiPromise.create({ provider: ws });
 
     const keyring = new Keyring({ 
@@ -197,12 +195,12 @@ const payment = async (req, asset, plan, memo) => {
       ss58Format: 972
     });
 
-    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, "seed").toString(CryptoJS.enc.Utf8);
+    const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
         
     const pair = keyring.createFromUri(seedDecrypted);
 
     const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req]);
-    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [recieverAddress]);
+    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [process.env.SENDERADDRESS]);
 
     const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
@@ -235,7 +233,7 @@ const payment = async (req, asset, plan, memo) => {
         } else {
 
           const done = await api.tx.balances
-            .transfer(recieverAddress, parsedAmount)
+            .transfer(process.env.SENDERADDRESS, parsedAmount)
             .signAndSend(pair, { nonce })
             .then(txObj => {
               pool.query(
@@ -243,7 +241,7 @@ const payment = async (req, asset, plan, memo) => {
                 [
                   txObj.toHex(),
                   pair.address,
-                  recieverAddress, 
+                  process.env.SENDERADDRESS, 
                   Number.parseFloat(amount).toFixed(4), 
                   "", 
                   "SEL", 
