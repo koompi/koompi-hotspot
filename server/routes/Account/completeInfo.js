@@ -81,7 +81,7 @@ router.put("/complete-info", async (req, res) => {
         [fullname, gender, birthdate, address, email, phone]
       );
 
-      if(user.rows[0].seed === null && checkFreeToken.rows.length < 2000){
+      if(user.rows[0].seed === null && checkFreeToken.rows.length < 1000){
 
         ///============================= Free SEL Token ========================
   
@@ -113,7 +113,7 @@ router.put("/complete-info", async (req, res) => {
           // sender initialize
           const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
           const pairSender = keyring.createFromUri(senderSeedDecrypted);
-          const amount = 100.1;
+          const amount = 50.1;
           const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
           const nonce = await api.rpc.system.accountNextIndex(pairSender.address);
       
@@ -136,7 +136,7 @@ router.put("/complete-info", async (req, res) => {
                   Number.parseFloat(amount).toFixed(4), 
                   "", 
                   "SEL", 
-                  "You recieved free 100.1000 SEL.", 
+                  "You recieved free 50.1000 SEL.", 
                   dateTime, 
                   // checkSenderPlayerid.rows[0].fullname,  
                   // checkDestPlayerid.rows[0].fullname, 
