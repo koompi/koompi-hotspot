@@ -234,15 +234,8 @@ router.post("/register-phone", async (req, res) => {
           "INSERT INTO useraccount ( phone, password, code) VALUES($1,$2,$3)",
           [phone, bcryptPassword, code]
         );
-      }
-      if (user.rows.length !== 0 && user.rows[0].activate === false) {
-        await pool.query(
-          "UPDATE useraccount SET password=$1, code=$2 WHERE phone =$3",
-          [bcryptPassword, code, phone]
-        );
 
-        // Generate Wallet after completed OPT
-        
+        // Generate Wallet after completed OPT     
         if(user.rows[0].seed === null && checkFreeToken.rows.length < 1000){
 
           ///============================= Free SEL Token ========================
@@ -355,6 +348,12 @@ router.post("/register-phone", async (req, res) => {
           }
           
         }
+      }
+      if (user.rows.length !== 0 && user.rows[0].activate === false) {
+        await pool.query(
+          "UPDATE useraccount SET password=$1, code=$2 WHERE phone =$3",
+          [bcryptPassword, code, phone]
+        );
       }
     }
   } catch (error) {
