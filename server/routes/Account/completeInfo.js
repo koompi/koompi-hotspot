@@ -6,7 +6,6 @@ const { randomAsHex } = require('@polkadot/util-crypto');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 const CryptoJS = require('crypto-js');
 require("dotenv").config();
-const bcrypt = require('bcryptjs');
 
 
 router.put("/complete-inf", async (req, res) => {
