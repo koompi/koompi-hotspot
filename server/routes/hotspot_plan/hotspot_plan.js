@@ -253,18 +253,28 @@ router.get("/get-plan", authorization, async (req, res) => {
   }
 });
 
-router.post("/disconnect", async (req, res) => {
+router.delete("/disconnect", async (req, res) => {
 
   const {session, username, ip} = req.body;
 
+  // const user = await pool.query(
+  //   "select * from radacct WHERE username = $1",
+  //   [username]
+  // );
 
+  // const remove = await pool.query(
+  //   "delete from radacct WHERE acctsessionid = $1",
+  //   [user.rows[0].acctsessionid]
+  // );
+  
   let package_template = ({session_id, user_name, ip}) => {
     return `Acct-Session-Id=${session_id}
     User-Name=${user_name}
-    NAS-IP-Address=${ip}`;
+    NAS-IP-Address="10.1.1.1"`;
   }
     
   let packet = package_template({
+      // session_id: user.rows[0].acctsessionid,
       session_id: session,
       user_name: username,
       ip: ip
@@ -273,13 +283,14 @@ router.post("/disconnect", async (req, res) => {
   let command_string = ({ip, port, password}) =>`echo "${packet}" | radclient -x ${ip}:${port} disconnect ${password}`
   
   process = spawn('sh', ['-c', command_string({
-      ip: "10.1.2.120", 
-      port: "3791", 
+      ip: "118.67.207.84", 
+      port: "3796", 
       password: "Testing123"
   })]);
   
   process.stdout.on('data', (data) => {
     console.log(`stdout: ${data}`);
+    // remove;
   });
   
   process.stderr.on('data', (data) => {
