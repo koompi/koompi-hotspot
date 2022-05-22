@@ -346,12 +346,12 @@ router.get("/portfolio", authorization, async (req, res) => {
         },
         {
           id: "luy",
-          token: "Coming Soon",
+          token: "Coming soon",
           symbol: "LUY"
         },
         {
           id: "ksd",
-          token: "Coming Soon",
+          token: "Coming soon",
           symbol: "KSD"
         },
       ]);
