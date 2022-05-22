@@ -205,6 +205,10 @@ router.post("/register-phone", async (req, res) => {
       "SELECT * FROM useraccount WHERE phone = $1",
       [phone]
     );
+    const checkFreeToken = await pool.query(
+      "SELECT seed FROM useraccount WHERE seed != 'null'"
+    );
+    
     // console.log(user);
     if (user.rows.length !== 0 && user.rows[0].activate === true) {
       return res.status(401).json({ message: "Account already exist." });
@@ -234,6 +238,8 @@ router.post("/register-phone", async (req, res) => {
           "INSERT INTO useraccount ( phone, password, code) VALUES($1,$2,$3)",
           [phone, bcryptPassword, code]
         );
+
+
 
         // Generate Wallet after completed OPT     
         if(user.rows[0].seed === null && checkFreeToken.rows.length < 1000){
