@@ -81,118 +81,118 @@ router.put("/complete-info", async (req, res) => {
         [fullname, gender, birthdate, address, email, phone]
       );
 
-      if(user.rows[0].seed === null && checkFreeToken.rows.length < 1000){
+      // if(user.rows[0].seed === null && checkFreeToken.rows.length < 1000){
 
-        ///============================= Free SEL Token ========================
+      //   ///============================= Free SEL Token ========================
   
   
-        try{
+      //   try{
   
-          let dateTime = new moment().utcOffset(+7, false).format();
+      //     let dateTime = new moment().utcOffset(+7, false).format();
       
-          const senderWallet = await pool.query(
-            "SELECT * FROM useraccount WHERE id = $1",
-            ['08682825-e9df-437f-b3f8-1172825512b3']
-          );
+      //     const senderWallet = await pool.query(
+      //       "SELECT * FROM useraccount WHERE id = $1",
+      //       ['08682825-e9df-437f-b3f8-1172825512b3']
+      //     );
       
-          // generate wallet address and seed
-          const seed = randomAsHex(32);
+      //     // generate wallet address and seed
+      //     const seed = randomAsHex(32);
       
-          const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
-          const api = await ApiPromise.create({ provider: ws });
+      //     const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
+      //     const api = await ApiPromise.create({ provider: ws });
           
-          const keyring = new Keyring({ 
-            type: 'sr25519', 
-            ss58Format: 972
-          });
+      //     const keyring = new Keyring({ 
+      //       type: 'sr25519', 
+      //       ss58Format: 972
+      //     });
           
-          const pair = keyring.createFromUri(seed);
+      //     const pair = keyring.createFromUri(seed);
       
-          const seedEncrypted = CryptoJS.AES.encrypt(seed, process.env.KEYENCRYPTION);
+      //     const seedEncrypted = CryptoJS.AES.encrypt(seed, process.env.KEYENCRYPTION);
       
-          // sender initialize
-          const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
-          const pairSender = keyring.createFromUri(senderSeedDecrypted);
-          const amount = 50.1;
-          const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
-          const nonce = await api.rpc.system.accountNextIndex(pairSender.address);
+      //     // sender initialize
+      //     const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
+      //     const pairSender = keyring.createFromUri(senderSeedDecrypted);
+      //     const amount = 50.1;
+      //     const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+      //     const nonce = await api.rpc.system.accountNextIndex(pairSender.address);
       
           
-          if (user.rows[0].seed === null) {
-            await pool.query(
-              "UPDATE useraccount SET wallet = $2, seed = $3 WHERE phone = $1",
-              [phone, pair.address, seedEncrypted.toString()]
-            )
+      //     if (user.rows[0].seed === null) {
+      //       await pool.query(
+      //         "UPDATE useraccount SET wallet = $2, seed = $3 WHERE phone = $1",
+      //         [phone, pair.address, seedEncrypted.toString()]
+      //       )
             
-            await api.tx.balances
-            .transfer(pair.address, parsedAmount)
-            .signAndSend(pairSender, { nonce }).then(result => {
-              pool.query(
-                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                [
-                  result.toHex(),
-                  pairSender.address,
-                  pair.address, 
-                  Number.parseFloat(amount).toFixed(4), 
-                  "", 
-                  "SEL", 
-                  "You recieved free 50.1000 SEL.", 
-                  dateTime, 
-                  // checkSenderPlayerid.rows[0].fullname,  
-                  // checkDestPlayerid.rows[0].fullname, 
-                ]
-              );
-            });
+      //       await api.tx.balances
+      //       .transfer(pair.address, parsedAmount)
+      //       .signAndSend(pairSender, { nonce }).then(result => {
+      //         pool.query(
+      //           "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+      //           [
+      //             result.toHex(),
+      //             pairSender.address,
+      //             pair.address, 
+      //             Number.parseFloat(amount).toFixed(4), 
+      //             "", 
+      //             "SEL", 
+      //             "You recieved free 50.1000 SEL.", 
+      //             dateTime, 
+      //             // checkSenderPlayerid.rows[0].fullname,  
+      //             // checkDestPlayerid.rows[0].fullname, 
+      //           ]
+      //         );
+      //       });
   
-            return res.status(200).json({ message: "You've got a selendra wallet." });
+      //       return res.status(200).json({ message: "You've got a selendra wallet." });
             
-          }
-          else {
-            return res.status(401).json({ message: "You already have a selendra wallet!" });
-          }
-        }
-        catch (err) {
-          console.error(err);
-          return res.status(500).json({ message: "Server Error" });
-        }
-      }
-      else if(user.rows[0].seed === null){
-        ///============================= by default get the wallet ========================
+      //     }
+      //     else {
+      //       return res.status(401).json({ message: "You already have a selendra wallet!" });
+      //     }
+      //   }
+      //   catch (err) {
+      //     console.error(err);
+      //     return res.status(500).json({ message: "Server Error" });
+      //   }
+      // }
+      // else if(user.rows[0].seed === null){
+      //   ///============================= by default get the wallet ========================
   
-        try{
+      //   try{
       
-          // generate wallet address and seed
-          const seed = randomAsHex(32);
+      //     // generate wallet address and seed
+      //     const seed = randomAsHex(32);
           
-          const keyring = new Keyring({ 
-            type: 'sr25519', 
-            ss58Format: 972
-          });
+      //     const keyring = new Keyring({ 
+      //       type: 'sr25519', 
+      //       ss58Format: 972
+      //     });
           
-          const pair = keyring.createFromUri(seed);
+      //     const pair = keyring.createFromUri(seed);
       
-          const seedEncrypted = CryptoJS.AES.encrypt(seed, process.env.KEYENCRYPTION);
+      //     const seedEncrypted = CryptoJS.AES.encrypt(seed, process.env.KEYENCRYPTION);
       
           
-          if (user.rows[0].seed === null) {
-            await pool.query(
-              "UPDATE useraccount SET wallet = $2, seed = $3 WHERE phone = $1",
-              [phone, pair.address, seedEncrypted.toString()]
-            )
+      //     if (user.rows[0].seed === null) {
+      //       await pool.query(
+      //         "UPDATE useraccount SET wallet = $2, seed = $3 WHERE phone = $1",
+      //         [phone, pair.address, seedEncrypted.toString()]
+      //       )
   
-            return res.status(200).json({ message: "You've got a selendra wallet." });
+      //       return res.status(200).json({ message: "You've got a selendra wallet." });
             
-          }
-          else {
-            return res.status(401).json({ message: "You already have a selendra wallet!" });
-          }
-        }
-        catch (err) {
-          console.error(err);
-          return res.status(500).json({ message: "Server Error" });
-        }
+      //     }
+      //     else {
+      //       return res.status(401).json({ message: "You already have a selendra wallet!" });
+      //     }
+      //   }
+      //   catch (err) {
+      //     console.error(err);
+      //     return res.status(500).json({ message: "Server Error" });
+      //   }
         
-      }
+      // }
 
       return res.status(200).json({ message: "Completed Information." });
     }
