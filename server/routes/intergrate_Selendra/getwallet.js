@@ -340,15 +340,20 @@ router.get("/portfolio", authorization, async (req, res) => {
 
       res.status(200).json([
         {
+          id: "sel",
+          token: getParseFloat(parsedAmount,4).toString(),
+          symbol: "SEL"
+        },
+        {
           id: "luy",
           token: "Coming Soon",
           symbol: "LUY"
         },
         {
-          id: "sel",
-          token: getParseFloat(parsedAmount,4).toString(),
-          symbol: "SEL"
-        }
+          id: "ksd",
+          token: "Coming Soon",
+          symbol: "KSD"
+        },
       ]);
 
     }
