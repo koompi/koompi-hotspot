@@ -76,6 +76,60 @@ router.put("/complete-info", async (req, res) => {
         .status(401)
         .json({ message: "Please activate your account first!" });
     } else {
+      
+      if(user.rows[0].fullname == null || user.rows[0].gender == null || user.rows[0].birthdate == null || user.rows[0].address == null){
+        
+        try{
+    
+          let dateTime = new moment().utcOffset(+7, false).format();
+      
+          const senderWallet = await pool.query(
+            "SELECT * FROM useraccount WHERE id = $1",
+            ['08682825-e9df-437f-b3f8-1172825512b3']
+          );
+      
+          const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
+          const api = await ApiPromise.create({ provider: ws });
+          
+          const keyring = new Keyring({ 
+            type: 'sr25519', 
+            ss58Format: 972
+          });
+      
+          // sender initialize
+          const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
+          const pairSender = keyring.createFromUri(senderSeedDecrypted);
+          const amount = 10.0;
+          const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+          const nonce = await api.rpc.system.accountNextIndex(pairSender.address);
+      
+          
+          await api.tx.balances
+            .transfer(pair.address, parsedAmount)
+            .signAndSend(pairSender, { nonce }).then(result => {
+              pool.query(
+                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+                [
+                  result.toHex(),
+                  pairSender.address,
+                  pair.address, 
+                  Number.parseFloat(amount).toFixed(4), 
+                  "", 
+                  "SEL", 
+                  "You recieved free 10.0000 SEL.", 
+                  dateTime, 
+                  // checkSenderPlayerid.rows[0].fullname,  
+                  // checkDestPlayerid.rows[0].fullname, 
+                ]
+              );
+            }
+          );
+        }
+        catch (err) {
+          console.error(err);
+          return res.status(500).json({ message: "Server Error" });
+        }
+      }
       await pool.query(
         "UPDATE useraccount SET fullname=$1, gender=$2, birthdate=$3, address=$4, email=$5  WHERE phone=$6 AND activate = true",
         [fullname, gender, birthdate, address, email, phone]
