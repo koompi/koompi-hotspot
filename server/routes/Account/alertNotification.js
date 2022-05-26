@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const axios = require("axios");
 const pool = require("../../db");
 require("dotenv").config();
 const authorization = require("../../middleware/authorization");

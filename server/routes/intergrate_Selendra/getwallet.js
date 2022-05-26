@@ -1,17 +1,14 @@
 const router = require("express").Router();
-const axios = require("axios");
 const pool = require("../../db");
 require("dotenv").config();
 const authorization = require("../../middleware/authorization");
 const confirmPass = require("../../utils/payment");
 const AddressIsValid = require("../../utils/check_validwallet");
-var ethers = require('ethers');
 const abi = require( "../../abi.json" );
 const CryptoJS = require('crypto-js');
 const moment = require("moment");
 const { randomAsHex } = require('@polkadot/util-crypto');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
-const BN = require('bn.js');
 require("../../utils/functions")();
 
 // OneSignal Notification
@@ -180,68 +177,11 @@ router.post("/transfer", authorization, async (req, res) => {
     } else if (checkWallet.rows[0].seed === null) {
       res.status(400).json({ message: "Please get a wallet first!" });
     } else if(typeAsset === "LUY") {
-      await getBalance(userWallet).then(async r => {
-        const wallet = ethers.utils.formatUnits(r, 18);
-        const balance = parseFloat(wallet);
-        if (balance < amount) {
-          res.status(400).json({ message: "You don't have enough token!" });
-        } else {
-          let senderWallet = new ethers.Wallet(seedDecrypted, selendraProvider);
-          const contract = new ethers.Contract(riseContract, abi, senderWallet);
-
-          let gas = {
-            gasLimit: 100000,
-            gasPrice: ethers.utils.parseUnits("100", "gwei"),
-          }
-          
-          await contract.transfer(dest_wallets, ethers.utils.parseUnits(amount.toString(), 18), gas)
-            .then(txObj => {
-              pool.query(
-                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                [
-                  JSON.parse(JSON.stringify(txObj.hash)), 
-                  JSON.parse(JSON.stringify(txObj.from)), 
-                  dest_wallet, Number.parseFloat(amount).toFixed(3), 
-                  "", 
-                  "LUY", 
-                  memo, 
-                  dateTime, 
-                  // checkSenderPlayerid.rows[0].fullname,  
-                  // checkDestPlayerid.rows[0].fullname, 
-                ]
-              );
-              res.status(200).json(JSON.parse(JSON.stringify({
-                hash: txObj.hash,
-                sender: txObj.from,
-                destination: dest_wallet,
-                amount: Number.parseFloat(amount).toFixed(3),
-                fee: "",
-                symbol: "LUY",
-                memo: memo,
-                datetime: dateTime,
-                // from: checkSenderPlayerid.rows[0].fullname,
-                // to: checkDestPlayerid.rows[0].fullname,
-              })));
-
-              // sendNotification(senderMessage);
-              // sendNotification(recieverMessage);
-              
-            })
-            .catch(err => {
-              console.log("selendra's bug with payment", err);
-              res.status(501).json({ message: err.reason });
-            });
-          }
-      })
-      .catch(err => {
-        console.error(err);
-        res.status(501).json({ message: "Sorry, Something went wrong!" });
-      });
+      return res.status(400).json({ message: "Not yet available!" });
     }
     else if(typeAsset === "SEL"){
 
       const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
-      // const parsedAmount = new BN(amount, 16);
 
       const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
