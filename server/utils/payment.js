@@ -1,9 +1,6 @@
-const axios = require("axios");
 const pool = require("../db");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-var ethers = require('ethers');
-const abi = require("../abi.json");
 const CryptoJS = require('crypto-js');
 const moment = require("moment");
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
