@@ -11,4 +11,4 @@ npm rebuild bcrypt --build-from-source
 
 echo "Starting API server"
 
-npm run server
+node --max-old-space-size=4096 index.js
