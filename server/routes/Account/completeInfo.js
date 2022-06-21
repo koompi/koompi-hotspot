@@ -87,7 +87,7 @@ router.put("/complete-info", async (req, res) => {
       //       ['08682825-e9df-437f-b3f8-1172825512b3']
       //     );
       
-      //     const ws = new WsProvider('wss://api-mainnet.selendra.org');
+      //     const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
       //     const api = await ApiPromise.create({ provider: ws });
           
       //     const keyring = new Keyring({ 
@@ -151,7 +151,7 @@ router.put("/complete-info", async (req, res) => {
       //     // generate wallet address and seed
       //     const seed = randomAsHex(32);
       
-      //     const ws = new WsProvider('wss://api-mainnet.selendra.org');
+      //     const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
       //     const api = await ApiPromise.create({ provider: ws });
           
       //     const keyring = new Keyring({ 
