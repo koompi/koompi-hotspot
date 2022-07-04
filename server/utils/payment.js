@@ -60,7 +60,15 @@ const payment = async (req, asset, plan, memo) => {
     );
 
 
-    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
+    let ws;
+    ws = new WsProvider('wss://rpc-mainnet.selendra.org');
+    
+    if(ws.isConnected == false){
+      await ws.disconnect();
+
+      ws = new WsProvider('wss://api-mainnet.selendra.org');
+    }
+
     const api = await ApiPromise.create({ provider: ws });
 
     const keyring = new Keyring({ 
@@ -270,7 +278,15 @@ const checking = async (req, plan) => {
     );
 
 
-    const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
+    let ws;
+    ws = new WsProvider('wss://rpc-mainnet.selendra.org');
+    
+    if(ws.isConnected == false){
+      await ws.disconnect();
+
+      ws = new WsProvider('wss://api-mainnet.selendra.org');
+    }
+
     const api = await ApiPromise.create({ provider: ws });
 
     const keyring = new Keyring({ 
