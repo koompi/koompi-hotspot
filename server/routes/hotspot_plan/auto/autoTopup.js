@@ -79,8 +79,12 @@ const payment = async (req, asset, plan, memo) => {
       await ws.disconnect();
 
       ws = new WsProvider('wss://api-mainnet.selendra.org');
+
+      if(ws.isConnected == false){
+        await ws.disconnect();
+      }
     }
-    
+
     const api = await ApiPromise.create({ provider: ws });
 
     const keyring = new Keyring({ 
