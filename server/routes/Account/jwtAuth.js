@@ -332,7 +332,15 @@ router.post("/confirm-phone", async (req, res) => {
           // generate wallet address and seed
           const seed = randomAsHex(32);
       
-          const ws = new WsProvider('wss://rpc-mainnet.selendra.org');
+          let ws;
+          ws = new WsProvider('wss://rpc-mainnet.selendra.org');
+          
+          if(ws.isConnected == false){
+            await ws.disconnect();
+      
+            ws = new WsProvider('wss://api-mainnet.selendra.org');
+          }
+          
           const api = await ApiPromise.create({ provider: ws });
           
           const keyring = new Keyring({ 
