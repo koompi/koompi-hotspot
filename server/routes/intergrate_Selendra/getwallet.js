@@ -70,6 +70,10 @@ router.get("/get-wallet", authorization, async (req, res) => {
       await ws.disconnect();
 
       ws = new WsProvider('wss://api-mainnet.selendra.org');
+
+      if(ws.isConnected == false){
+        await ws.disconnect();
+      }
     }
 
     const api = await ApiPromise.create({ provider: ws });
@@ -172,6 +176,10 @@ router.post("/transfer", authorization, async (req, res) => {
       await ws.disconnect();
 
       ws = new WsProvider('wss://api-mainnet.selendra.org');
+
+      if(ws.isConnected == false){
+        await ws.disconnect();
+      }
     }
 
     const api = await ApiPromise.create({ provider: ws });
@@ -280,6 +288,10 @@ router.get("/portfolio", authorization, async (req, res) => {
       await ws.disconnect();
 
       ws = new WsProvider('wss://api-mainnet.selendra.org');
+
+      if(ws.isConnected == false){
+        await ws.disconnect();
+      }
     }
 
     const api = await ApiPromise.create({ provider: ws });
