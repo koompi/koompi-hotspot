@@ -155,20 +155,7 @@ router.post("/transfer", authorization, async (req, res) => {
     );
 
 
-    let ws;
-    ws = new WsProvider('wss://rpc-mainnet.selendra.org');
-    
-    if(ws.isConnected == false){
-      await ws.disconnect();
-
-      ws = new WsProvider('wss://api-mainnet.selendra.org');
-
-      if(ws.isConnected == false){
-        await ws.disconnect();
-      }
-    }
-
-    const api = await ApiPromise.create({ provider: ws });
+    const api = await requestTimer(res)
     
     const keyring = new Keyring({ 
       type: 'sr25519', 
@@ -200,7 +187,6 @@ router.post("/transfer", authorization, async (req, res) => {
 
         const parsedBalance = parseFloat(balance.data.free / Math.pow(10, api.registry.chainDecimals));
 
-        console.log(parsedAmount);
         if (parsedBalance < amount) {
           res.status(400).json({ message: "You don't have enough token!" });
         }
