@@ -5,6 +5,7 @@ const CryptoJS = require('crypto-js');
 const moment = require("moment");
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 require("../utils/functions")();
+const requestTimer = require('../utils/requestTimer');
 
 // OneSignal Notification
 var sendNotification = function(data) {
