@@ -10,12 +10,7 @@ const moment = require("moment");
 const { randomAsHex } = require('@polkadot/util-crypto');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 require("../../utils/functions")();
-const _ = require('lodash');
-const { values } = require("lodash");
-const { Console } = require("console");
-const { setTimeout } = require("timers/promises");
 const requestTimer = require('../../utils/requestTimer');
-const { constants } = require("os");
 // OneSignal Notification
 var sendNotification = function(data) {
   var headers = {
