@@ -11,7 +11,11 @@ const { randomAsHex } = require('@polkadot/util-crypto');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 require("../../utils/functions")();
 const _ = require('lodash');
-
+const { values } = require("lodash");
+const { Console } = require("console");
+const { setTimeout } = require("timers/promises");
+const requestTimer = require('../../utils/requestTimer');
+const { constants } = require("os");
 // OneSignal Notification
 var sendNotification = function(data) {
   var headers = {
@@ -63,20 +67,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
     // generate wallet address and seed
     const seed = randomAsHex(32);
 
-    let ws;
-    ws = new WsProvider('wss://rpc-mainnet.selendra.org');
-    
-    if(ws.isConnected == false){
-      await ws.disconnect();
-
-      ws = new WsProvider('wss://api-mainnet.selendra.org');
-
-      if(ws.isConnected == false){
-        await ws.disconnect();
-      }
-    }
-
-    const api = await ApiPromise.create({ provider: ws });
+    const api = await requestTimer(res)
     
     const keyring = new Keyring({ 
       type: 'sr25519', 
@@ -271,30 +262,24 @@ router.post("/transfer", authorization, async (req, res) => {
   }
 });
 
+// async function test(a) {
+ 
+//   console.log("test test url ", a);
+//   ws = new WsProvider(a);
+//   console.log("test test",ws.isConnected);
+//   return ws
+// }
 // Porfilio user balance
 router.get("/portfolio", authorization, async (req, res) => {
+ 
   try {
-
-    console.log("portfolio")
+    
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
     );
 
-    let ws;
-    ws = new WsProvider('wss://rpc-mainnet.selendra.org');
-    
-    if(ws.isConnected == false){
-      await ws.disconnect();
-
-      ws = new WsProvider('wss://api-mainnet.selendra.org');
-
-      if(ws.isConnected == false){
-        await ws.disconnect();
-      }
-    }
-
-    const api = await ApiPromise.create({ provider: ws });
+    const api = await requestTimer(res)
 
     const keyring = new Keyring({ 
       type: 'sr25519', 
