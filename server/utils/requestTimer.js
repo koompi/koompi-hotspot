@@ -9,7 +9,7 @@ module.exports = async function  requestTimer(res){
     res.setTimeout(8000, async function () {  
       if (timer === false) {
         ws.disconnect();
-        res.status(400).send("Bad request timeout");
+        return res.status(400).json({ message: "Bad request timed out" });
       }
     })
    
