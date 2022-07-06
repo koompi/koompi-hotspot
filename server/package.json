@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --max_old_space_size=4096 index.js",
-    "server": "nodemon --max_old_space_size=4096 index.js"
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "_start": "node --max_old_space_size=4096 index.js",
+    "_server": "nodemon --max_old_space_size=4096 index.js"
   },
   "keywords": [],
   "author": "",

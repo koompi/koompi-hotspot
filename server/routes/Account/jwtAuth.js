@@ -11,7 +11,7 @@ const { randomAsHex } = require('@polkadot/util-crypto');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 const CryptoJS = require('crypto-js');
 require("dotenv").config();
-const requestTimer = require('../../utils/requestTimer');
+const Api = require('../../utils/requestTimer');
 
 //         RESGISTERING //
 
@@ -333,7 +333,7 @@ router.post("/confirm-phone", async (req, res) => {
           // generate wallet address and seed
           const seed = randomAsHex(32);
       
-          const api = await requestTimer(res)
+          const {api} = new Api();
           
           const keyring = new Keyring({ 
             type: 'sr25519', 
