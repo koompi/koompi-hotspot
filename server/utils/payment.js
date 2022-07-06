@@ -5,7 +5,7 @@ const CryptoJS = require('crypto-js');
 const moment = require("moment");
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 require("../utils/functions")();
-const requestTimer = require('../utils/requestTimer');
+const Api = require('../utils/requestTimer');
 
 // OneSignal Notification
 var sendNotification = function(data) {
@@ -61,7 +61,7 @@ const payment = async (req, asset, plan, memo) => {
     );
 
 
-    const api = await requestTimer(res)
+    const {api} = new Api();
 
     const keyring = new Keyring({ 
       type: 'sr25519', 
@@ -269,7 +269,7 @@ const checking = async (req, plan) => {
       [req.user]
     );
 
-    const api = await requestTimer(res)
+    const {api} = new Api();
 
     const keyring = new Keyring({ 
       type: 'sr25519', 

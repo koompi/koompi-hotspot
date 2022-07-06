@@ -10,7 +10,11 @@ const moment = require("moment");
 const { randomAsHex } = require('@polkadot/util-crypto');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 require("../../utils/functions")();
-const requestTimer = require('../../utils/requestTimer');
+const {api, getApi} = require('../../config/connectSelendra');
+
+const Api = require('../../utils/requestTimer');
+
+
 // OneSignal Notification
 var sendNotification = function(data) {
   var headers = {
@@ -62,7 +66,7 @@ router.get("/get-wallet", authorization, async (req, res) => {
     // generate wallet address and seed
     const seed = randomAsHex(32);
 
-    const api = await requestTimer(res)
+    const {api} = new Api();
     
     const keyring = new Keyring({ 
       type: 'sr25519', 
@@ -155,7 +159,7 @@ router.post("/transfer", authorization, async (req, res) => {
     );
 
 
-    const api = await requestTimer(res)
+    const {api} = new Api();
     
     const keyring = new Keyring({ 
       type: 'sr25519', 
@@ -260,21 +264,24 @@ router.get("/portfolio", authorization, async (req, res) => {
       [req.user]
     );
 
-    const api = await requestTimer(res)
+    const {api} = new Api();
 
     const keyring = new Keyring({ 
       type: 'sr25519', 
       ss58Format: 972
     });
-
+   
     
     if (checkWallet.rows[0].seed === null) {
+
       res.status(401).json({ message: "Please get wallet first!" });
+
     } else {
+      
       const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
       
       const pair = keyring.createFromUri(seedDecrypted);
-
+      
 
       // Retrieve the account balance via the system module
       const { data: balance } = await api.query.system.account(pair.address);
