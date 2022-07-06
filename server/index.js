@@ -8,7 +8,7 @@ const moment = require("moment");
 const cron = require("node-cron");
 const autoCheck = require("./routes/hotspot_plan/auto/autoCheck");
 const autoTopUp = require("./routes/hotspot_plan/auto/autoTopup");
-
+const {connectSelendra} = require("./config/connectSelendra");
 // AWS sending email middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -83,8 +83,9 @@ cron.schedule("59 23 * * *", () => {
 //   console.log("automatically topup every minute");
 // });
 
+connectSelendra();
+
 app.listen(5000, () => {
   console.log("server is running on port 5000...");
-
 
 });

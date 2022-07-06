@@ -72,7 +72,7 @@ const payment = async (req, asset, plan, memo) => {
     );
 
 
-    const api = await requestTimer(res)
+    const {api} = new Api();
 
     const keyring = new Keyring({ 
       type: 'sr25519', 
