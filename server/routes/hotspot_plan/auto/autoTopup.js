@@ -6,38 +6,6 @@ const CryptoJS = require('crypto-js');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 
 
-// OneSignal Notification
-var sendNotification = function(data) {
-  var headers = {
-    "Content-Type": "application/json; charset=utf-8",
-    "Authorization": `Basic ${process.env.API_KEY_ONESIGNAL}`
-  };
-  
-  var options = {
-    host: "onesignal.com",
-    port: 443,
-    path: "/api/v1/notifications",
-    method: "POST",
-    headers: headers
-  };
-  
-  var https = require('https');
-  var req = https.request(options, function(res) {  
-    res.on('data', function(data) {
-      console.log("Response:");
-      console.log(JSON.parse(data));
-    });
-  });
-  
-  req.on('error', function(e) {
-    console.log("ERROR:");
-    console.log(e);
-  });
-  
-  req.write(JSON.stringify(data));
-  req.end();
-};
-
 const payment = async (req, asset, plan, memo) => {
   try {
     let amnt = parseFloat(plan, 10);
@@ -83,25 +51,10 @@ const payment = async (req, asset, plan, memo) => {
         
     const pair = keyring.createFromUri(seedDecrypted);
 
-    const checkUserPlayerid = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req]);
-    const checkSellerPlayerid = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [process.env.SENDERADDRESS]);
+    const user = await pool.query("SELECT * FROM useraccount WHERE id = $1", [req]);
+    const seller = await pool.query("SELECT * FROM useraccount WHERE wallet = $1", [process.env.SENDERADDRESS]);
 
     const nonce = await api.rpc.system.accountNextIndex(pair.address);
-
-    // OneSignal Message
-    let autoRenewPlanMessage = { 
-      app_id: process.env.API_ID_ONESIGNAL,
-      headings: {"en": "Auto Renew Fi-Fi Plan" + " " + amnt + " " + "days"},
-      contents: {"en": amount + " " + asset + " " + "has been paid from your wallet"},
-      include_player_ids: [checkUserPlayerid.rows[0].player_id]
-    };
-
-    let sellerMessage = { 
-      app_id: process.env.API_ID_ONESIGNAL,
-      headings: {"en": "Auto Renew Fi-Fi Plan" + " " + amnt + " " + "days"},
-      contents: {"en": amount + " " + asset + " " + "has been paid to your wallet"},
-      include_player_ids: [checkSellerPlayerid.rows[0].player_id]
-    };
 
     // =====================================check if user doesn't have a wallet=================
     if (checkWallet.rows[0].seed === null) {
@@ -131,13 +84,10 @@ const payment = async (req, asset, plan, memo) => {
                   "SEL", 
                   memo, 
                   dateTime, 
-                  checkUserPlayerid.rows[0].fullname,  
-                  checkSellerPlayerid.rows[0].fullname, 
+                  user.rows[0].fullname,  
+                  seller.rows[0].fullname, 
                 ]
               );
-
-              sendNotification(autoRenewPlanMessage);
-              sendNotification(sellerMessage);
 
               return [200, "Paid successfully!"];
             })
