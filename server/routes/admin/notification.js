@@ -10,37 +10,6 @@ require("dotenv").config({ path: `../../.env` });
 const path = require("path");
 const authorization = require("../../middleware/authorization");
 
-// OneSignal Notification
-var sendNotification = function(data) {
-  var headers = {
-    "Content-Type": "application/json; charset=utf-8",
-    "Authorization": `Basic ${process.env.API_KEY_ONESIGNAL}`
-  };
-  
-  var options = {
-    host: "onesignal.com",
-    port: 443,
-    path: "/api/v1/notifications",
-    method: "POST",
-    headers: headers
-  };
-  
-  var https = require('https');
-  var req = https.request(options, function(res) {  
-    res.on('data', function(data) {
-      console.log("Response:");
-      console.log(JSON.parse(data));
-    });
-  });
-  
-  req.on('error', function(e) {
-    console.log("ERROR:");
-    console.log(e);
-  });
-  
-  req.write(JSON.stringify(data));
-  req.end();
-};
 
 
 // add other middleware
@@ -107,15 +76,6 @@ router.post("/upload-img-notification", authorization, async (req, res) => {
 router.post("/notification", authorization, async (req, res) => {
   try {
     const { title, category, description, name} = req.body;
-    
-    // OneSignal Message
-    var message = { 
-      app_id: process.env.API_ID_ONESIGNAL,
-      headings: {"en": title},
-      contents: {"en": description},
-      included_segments: ["Subscribed Users"]
-      // include_player_ids: ["3bf9e780-96a9-4232-9d24-4460c57c1f3f"]
-    };
 
     var now = moment();
     await pool.query(
@@ -132,7 +92,6 @@ router.post("/notification", authorization, async (req, res) => {
       message: "File is uploaded",
     });
 
-    sendNotification(message);
 
   } catch (error) {
     console.log("error on POST notification", error);
