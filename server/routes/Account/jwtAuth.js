@@ -372,8 +372,6 @@ router.post("/confirm-phone", async (req, res) => {
                   "SEL", 
                   "You recieved free 50.1000 SEL.", 
                   dateTime, 
-                  // checkSenderPlayerid.rows[0].fullname,  
-                  // checkDestPlayerid.rows[0].fullname, 
                 ]
               );
             });
