@@ -68,13 +68,17 @@ app.use("/api/selendra", require("./routes/intergrate_Selendra/getwallet"));
 // send sms to testing
 app.use("/api/test", require("./routes/Account/twilioSMS/lookup"));
 
-// alert notification
-app.use("/api", require("./routes/Account/alertNotification"));
 
 // Check deadline at 11:59 PM every day.
 cron.schedule("59 23 * * *", () => {
   autoCheck.statusPlan();
   console.log("checking automatically plan every day");
+});
+
+// Check auto topup at 11:59 PM every day.
+cron.schedule("59 23 * * *", () => {
+  autoTopUp.autoRenew();
+  console.log("automatically topup every minute");
 });
 
 // // Check  every minute for automatically to up.
