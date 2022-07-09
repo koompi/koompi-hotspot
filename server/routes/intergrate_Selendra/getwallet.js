@@ -11,6 +11,7 @@ require("../../utils/functions")();
 
 const Api = require('../../utils/requestTimer');
 
+
 router.post("/transfer", authorization, async (req, res) => {
   try {
     const { password, dest_wallet, asset, amount, memo } = req.body;
@@ -171,31 +172,38 @@ router.get("/portfolio", authorization, async (req, res) => {
 // History user balance
 router.get("/history", authorization, async (req, res) => {
   try {
+
+    const limit = req.query.limit;
+    
     const checkWallet = await pool.query(
       "SELECT * FROM useraccount WHERE id = $1",
       [req.user]
     );
 
+    const getHistory = await pool.query(
+      "SELECT * FROM txhistory WHERE sender = $1 OR destination = $1 ORDER BY datetime DESC LIMIT $2",
+      [checkWallet.rows[0].wallet, limit]
+    )
+
+    // const paginate = getHistory.rows.slice((page - 1) * limit, page * limit);
+
+
     if (checkWallet.rows[0].seed === null) {
       res.status(401).json({ message: "Please get wallet first!" });
     } else {
-        await pool.query(
-          "SELECT * FROM txhistory WHERE sender = $1 OR destination = $1 ORDER BY datetime DESC",
-          [checkWallet.rows[0].wallet]
-        )
-        .then(async r => {
-          res.status(200).json(JSON.parse(JSON.stringify(r.rows)));
-        })
-        .catch(err => {
-          res.status(500).json({ message: "Internal server error" });
-          console.error(err);
-        });
+      if(limit === null){
+        return res.status(200).json(getHistory.rows);
+      } 
+      else{
+        return res.status(200).json(getHistory.rows);
+      }
     }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error!" });
   }
 });
+
 
 // router.post("/test", authorization, async (req, res) => {
 //   try {
