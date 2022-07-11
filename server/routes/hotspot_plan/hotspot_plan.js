@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const pool = require("../../db");
 const moment = require("moment");
-const bcrypt = require("bcrypt");
 const { spawn } = require('child_process');
 
 const authorization = require("../../middleware/authorization");
@@ -10,6 +9,7 @@ const nthash = require('smbhash').nthash;
 
 // const confirmPass = require("../intergrate_Selendra/payment");
 const Payment = require("../../utils/payment");
+
 
 // Create Account User
 
