@@ -4,6 +4,7 @@ require("dotenv").config();
 const abi = require("../../../abi.json");
 const CryptoJS = require('crypto-js');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
+const Api = require('../../../utils/requestTimer');
 
 
 const payment = async (req, asset, plan, memo) => {
