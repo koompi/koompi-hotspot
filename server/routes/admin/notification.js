@@ -75,12 +75,12 @@ router.post("/upload-img-notification", authorization, async (req, res) => {
 
 router.post("/notification", authorization, async (req, res) => {
   try {
-    const { title, category, description, name} = req.body;
+    const { title, category, description, file_name, share} = req.body;
 
     var now = moment();
     await pool.query(
-      "INSERT INTO notification (title,category,description,image,date,acc_id) VALUES($1,$2,$3,$4,$5,$6)",
-      [title, category, description, name, now, req.user]
+      "INSERT INTO notification (title,category,description,image,share,date,acc_id) VALUES($1,$2,$3,$4,$5,$6,$7)",
+      [title, category, description, file_name, share, now, req.user ]
     );
     
     res.status(200).json({
@@ -88,7 +88,8 @@ router.post("/notification", authorization, async (req, res) => {
       title,
       category,
       description,
-      name,
+      file_name,
+      share,
       message: "File is uploaded",
     });
 
