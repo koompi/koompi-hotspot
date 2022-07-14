@@ -5,6 +5,7 @@ const abi = require("../../../abi.json");
 const CryptoJS = require('crypto-js');
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 const Api = require('../../../utils/requestTimer');
+const BN = require('bn.js');
 
 
 const payment = async (req, asset, plan, memo) => {
