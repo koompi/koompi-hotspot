@@ -6,6 +6,7 @@ const moment = require("moment");
 const { Keyring, ApiPromise, WsProvider } = require('@polkadot/api');
 require("../utils/functions")();
 const Api = require('../utils/requestTimer');
+const BN = require('bn.js');
 
 const payment = async (req, asset, plan, memo) => {
   try {
