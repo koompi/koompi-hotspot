@@ -37,10 +37,9 @@ app.use("/api/hotspot", require("./routes/hotspot_plan/renewPlan"));
 // app.use("/api/hotspot", require("./routes/hotspot_plan/disconnect"));
 
 //  change password
-app.use(
-  "/api/change-password",
-  require("./routes/Account/change_password_Acc")
-);
+app.use(  "/api/change-password", require("./routes/Account/change_password_Acc"));
+
+app.use("/api", require("./routes/Account/change_password_Acc"));
 
 // vote ads
 app.use("/api/ads", require("./utils/vote_ads"));
