@@ -19,7 +19,7 @@ const connectSelendra = async () => {
    
   },8000)
 
-  ws = new WsProvider('wss://api-mainnet.selendra.org');
+  ws = new WsProvider('wss://rpc-mainnet.selendra.org');
   api = await ApiPromise.create({ provider: ws });
   console.log("Connected to Selendra");
   timer = true;
