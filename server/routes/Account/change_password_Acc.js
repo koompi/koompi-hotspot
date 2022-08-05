@@ -91,4 +91,33 @@ router.put("/account-phone", authorization, async (req, res) => {
   }
 });
 
+
+router.post("/check-password", authorization, async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    const acc = await pool.query("SELECT * FROM useraccount WHERE id = $1", [
+      req.user
+    ]);
+
+    // compare password
+    const validPassword = await bcrypt.compare(
+      password,
+      acc.rows[0].password
+    );
+
+    if (!validPassword) {
+      return res.status(401).json({ password: false });
+    }
+    else{
+      res.status(200).json({ password: true });
+    }
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+
 module.exports = router;
