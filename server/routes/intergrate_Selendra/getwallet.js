@@ -38,7 +38,18 @@ router.post("/transfer", authorization, async (req, res) => {
 
     const pair = keyring.createFromUri(seedDecrypted);
 
+    // Retrieve the account balance via the system module
+    const { data: balance } = await api.query.system.account(pair.address);
+
+    let mainBalance = parseFloat(balance.free / Math.pow(10, api.registry.chainDecimals[0]));
+
+    const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals[0]));
+
+    const nonce = await api.rpc.system.accountNextIndex(pair.address);
+    
     let dateTime = new moment().utcOffset(+7, false).format();
+
+    
 
     //=====================================check if user doesn't have a wallet=================
     if (!confirm) {
@@ -50,53 +61,45 @@ router.post("/transfer", authorization, async (req, res) => {
     }
     else if(typeAsset === "SEL"){
 
-      const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
 
-      const nonce = await api.rpc.system.accountNextIndex(pair.address);
-
-      await api.query.system.account(pair.address).then(async balance => {
-
-        const parsedBalance = parseFloat(balance.data.free / Math.pow(10, api.registry.chainDecimals));
-
-        if (parsedBalance < amount) {
-          res.status(400).json({ message: "You don't have enough token!" });
-        }
-        else{
-          await api.tx.balances
-            .transfer(dest_wallet, parsedAmount)
-            .signAndSend(pair, { nonce }).then(result =>{
-              pool.query(
-                "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
-                [
-                  result.toHex(),
-                  pair.address,
-                  dest_wallet, 
-                  Number.parseFloat(amount).toFixed(4), 
-                  "", 
-                  "SEL", 
-                  memo, 
-                  dateTime, 
-                ]
-              ).then(() => {
-                  res.status(200).json(JSON.parse(JSON.stringify({
-                    hash: result.toHex(),
-                    sender: pair.address,
-                    destination: dest_wallet,
-                    amount: Number.parseFloat(amount).toFixed(4),
-                    fee: "",
-                    symbol: "SEL",
-                    memo: memo,
-                    datetime: dateTime,
-                  })));
-              });
-              
-
-            }).catch(err => {
-              console.error(err);
-              res.status(501).json({ message: "Sorry, Something went wrong!" });
+      if (mainBalance < amount) {
+        res.status(400).json({ message: "You don't have enough token!" });
+      }
+      else{
+        await api.tx.balances
+          .transfer(dest_wallet, parsedAmount)
+          .signAndSend(pair, { nonce }).then(result =>{
+            pool.query(
+              "INSERT INTO txhistory ( hash, sender, destination, amount, fee, symbol ,memo, datetime) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+              [
+                result.toHex(),
+                pair.address,
+                dest_wallet, 
+                Number.parseFloat(amount).toFixed(4), 
+                "", 
+                "SEL", 
+                memo, 
+                dateTime, 
+              ]
+            ).then(() => {
+                res.status(200).json(JSON.parse(JSON.stringify({
+                  hash: result.toHex(),
+                  sender: pair.address,
+                  destination: dest_wallet,
+                  amount: Number.parseFloat(amount).toFixed(4),
+                  fee: "",
+                  symbol: "SEL",
+                  memo: memo,
+                  datetime: dateTime,
+                })));
             });
-        }
-      });
+            
+
+          }).catch(err => {
+            console.error(err);
+            res.status(501).json({ message: "Sorry, Something went wrong!" });
+          });
+      }
       
     }
     else{
@@ -139,20 +142,13 @@ router.get("/portfolio", authorization, async (req, res) => {
       // Retrieve the account balance via the system module
       const { data: balance } = await api.query.system.account(pair.address);
 
-      const chainDecimals = api.registry.chainDecimals[0];
-
-      formatBalance.setDefaults({ unit: '' });
-
-      const free = formatBalance(balance.free, { withSiFull: true }, chainDecimals);
-  
-
-      // const parsedAmount = parseFloat(balance.free / Math.pow(10, api.registry.chainDecimals));
+      let mainBalance = parseFloat(balance.free / Math.pow(10, api.registry.chainDecimals[0]));
 
 
       res.status(200).json([
         {
           id: "sel",
-          token: free,
+          token: mainBalance,
           symbol: "SEL"
         },
         {

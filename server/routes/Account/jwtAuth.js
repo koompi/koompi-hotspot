@@ -348,7 +348,7 @@ router.post("/confirm-phone", async (req, res) => {
           const senderSeedDecrypted = CryptoJS.AES.decrypt(senderWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);
           const pairSender = keyring.createFromUri(senderSeedDecrypted);
           const amount = 50.1;
-          const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+          const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals[0]));
           const nonce = await api.rpc.system.accountNextIndex(pairSender.address);
       
           
