@@ -64,10 +64,11 @@ const payment = async (req, asset, plan, memo) => {
     } else {
       const check = api.query.system.account(pair.address).then(async balance => {
 
-        const parsedBalance = new BN(r.data.free, 16)
-        const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals));
+        let mainBalance = parseFloat(r.data.free / Math.pow(10, api.registry.chainDecimals[0]));
 
-        if (parsedBalance < amount) {
+        const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals[0]));
+
+        if (mainBalance < amount) {
           return [400, "You don't have enough money!"];
         } else {
 

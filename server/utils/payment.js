@@ -62,13 +62,13 @@ const payment = async (req, asset, plan, memo) => {
         
         const pair = keyring.createFromUri(seedDecrypted);
 
-        const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+        const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals[0]));
 
         const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
         const check = await api.query.system.account(pair.address).then(async balance => {
 
-          const parsedBalance = parseFloat(balance.data.free / Math.pow(10, api.registry.chainDecimals));
+          let parsedBalance = parseFloat(balance.data.free / Math.pow(10, api.registry.chainDecimals[0]));
 
           if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
@@ -126,14 +126,14 @@ const payment = async (req, asset, plan, memo) => {
         
         const pair = keyring.createFromUri(seedDecrypted);
         
-        const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+        const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals[0]));
 
         const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
         const check =  await api.query.system.account(pair.address).then(async balance => {
-          const parsedBalance = new BN(balance.data.free, 16)
+          let mainBalance = parseFloat(balance.data.free / Math.pow(10, api.registry.chainDecimals[0]));
 
-          if (parsedBalance < amount - dis_value) {
+          if (mainBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
           } else {
 
@@ -214,7 +214,7 @@ const checking = async (req, plan) => {
         
     const pair = keyring.createFromUri(seedDecrypted);
   
-    const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals));
+    const parsedAmount = BigInt(amount * Math.pow(10, api.registry.chainDecimals[0]));
 
     const nonce = await api.rpc.system.accountNextIndex(pair.address);
 
@@ -224,7 +224,7 @@ const checking = async (req, plan) => {
         return [400, "Please get a wallet first!"];
       } else {
         const check = await api.query.system.account(pair.address).then(async balance => {
-          const parsedBalance = new BN(balance.data.free, 16)
+          let parsedBalance = parseFloat(balance.data.free / Math.pow(10, api.registry.chainDecimals[0]));
 
           if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
@@ -273,7 +273,7 @@ const checking = async (req, plan) => {
       } else {
         const check = await api.query.system.account(pair.address).then(async balance => {
           const parsedBalance = new BN(balance.data.free, 16)
-          const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals));
+          const parsedAmount = Number(amount * Math.pow(10, api.registry.chainDecimals[0]));
 
           if (parsedBalance < amount - dis_value) {
             return [400, "You don't have enough money!"];
