@@ -46,7 +46,7 @@ const payment = async (req, asset, plan, memo) => {
 
     const keyring = new Keyring({ 
       type: 'sr25519', 
-      ss58Format: 972
+      ss58Format: 204
     });
 
     const seedDecrypted = CryptoJS.AES.decrypt(checkWallet.rows[0].seed, process.env.KEYENCRYPTION).toString(CryptoJS.enc.Utf8);

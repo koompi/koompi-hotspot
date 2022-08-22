@@ -30,7 +30,7 @@ router.post("/transfer", authorization, async (req, res) => {
     
     const keyring = new Keyring({ 
       type: 'sr25519', 
-      ss58Format: 972
+      ss58Format: 204
     });
 
 
@@ -125,7 +125,7 @@ router.get("/portfolio", authorization, async (req, res) => {
 
     const keyring = new Keyring({ 
       type: 'sr25519', 
-      ss58Format: 972
+      ss58Format: 204
     });
    
     
@@ -148,7 +148,7 @@ router.get("/portfolio", authorization, async (req, res) => {
       res.status(200).json([
         {
           id: "sel",
-          token: mainBalance,
+          token: mainBalance.toFixed(4),
           symbol: "SEL"
         },
         {
