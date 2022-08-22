@@ -337,7 +337,7 @@ router.post("/confirm-phone", async (req, res) => {
           
           const keyring = new Keyring({ 
             type: 'sr25519', 
-            ss58Format: 972
+            ss58Format: 204
           });
           
           const pair = keyring.createFromUri(seed);
@@ -398,7 +398,7 @@ router.post("/confirm-phone", async (req, res) => {
           
           const keyring = new Keyring({ 
             type: 'sr25519', 
-            ss58Format: 972
+            ss58Format: 204
           });
           
           const pair = keyring.createFromUri(seed);
