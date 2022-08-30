@@ -106,7 +106,6 @@ router.post("/transfer", authorization, async (req, res) => {
       res.status(404).json({ message: "Sorry, Something went wrong!" });
     }
   } catch (err) {
-    console.log("bug on get wallet function", err);
     res.status(500).json({ message: err.reason });
   }
 });
