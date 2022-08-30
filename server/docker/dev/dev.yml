@@ -1,7 +1,7 @@
 version: "3.0"
 services:
   koompififi_dev:
-    image: hongsea/koompi-fifi:0.1.0
+    image: node
     container_name: api-hotspot-dev
     restart: always
     ports:
