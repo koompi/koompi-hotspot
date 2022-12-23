@@ -9,7 +9,7 @@
     "antd": "^4.4.3",
     "axios": "^0.21.1",
     "chart.js": "^2.9.4",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-chartjs-2": "^2.11.1",
